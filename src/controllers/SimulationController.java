@@ -46,7 +46,7 @@ public class SimulationController extends ThreadedProcess {
 					// TODO: Don't use hardcoded value here
 					SimulationResult previousResult = ObjectFactory.getInitialGrid(20, 20);
 					
-					while (!mRunningThread.isInterrupted()) {
+					while (!checkStopped()) {
 						checkPaused();
 
 						SimulationResult newResult = simulate(previousResult);
@@ -58,12 +58,15 @@ public class SimulationController extends ThreadedProcess {
 					}
 				} catch (InterruptedException e) {
 					log(Level.INFO, "Simulation stopped by interrupt");
-				} finally {
-					mRunningThread = null;
 				}
 			}
 
 		};
+	}
+	
+	@Override
+	public String getThreadName() {
+		return "Simulation";
 	}
 
 	@Override

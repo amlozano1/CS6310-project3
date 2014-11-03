@@ -38,7 +38,7 @@ public class PresentationController extends ThreadedProcess {
 			@Override
 			public void run() {
 				try {
-					while (!mRunningThread.isInterrupted()) {
+					while (!checkStopped()) {
 						checkPaused();
 						
 						SimulationResult result = mQueue.take();
@@ -50,12 +50,15 @@ public class PresentationController extends ThreadedProcess {
 					}
 				} catch (InterruptedException e) {
 					log(Level.INFO, "Presentation stopped by interrupt");
-				} finally {
-					mRunningThread = null;
 				}
 			}
 
 		};
+	}
+	
+	@Override
+	public String getThreadName() {
+		return "Presentation";
 	}
 
 	@Override

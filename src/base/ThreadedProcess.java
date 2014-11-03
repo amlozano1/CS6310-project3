@@ -15,7 +15,7 @@ public abstract class ThreadedProcess {
 	 * Stores a reference to the currently executing thread. Once the thread is
 	 * stopped, this variable is set back to null.
 	 */
-	protected Thread mRunningThread;
+	private Thread mRunningThread;
 
 	/**
 	 * Holds the current pause state. If true, the thread should pause at the
@@ -30,11 +30,11 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void pause() throws Exception {
-		if (mRunningThread == null) {
+		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
 			throw new Exception("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
-				log(Level.INFO, "Pausing thread");
+				logWithThreadName(Level.INFO, "Pausing %s thread");
 				mPaused = true;
 			}
 		}
@@ -47,11 +47,11 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void resume() throws Exception {
-		if (mRunningThread == null) {
+		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
 			throw new Exception("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
-				log(Level.INFO, "Resuming thread");
+				logWithThreadName(Level.INFO, "Resuming %s thread");
 				Boolean toNotify = mPaused;
 				mPaused = false;
 				toNotify.notify();
@@ -65,9 +65,10 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has already been started.
 	 */
 	public void start() throws Exception {
-		if (mRunningThread == null) {
-			log(Level.INFO, "Starting thread");
-			mRunningThread = new Thread(getRunnableAction());
+		if (mRunningThread == null || mRunningThread.isInterrupted()) {
+			String threadName = getThreadName();
+			logWithThreadName(Level.INFO, "Starting %s thread");
+			mRunningThread = threadName == null ? new Thread(getRunnableAction()) : new Thread(getRunnableAction(), threadName);
 			mRunningThread.start();
 		} else {
 			throw new Exception("Thread already started");
@@ -81,12 +82,16 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void stop() throws Exception {
-		if (mRunningThread == null) {
-			log(Level.INFO, "Stopping thread");
+		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
+			logWithThreadName(Level.INFO, "Stopping %s thread");
 			throw new Exception("Thread has not been started");
 		} else {
 			mRunningThread.interrupt();
 		}
+	}
+	
+	protected void acknowledgeStopped() {
+		mRunningThread = null;
 	}
 
 	/**
@@ -94,11 +99,44 @@ public abstract class ThreadedProcess {
 	 * 
 	 * @throws InterruptedException Thrown if the thread is interrupted while paused.
 	 */
-	protected synchronized void checkPaused() throws InterruptedException {
+	protected void checkPaused() throws InterruptedException {
 		synchronized (mPaused) {
 			if (mPaused) {
 				mPaused.wait();
 			}
+		}
+	}
+	
+	/**
+	 * Checks the stopped state of the thread
+	 * 
+	 * @return True if the thread is stopped, false otherwise
+	 */
+	protected boolean checkStopped() {
+		return mRunningThread.isInterrupted();
+	}
+	
+	/**
+	 * Gets the name of the thread. Override to change the name of the thread.
+	 * 
+	 * @return The name of the thread
+	 */
+	protected String getThreadName() {
+		return null;
+	}
+	
+	/**
+	 * Formats a message string, replacing %s with the thread name.
+	 * 
+	 * @param level The level the log message is set to
+	 * @param message The message to log, with %s being replaces as the thread name
+	 */
+	protected void logWithThreadName(Level level, String message) {
+		String threadName = getThreadName();
+		if (threadName == null) {
+			log(level, String.format(message, ""));
+		} else {
+			log(level, String.format(message, threadName));
 		}
 	}
 

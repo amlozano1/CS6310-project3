@@ -31,6 +31,8 @@ public class Demo {
 			Thread.sleep(5000);
 			
 			controller.stop();
+			
+			System.out.println("Complete");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
