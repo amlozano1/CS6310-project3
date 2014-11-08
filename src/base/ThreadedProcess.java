@@ -2,6 +2,8 @@ package base;
 
 import java.util.logging.Level;
 
+import exceptions.ThreadException;
+
 /**
  * ThreadedProcess provides some core functionality for classes with
  * concurrent actions that can be started, stopped, paused, and resumed.
@@ -29,9 +31,9 @@ public abstract class ThreadedProcess {
 	 * 
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
-	public void pause() throws Exception {
+	public void pause() throws ThreadException {
 		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
-			throw new Exception("Thread has not been started");
+			throw new ThreadException("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
 				logWithThreadName(Level.INFO, "Pausing %s thread");
@@ -46,9 +48,9 @@ public abstract class ThreadedProcess {
 	 * 
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
-	public void resume() throws Exception {
+	public void resume() throws ThreadException {
 		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
-			throw new Exception("Thread has not been started");
+			throw new ThreadException("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
 				logWithThreadName(Level.INFO, "Resuming %s thread");
@@ -64,14 +66,14 @@ public abstract class ThreadedProcess {
 	 * 
 	 * @throws Exception Thrown if the thread has already been started.
 	 */
-	public void start() throws Exception {
+	public void start() throws ThreadException {
 		if (mRunningThread == null || mRunningThread.isInterrupted()) {
 			String threadName = getThreadName();
 			logWithThreadName(Level.INFO, "Starting %s thread");
 			mRunningThread = threadName == null ? new Thread(getRunnableAction()) : new Thread(getRunnableAction(), threadName);
 			mRunningThread.start();
 		} else {
-			throw new Exception("Thread already started");
+			throw new ThreadException("Thread already started");
 		}
 	}
 
@@ -81,11 +83,11 @@ public abstract class ThreadedProcess {
 	 * 
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
-	public void stop() throws Exception {
+	public void stop() throws ThreadException {
 		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
-			logWithThreadName(Level.INFO, "Stopping %s thread");
-			throw new Exception("Thread has not been started");
+			throw new ThreadException("Thread has not been started");
 		} else {
+			logWithThreadName(Level.INFO, "Stopping %s thread");
 			mRunningThread.interrupt();
 		}
 	}
