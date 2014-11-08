@@ -4,6 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import callbacks.OnCompleteListener;
 import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
 import base.SimulationMethod;
@@ -27,6 +28,8 @@ public class SimulationController extends ThreadedProcess {
 	private int mSimulationTimestep = DEFAULT_TIME_STEP;
 	private int mSimulationLength = DEFAULT_LENGTH;
 	
+	private OnCompleteListener mOnCompleteListener;
+	
 	/**
 	 * The shared data queue to add simulation result data to.
 	 */
@@ -40,6 +43,11 @@ public class SimulationController extends ThreadedProcess {
 	public SimulationController(BlockingQueue<SimulationResult> queue, SimulationMethod simulationMethod) {
 		mQueue = queue;
 		mSimulationMethod = simulationMethod;
+	}
+	
+	
+	public void setOnCompleteListener(OnCompleteListener listener) {
+		mOnCompleteListener = listener;
 	}
 	
 	public SimulationResult simulate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
@@ -117,6 +125,10 @@ public class SimulationController extends ThreadedProcess {
 					
 					if (reachedSimulationEnd) {
 						LOGGER.info("Simulation reached completion");
+						
+						if (mOnCompleteListener != null) {
+							mOnCompleteListener.complete();
+						}
 					} else {
 						LOGGER.info("Simulation stopped by interrupt");
 					}
@@ -188,5 +200,5 @@ public class SimulationController extends ThreadedProcess {
 			throw new ArgumentInvalidException("simulationLength", "Simulation length must be between 1 and 1200 Solar months");
 		}
 	}
-
+	
 }

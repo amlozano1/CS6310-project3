@@ -2,6 +2,7 @@ package PlanetSim;
 
 import java.util.logging.Logger;
 
+import callbacks.OnCompleteListener;
 import controllers.MasterController;
 import controllers.PresentationController;
 import controllers.SimulationController;
@@ -41,6 +42,14 @@ public class Demo {
 		}
 		
 		MasterController controller = ObjectFactory.getMasterController();
+		controller.setOnCompleteListener(new OnCompleteListener() {
+			
+			@Override
+			public void complete() {
+				System.out.println("Complete");
+			}
+			
+		});
 		
 		// TODO: Add the GUI here
 		// TODO: The below code is an example of user behavior and should be removed with the GUI is implemented
@@ -59,8 +68,6 @@ public class Demo {
 			Thread.sleep(5000);
 			
 			controller.stop();
-			
-			System.out.println("Complete");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

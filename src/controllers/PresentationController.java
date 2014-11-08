@@ -4,6 +4,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import callbacks.OnCompleteListener;
+import exceptions.ThreadException;
 import base.PresentationMethod;
 import base.SimulationResult;
 import base.ThreadedProcess;
@@ -15,6 +17,8 @@ public class PresentationController extends ThreadedProcess {
 	public final static int DEFAULT_DISPLAY_RATE = 1;
 	
 	private int mPresentationDisplayRate = DEFAULT_DISPLAY_RATE;
+	private boolean mStopAndFlush = false;
+	private OnCompleteListener mFlushCompleteListener;
 	
 	/**
 	 * The presentation method implementation to execute when the queue contains a simulation result.
@@ -44,6 +48,11 @@ public class PresentationController extends ThreadedProcess {
 	public void present(SimulationResult simulationResult) throws InterruptedException {
 		mPresentationMethod.present(simulationResult);
 	}
+	
+	public void stopAndFlush(OnCompleteListener flushCompleteListener) throws ThreadException {
+		mStopAndFlush = true;
+		mFlushCompleteListener = flushCompleteListener;
+	}
 
 	@Override
 	protected Runnable getRunnableAction() {
@@ -52,7 +61,10 @@ public class PresentationController extends ThreadedProcess {
 			@Override
 			public void run() {
 				try {
-					while (!checkStopped()) {
+					mStopAndFlush = false;
+					mFlushCompleteListener = null;
+					
+					while (!checkStopped() && (!mStopAndFlush || mQueue.size() > 0)) {
 						checkPaused();
 						
 						SimulationResult result = mQueue.take();
@@ -61,6 +73,11 @@ public class PresentationController extends ThreadedProcess {
 						present(result);
 						
 						log(Level.INFO, "Buffer size: " + mQueue.size() + "/" + (mQueue.size() + mQueue.remainingCapacity()));
+					}
+					
+					// If presentation was flushed, call the flush complete listener
+					if (mStopAndFlush && mFlushCompleteListener != null) {
+						mFlushCompleteListener.complete();
 					}
 				} catch (InterruptedException e) {
 					LOGGER.info("Presentation stopped by interrupt");
