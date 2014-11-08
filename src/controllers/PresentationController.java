@@ -12,6 +12,10 @@ public class PresentationController extends ThreadedProcess {
 
 	private final static Logger LOGGER = Logger.getLogger(PresentationController.class.getName());
 	
+	public final static int DEFAULT_DISPLAY_RATE = 1;
+	
+	private int mPresentationDisplayRate = DEFAULT_DISPLAY_RATE;
+	
 	/**
 	 * The presentation method implementation to execute when the queue contains a simulation result.
 	 */
@@ -25,6 +29,16 @@ public class PresentationController extends ThreadedProcess {
 	public PresentationController(BlockingQueue<SimulationResult> queue, PresentationMethod presentationMethod) {
 		mPresentationMethod = presentationMethod;
 		mQueue = queue;
+	}
+	
+	/**
+	 * Sets the presentation parameters to the specified values. 
+	 * 
+	 * @param presentationDisplayRate
+	 */
+	public void setPresentationParameters(int presentationDisplayRate) {
+		// TODO: Decide on display rate validation
+		mPresentationDisplayRate = presentationDisplayRate;
 	}
 	
 	public void present(SimulationResult simulationResult) throws InterruptedException {
@@ -43,13 +57,13 @@ public class PresentationController extends ThreadedProcess {
 						
 						SimulationResult result = mQueue.take();
 						
-						// TODO: Add presentation time step check
+						// TODO: Add presentation display rate check
 						present(result);
 						
 						log(Level.INFO, "Buffer size: " + mQueue.size() + "/" + (mQueue.size() + mQueue.remainingCapacity()));
 					}
 				} catch (InterruptedException e) {
-					log(Level.INFO, "Presentation stopped by interrupt");
+					LOGGER.info("Presentation stopped by interrupt");
 				}
 			}
 
@@ -57,7 +71,7 @@ public class PresentationController extends ThreadedProcess {
 	}
 	
 	@Override
-	public String getThreadName() {
+	protected String getThreadName() {
 		return "Presentation";
 	}
 

@@ -14,6 +14,7 @@ package base;
  */
 public interface SimulationMethod {
 	
-	public SimulationResult simulate(SimulationResult previousResult) throws InterruptedException;
+	// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
+	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition) throws InterruptedException;
 
 }

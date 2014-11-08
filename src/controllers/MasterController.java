@@ -28,9 +28,9 @@ public class MasterController {
 		mSimulationController.resume();
 	}
 	
-	public void start() throws Exception {
+	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength, int presentationDisplayRate) throws Exception {
 		// TODO: Make custom exception type
-		// TODO: Add input parameters here
+		mSimulationController.setSimulationParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 		mPresenationController.start();
 		mSimulationController.start();
 	}
@@ -40,5 +40,4 @@ public class MasterController {
 		mPresenationController.stop();
 		mSimulationController.stop();
 	}
-
 }
