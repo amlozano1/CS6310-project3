@@ -37,7 +37,7 @@ public class UI extends JFrame implements ActionListener {
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtGridSpacing, txtSimLength, txtAxialTilt, txtOrbitalEcc;
-	private JSpinner spinnerDate, spinnerSimTimeStep;
+	private JSpinner spinnerSimTimeStep;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel;
 
@@ -45,19 +45,29 @@ public class UI extends JFrame implements ActionListener {
 	
 	public UI(){
 		super("Earth Simulation");
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
 		this.setLocation(10, 10);
-		this.setSize(800, 600);
+		this.setSize(1200, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Dimension dim = new Dimension (800,825);
 		EarthPanel.getInstance().init(dim, dim, dim);
 		
-		this.setLayout(new GridLayout(2, 0));
-		this.add(this.createControlsComponent());
-		this.add(this.createVisualizerDisplay());
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints layoutConstraint = new GridBagConstraints();
+		layoutConstraint.ipadx = 5;
+		layoutConstraint.ipady = 5;
+		layoutConstraint.fill = GridBagConstraints.BOTH;
+		layoutConstraint.gridx=0;
+		layoutConstraint.gridy=1;
+		layoutConstraint.gridheight=1;
+		this.add(this.createControlsComponent(),layoutConstraint);
+		layoutConstraint.gridx=1;
+		layoutConstraint.gridy=1;
+		layoutConstraint.gridheight=1;
+		this.add(this.createVisualizerDisplay(),layoutConstraint);
 		this.setVisible(true);
 	}
 	
