@@ -1,4 +1,4 @@
-package Visualizer;
+package gui;
 
 /**
  * Implement this interface to allow for the retrieval of information 

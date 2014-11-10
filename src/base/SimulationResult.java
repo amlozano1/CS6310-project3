@@ -1,6 +1,6 @@
 package base;
 
-import Visualizer.TemperatureGrid;
+import gui.TemperatureGrid;
 
 /**
  * Contains result data from a single simulation execution.

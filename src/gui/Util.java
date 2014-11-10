@@ -1,4 +1,4 @@
-package Visualizer;
+package gui;
 
 /**
  * Provides utility functions for geometric calculations related to the earth

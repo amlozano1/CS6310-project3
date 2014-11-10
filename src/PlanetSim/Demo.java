@@ -7,7 +7,7 @@ import controllers.MasterController;
 import controllers.PresentationController;
 import controllers.SimulationController;
 import exceptions.ArgumentInvalidException;
-import Visualizer.GUI;
+import gui.UI;
 import base.ObjectFactory;
 import base.Utils;
 
@@ -54,7 +54,7 @@ public class Demo {
 		
 		// TODO: Add the GUI here
 		// TODO: The below code is an example of user behavior and should be removed with the GUI is implemented
-		GUI gui = new GUI();
+		UI gui = new UI();
 		System.out.println("gui created");
 		try {
 			controller.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);

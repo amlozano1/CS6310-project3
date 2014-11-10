@@ -1,4 +1,6 @@
-package Visualizer;
+package gui;
+
+import gui.EarthPanel;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -26,10 +28,9 @@ import javax.swing.event.ChangeListener;
 
 import javax.swing.Timer;
 
-import Visualizer.EarthPanel;
 
 
-public class GUI extends JFrame implements ActionListener {
+public class UI extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1061316348359815659L;
 
@@ -42,7 +43,7 @@ public class GUI extends JFrame implements ActionListener {
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
-	public GUI(){
+	public UI(){
 		super("Earth Simulation");
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
