@@ -5,13 +5,15 @@ import gui.EarthPanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,12 +23,9 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import javax.swing.Timer;
 
 
 
@@ -37,6 +36,8 @@ public class UI extends JFrame implements ActionListener {
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtGridSpacing, txtSimLength, txtAxialTilt, txtOrbitalEcc;
+	private JTextField txtSimulationName;
+	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel;
@@ -59,14 +60,16 @@ public class UI extends JFrame implements ActionListener {
 		GridBagConstraints layoutConstraint = new GridBagConstraints();
 		layoutConstraint.ipadx = 5;
 		layoutConstraint.ipady = 5;
-		layoutConstraint.fill = GridBagConstraints.BOTH;
+		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
+		layoutConstraint.gridx=0;
+		layoutConstraint.gridy=0;
+		this.add(this.createSimControlsComponent(),layoutConstraint);
 		layoutConstraint.gridx=0;
 		layoutConstraint.gridy=1;
-		layoutConstraint.gridheight=1;
-		this.add(this.createControlsComponent(),layoutConstraint);
+		//this.add(this.createQueryControlsComponent(),layoutConstraint);
 		layoutConstraint.gridx=1;
-		layoutConstraint.gridy=1;
-		layoutConstraint.gridheight=1;
+		layoutConstraint.gridy=0;
+		layoutConstraint.gridheight = GridBagConstraints.REMAINDER;
 		this.add(this.createVisualizerDisplay(),layoutConstraint);
 		this.setVisible(true);
 	}
@@ -79,7 +82,32 @@ public class UI extends JFrame implements ActionListener {
 		return component;
 	}
 	
-	private JComponent createControlsComponent() {
+	private JComponent createQueryControlsComponent(){
+		JPanel component = new JPanel();
+		component.setLayout(new GridBagLayout());
+		GridBagConstraints layoutConstraint = new GridBagConstraints();
+		layoutConstraint.ipadx = 5;
+		layoutConstraint.ipady = 5;
+		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
+		int currentY = 0;
+		
+		//add the label for Simulation Name
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelPresDispRate = new JLabel("Simulation Name");
+		component.add(labelPresDispRate, layoutConstraint);
+		
+		//add the textbox for Simulation Name
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtSimulationName = new JTextField("---");
+		component.add(txtSimulationName, layoutConstraint);
+		return component;
+	}
+	
+	private JComponent createSimControlsComponent() {
 		
 		JPanel component = new JPanel();
 		component.setLayout(new GridBagLayout());
@@ -140,7 +168,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 2;
 		spinnerSimTimeStep = new JSpinner();
-		spinnerSimTimeStep.setModel(new SpinnerNumberModel(1, 1, 525600, 1));
+		spinnerSimTimeStep.setModel(new SpinnerNumberModel(1440, 1, 525600, 1));
 		component.add(spinnerSimTimeStep, layoutConstraint);
 		
 		//update currentY
@@ -179,7 +207,19 @@ public class UI extends JFrame implements ActionListener {
 		
 		//updated currentY
 		currentY += layoutConstraint.gridheight;
-		
+
+		//add the Checkbox for display animation
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
+		cbDisplayAnimation = new JCheckBox("Check to Enable Display Animation");
+		cbDisplayAnimation.setSelected(true);
+		component.add(cbDisplayAnimation, layoutConstraint);
+		layoutConstraint.gridwidth = 1;
+		//updated currentY
+		currentY += layoutConstraint.gridheight;
+
 		//add Start Button
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -240,12 +280,10 @@ public class UI extends JFrame implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			//Start has been pressed
-			if(btnStartStop.isSelected())
-			{				
+			if(btnStartStop.isSelected()){				
 				//Validate the values entered before starting processes
 				String valuesMessage = validValues();
-				if( valuesMessage == null)
-				{
+				if( valuesMessage == null){
 					btnStartStop.setText("Stop");
 					btnPauseResume.setEnabled(true);
 					
@@ -253,17 +291,14 @@ public class UI extends JFrame implements ActionListener {
 					txtSimLength.setEnabled(false);
 					txtAxialTilt.setEnabled(false);
 					txtGridSpacing.setEnabled(false);
+					txtOrbitalEcc.setEnabled(false);
 					spinnerSimTimeStep.setEnabled(false);
 					
 					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
-					
-					if(!valuesMessage.equals(""))
-					{
-						btnStartStop.setText("Start");
-						btnStartStop.setSelected(false);
-						JOptionPane.showMessageDialog(frame, valuesMessage);						
-					}
-						
+				}else{
+					btnStartStop.setText("Start");
+					btnStartStop.setSelected(false);
+					JOptionPane.showMessageDialog(frame, valuesMessage);
 				}
 			}else{//Stop has been pressed
 				btnStartStop.setText("Start");
@@ -277,6 +312,7 @@ public class UI extends JFrame implements ActionListener {
 				//Enable settings fields during sim
 				txtSimLength.setEnabled(true);
 				txtAxialTilt.setEnabled(true);
+				txtOrbitalEcc.setEnabled(true);
 				txtGridSpacing.setEnabled(true);
 				spinnerSimTimeStep.setEnabled(true);
 			}
@@ -307,7 +343,7 @@ public class UI extends JFrame implements ActionListener {
 				return "Simulation Time Step must be greater than 0";
 			if(simTimeStep > 525600)
 				return "Simulation Time Step must be less than or equal to 525,600.";
-		}catch(Exception e){
+		}catch(NumberFormatException e){
 			return "Error processing Simulation Time Step.";
 		}
 		
@@ -329,8 +365,24 @@ public class UI extends JFrame implements ActionListener {
 					txtGridSpacing.setText(gridSpacing+"");
 				}
 			}
-		}catch(Exception e){
+		}catch(NumberFormatException e){
 			return "Error processing Grid Spacing. Please input a positive integer value.";
+		}
+		
+		try{
+			float axialTilt = Float.parseFloat(txtAxialTilt.getText());
+			if(Math.abs(axialTilt) > 180)
+				return "The axial tilt value must be between -180 and 180 (inclusive).";
+		}catch(NumberFormatException e){
+			return "Error processing Axial Tilt.";
+		}
+		
+		try{
+			float orbitalEcc = Float.parseFloat(txtOrbitalEcc.getText());
+			if((orbitalEcc < (float)0) || (orbitalEcc >= 1))
+				return "The orbital eccentricity value must be between a non-negative real number less than 1 and it is "+orbitalEcc+".";
+		}catch(NumberFormatException e){
+			return "Error processing Orbital Eccentricity.";
 		}
 		
 		return null;
