@@ -6,6 +6,10 @@ import java.util.concurrent.BlockingQueue;
 import mock.MockPresentationMethod;
 import mock.MockSimulationMethod;
 import controllers.MasterController;
+import data.SimualtionDAOFactory;
+import data.SimulationDAO;
+import data.SimualtionDAOFactory.DaoType;
+import data.SimulationResultDAO;
 
 /**
  * ObjectFactory provides methods of creating implementations of interface
@@ -48,6 +52,14 @@ public final class ObjectFactory {
 		return new MasterController(getBlockingQueue(BUFFER_CAPACITY), getPresentationMethod(), getSimulationMethod());
 	}
 	
+	public static SimulationDAO getSimulationDAO(){
+		return getSimualtionDAOFactory().getSimulationDAO();
+	}
+	
+	public static SimulationResultDAO getSimulationResultDAO(){
+		return getSimualtionDAOFactory().getSimulationResultDAO();
+	}
+	
 	private static BlockingQueue<SimulationResult> getBlockingQueue(int capacity) {
 		return new ArrayBlockingQueue<SimulationResult>(capacity);
 	}
@@ -60,4 +72,7 @@ public final class ObjectFactory {
 		return new MockSimulationMethod();
 	}
 	
+	private static SimualtionDAOFactory getSimualtionDAOFactory(){
+		return SimualtionDAOFactory.getSimualtionDAOFactory(DaoType.RDBMS);
+	}
 }
