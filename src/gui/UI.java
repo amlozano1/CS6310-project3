@@ -5,13 +5,15 @@ import gui.EarthPanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -25,6 +27,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,10 +44,12 @@ public class UI extends JFrame implements ActionListener {
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
-	private JSpinner spinnerSimTimeStep;
+	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel;
 	private String[] queryNames = new String[0];
+	//private String[] months = {"Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul,", "Aug.", "Sep.", "Oct.", "Nov.", "Dec"};
+	//private 
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
@@ -62,19 +67,33 @@ public class UI extends JFrame implements ActionListener {
 		
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints layoutConstraint = new GridBagConstraints();
-		layoutConstraint.ipadx = 5;
-		layoutConstraint.ipady = 5;
+		
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		layoutConstraint.gridx=0;
 		layoutConstraint.gridy=0;
+		
 		JTabbedPane tabs = new JTabbedPane();
-		tabs.addTab("Simulation Controls", this.createSimControlsComponent());
+		
+		//We could use this setup if we want top level tabs
+		//which only shows the map on the sim tab not the query tab 
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.add(createSimControlsComponent());
+		panel.add(createVisualizerDisplay());
+		tabs.add("Simulation",panel);
+		tabs.add("Query",this.createQueryControlsComponent());
+		this.add(tabs, layoutConstraint);
+		
+		/*
+		tabs.addTab("Simulation Controls", this.createSimControlsComponent()); 
 		tabs.addTab("Query Controls", this.createQueryControlsComponent());
 		this.add(tabs,layoutConstraint);
+		
 		layoutConstraint.gridx=1;
 		layoutConstraint.gridy=0;
 		layoutConstraint.gridheight = GridBagConstraints.REMAINDER;
 		this.add(this.createVisualizerDisplay(),layoutConstraint);
+		*/
 		this.setVisible(true);
 	}
 	
@@ -145,8 +164,65 @@ public class UI extends JFrame implements ActionListener {
 
 		//updated currentY
 		currentY += layoutConstraint.gridheight;
-
+		
+		//add the label for start Date
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelQueryStartDate = new JLabel("Start Date");
+		component.add(labelQueryStartDate, layoutConstraint);
+		
+		//add the spinner for start Date
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		startTimeSpinner = new JSpinner( new SpinnerDateModel() );
+		JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "MM-dd-yyyy HH:mm");
+		startTimeSpinner.setEditor(startTimeEditor);
+		try{
+			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse("01-04-2014");
+			startTimeSpinner.setValue(d);
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		component.add(startTimeSpinner, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for End Date
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelQueryEndDate = new JLabel("End Date");
+		component.add(labelQueryEndDate, layoutConstraint);
+		
+		//add spinner for end date
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		endTimeSpinner = new JSpinner( new SpinnerDateModel() );
+		JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "MM-dd-yyyy HH:mm");
+		endTimeSpinner.setEditor(endTimeEditor);
+		try{
+			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse("01-04-2014");
+			endTimeSpinner.setValue(d); 
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		component.add(endTimeSpinner, layoutConstraint);
 				
+		//updated currentY
+		currentY += layoutConstraint.gridheight;
+				
+		//add query button
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
+		JButton btnQueryGo = new JButton("Query");
+		component.add(btnQueryGo, layoutConstraint);
+		
 		return component;
 	}
 	
