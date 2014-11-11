@@ -23,7 +23,7 @@ public class JavaDBDatastore extends Datastore{
 	
 	public static final String DB_EXISTS		= "01J01";
     public static final String DRIVER 			= "org.apache.derby.jdbc.EmbeddedDriver";
-    public static final String DBNAME 			= "heatedplanetp3t1";
+    public static final String DBNAME 			= "heatedplanetp3t1-db";
     public static final String CONNECTION_URL	= "jdbc:derby:" + DBNAME + ";create=true";
 
     private static Connection conn;
