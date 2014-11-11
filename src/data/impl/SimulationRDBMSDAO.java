@@ -46,7 +46,7 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
-			stmnt = conn.prepareStatement(DELETE);
+			stmnt = conn.prepareStatement(DELETE_BY_PK);
 			stmnt.setString(1, name);
 			int rows = stmnt.executeUpdate();
 			return rows>0;
