@@ -5,12 +5,10 @@ import gui.EarthPanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -42,14 +40,13 @@ public class UI extends JFrame implements ActionListener {
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
+	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
 	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel;
 	private String[] queryNames = new String[0];
-	//private String[] months = {"Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul,", "Aug.", "Sep.", "Oct.", "Nov.", "Dec"};
-	//private 
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
@@ -214,7 +211,98 @@ public class UI extends JFrame implements ActionListener {
 				
 		//updated currentY
 		currentY += layoutConstraint.gridheight;
+		
+		//add boundary information message
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
+		JLabel labelBoundaryMessage = new JLabel("Leave the textboxes blank if you would like to include the whole Earth.");
+		component.add(labelBoundaryMessage, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
+		
+		//add boundary information message
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
+		JLabel labelBoundaryMessage2 = new JLabel("You may also leave a pair (North, South) or (East,West) blank to include all.");
+		component.add(labelBoundaryMessage2, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
+		
+		//add the label for North boundary
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 1;
+		JLabel labelNorthBoundary = new JLabel("Northern Boundary Latitude");
+		component.add(labelNorthBoundary, layoutConstraint);
+		
+		//add textbox for North boundary
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtNorthBoundary = new JTextField("");
+		component.add(txtNorthBoundary, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
+		
+		//add the label for South boundary
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelSouthBoundary = new JLabel("Southern Boundary Latitude");
+		component.add(labelSouthBoundary, layoutConstraint);
+		
+		//add textbox for South boundary
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtSouthBoundary = new JTextField("");
+		component.add(txtSouthBoundary, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
 				
+		//add the label for East boundary
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelEastBoundary = new JLabel("Eastern Boundary Longitude");
+		component.add(labelEastBoundary, layoutConstraint);
+		
+		//add textbox for East boundary
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtEastBoundary = new JTextField("");
+		component.add(txtEastBoundary, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
+		
+		//add the label for West boundary
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelWestBoundary = new JLabel("Western Boundary Latitude");
+		component.add(labelWestBoundary, layoutConstraint);
+		
+		//add textbox for West boundary
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtWestBoundary = new JTextField("");
+		component.add(txtWestBoundary, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
+		
 		//add query button
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -222,6 +310,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridwidth = 2;
 		JButton btnQueryGo = new JButton("Query");
 		component.add(btnQueryGo, layoutConstraint);
+		
 		
 		return component;
 	}
