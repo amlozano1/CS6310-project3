@@ -14,6 +14,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
@@ -35,12 +37,14 @@ public class UI extends JFrame implements ActionListener {
 
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
-	private JTextField txtGridSpacing, txtSimLength, txtAxialTilt, txtOrbitalEcc;
-	private JTextField txtSimulationName;
+	private JTextField txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim;
+	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
+	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel;
+	private String[] queryNames = new String[0];
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
@@ -63,10 +67,10 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		layoutConstraint.gridx=0;
 		layoutConstraint.gridy=0;
-		this.add(this.createSimControlsComponent(),layoutConstraint);
-		layoutConstraint.gridx=0;
-		layoutConstraint.gridy=1;
-		//this.add(this.createQueryControlsComponent(),layoutConstraint);
+		JTabbedPane tabs = new JTabbedPane();
+		tabs.addTab("Simulation Controls", this.createSimControlsComponent());
+		tabs.addTab("Query Controls", this.createQueryControlsComponent());
+		this.add(tabs,layoutConstraint);
 		layoutConstraint.gridx=1;
 		layoutConstraint.gridy=0;
 		layoutConstraint.gridheight = GridBagConstraints.REMAINDER;
@@ -95,15 +99,54 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelPresDispRate = new JLabel("Simulation Name");
-		component.add(labelPresDispRate, layoutConstraint);
+		JLabel labelSimName = new JLabel("Simulation Name");
+		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		txtSimulationName = new JTextField("---");
-		component.add(txtSimulationName, layoutConstraint);
+		queryNameSelect = new JComboBox<String>(queryNames);
+		component.add(queryNameSelect, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Axial Tilt
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelAxialTilt = new JLabel("Axial Tilt");
+		component.add(labelAxialTilt, layoutConstraint);
+		
+		//add the textbox for Axial Tilt
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtAxialTiltQuery = new JTextField("23.44");
+		component.add(txtAxialTiltQuery, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Orbital Eccentricity
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelOrbitalEcc = new JLabel("Orbital Eccentricity");
+		component.add(labelOrbitalEcc, layoutConstraint);
+		
+		//add the textbox for Orbital Eccentricity
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtOrbitalEccQuery = new JTextField("0.167");
+		component.add(txtOrbitalEccQuery, layoutConstraint);
+
+		//updated currentY
+		currentY += layoutConstraint.gridheight;
+
+				
 		return component;
 	}
 	
@@ -121,15 +164,15 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelPresDispRate = new JLabel("Axial Tilt");
-		component.add(labelPresDispRate, layoutConstraint);
+		JLabel labelAxialTilt = new JLabel("Axial Tilt");
+		component.add(labelAxialTilt, layoutConstraint);
 		
 		//add the textbox for Axial Tilt
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		txtAxialTilt = new JTextField("23.44");
-		component.add(txtAxialTilt, layoutConstraint);
+		txtAxialTiltSim = new JTextField("23.44");
+		component.add(txtAxialTiltSim, layoutConstraint);
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
@@ -145,12 +188,12 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		txtOrbitalEcc = new JTextField("0.167");
-		component.add(txtOrbitalEcc, layoutConstraint);
-	
+		txtOrbitalEccSim = new JTextField("0.167");
+		component.add(txtOrbitalEccSim, layoutConstraint);
+
 		//updated currentY
 		currentY += layoutConstraint.gridheight;
-		
+				
 		//add the label for Simulation Time Step
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -245,17 +288,24 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
 		JLabel labelOpacitySlider = new JLabel("Adjust Temp Filter Transparency");
 		component.add(labelOpacitySlider, layoutConstraint);
 		
+		//update currentY
+		currentY += layoutConstraint.gridheight;		
+		
 		//Add Opacity Slider
-		layoutConstraint.gridx = 1;
+		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridwidth = 2;
 		sliderOpacity = new JSlider();
 		sliderOpacity.addChangeListener(chngSliderOpacity);
 		sliderOpacity.setValue(70);
 		component.add(sliderOpacity, layoutConstraint);		
+		
+		layoutConstraint.gridwidth = 1;
 		
 		return component;
 	}
@@ -289,9 +339,10 @@ public class UI extends JFrame implements ActionListener {
 					
 					//Disabled settings fields during sim
 					txtSimLength.setEnabled(false);
-					txtAxialTilt.setEnabled(false);
+					txtAxialTiltSim.setEnabled(false);
 					txtGridSpacing.setEnabled(false);
-					txtOrbitalEcc.setEnabled(false);
+					txtOrbitalEccSim.setEnabled(false);
+					cbDisplayAnimation.setEnabled(false);
 					spinnerSimTimeStep.setEnabled(false);
 					
 					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
@@ -311,8 +362,9 @@ public class UI extends JFrame implements ActionListener {
 				
 				//Enable settings fields during sim
 				txtSimLength.setEnabled(true);
-				txtAxialTilt.setEnabled(true);
-				txtOrbitalEcc.setEnabled(true);
+				txtAxialTiltSim.setEnabled(true);
+				txtOrbitalEccSim.setEnabled(true);
+				cbDisplayAnimation.setEnabled(true);
 				txtGridSpacing.setEnabled(true);
 				spinnerSimTimeStep.setEnabled(true);
 			}
@@ -370,7 +422,7 @@ public class UI extends JFrame implements ActionListener {
 		}
 		
 		try{
-			float axialTilt = Float.parseFloat(txtAxialTilt.getText());
+			float axialTilt = Float.parseFloat(txtAxialTiltSim.getText());
 			if(Math.abs(axialTilt) > 180)
 				return "The axial tilt value must be between -180 and 180 (inclusive).";
 		}catch(NumberFormatException e){
@@ -378,7 +430,7 @@ public class UI extends JFrame implements ActionListener {
 		}
 		
 		try{
-			float orbitalEcc = Float.parseFloat(txtOrbitalEcc.getText());
+			float orbitalEcc = Float.parseFloat(txtOrbitalEccSim.getText());
 			if((orbitalEcc < (float)0) || (orbitalEcc >= 1))
 				return "The orbital eccentricity value must be between a non-negative real number less than 1 and it is "+orbitalEcc+".";
 		}catch(NumberFormatException e){
@@ -387,5 +439,4 @@ public class UI extends JFrame implements ActionListener {
 		
 		return null;
 	}
-
 }
