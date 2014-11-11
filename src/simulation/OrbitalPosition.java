@@ -3,11 +3,12 @@ package simulation;
 public abstract class OrbitalPosition {
 	
 	public static double[] getCoordinates(double eccentricity, double time, double solarYear, double semiMajorAxis) {
+		// TODO: This calculation seems wrong
 		double c = semiMajorAxis * eccentricity;
-		double minorRadius = getMinorAxis(eccentricity, semiMajorAxis);
+		double minorAxis = getMinorAxis(eccentricity, time, solarYear, semiMajorAxis);
 		double eT = getEccentricAnomaly(eccentricity, time, solarYear);
 		double x = c + semiMajorAxis * Math.cos(eT);
-		double y = minorRadius * Math.sin(eT);
+		double y = minorAxis * Math.sin(eT);
 		return new double[] {x, y};
 	}
 	
@@ -51,9 +52,19 @@ public abstract class OrbitalPosition {
 		}
 	}
 	
-	private static double getMinorAxis(double eccentricity, double semiMajorAxis) {
-		// TODO: Figure this equation out
-		return 0;
+	/**
+	 * http://www.mathopenref.com/ellipseaxes.html
+	 * 
+	 * @param eccentricity
+	 * @param semiMajorAxis
+	 * @return
+	 */
+	public static double getMinorAxis(double eccentricity, double time, double solarYear, double semiMajorAxis) {
+		double perihelion = getDistanceFromSun(eccentricity, 0, solarYear, semiMajorAxis);
+		double distanceBetweenFoci = (semiMajorAxis - perihelion) * 2;
+		double distanceToSun = getDistanceFromSun(eccentricity, time, solarYear, semiMajorAxis);
+		double distanceToFoci = semiMajorAxis - distanceToSun;
+		return Math.sqrt(((distanceToSun + distanceToFoci) * (distanceToSun + distanceToFoci)) - (distanceBetweenFoci * distanceBetweenFoci));
 	}
 
 }
