@@ -22,7 +22,7 @@ public class EarthGridDisplay extends JPanel {
   
   private BufferedImage imgTransparent;
   private BufferedImage earthImage;
-  private float[] scales = { .4f, .4f, .4f, OPACITY }; //last index controls the transparency
+  private float opacity = OPACITY;
   private float[] offsets = new float[4];
   private int degreeSeparation;
   private int pixelsPerCellX; //number of pixels per latitudal division
@@ -71,17 +71,19 @@ public class EarthGridDisplay extends JPanel {
   }
   
   public void paint(Graphics g) {
-    //the order in which these are called does matter
-    if(paintInitialColors)
-      initCellColors(g);
-    else 
-      fillCellColors(g);
-    drawTransparentImage(g);
-    drawGrid(g);
+	//the order in which these are called does matter
+	g.drawImage(earthImage, 0, 0, imgWidth, imgHeight, null);
+	
+	if(paintInitialColors)
+		initCellColors(g);
+	else
+		fillCellColors(g);
+	//drawTransparentImage(g);
+	drawGrid(g);
   }
   
   private void initCellColors(Graphics g) {
-    g.setColor(colorPicker.getColor(DEFAULT_CELL_TEMP));
+    g.setColor(colorPicker.getColor(DEFAULT_CELL_TEMP, opacity));
     g.fillRect(0, 0, imgWidth, imgHeight);
   }
   
@@ -135,7 +137,7 @@ public class EarthGridDisplay extends JPanel {
 	        double newTemp = grid.getTemperature(xIndex, y);
 	        int colorValue = new Double(newTemp).intValue();
 	        
-	        g.setColor(colorPicker.getColor(colorValue));
+	        g.setColor(colorPicker.getColor(colorValue, opacity));
 	        g.fillRect(cellX, cellY, cellWidth, cellHeight);
 	        System.out.println("("+cellX+","+cellY+","+cellWidth+","+cellHeight+")");
 	        cellX += cellWidth;
@@ -147,11 +149,7 @@ public class EarthGridDisplay extends JPanel {
     }
   }
   
-  private void drawTransparentImage(Graphics g) {    
-    RescaleOp rop = new RescaleOp(scales, offsets, null);
-    Graphics2D g2d = (Graphics2D)g;
-    g2d.drawImage(imgTransparent, rop, 0, 0);
-  }
+
   
   private void drawGrid(Graphics g) {
     g.setColor(new Color(0,0,0,80));
@@ -178,12 +176,14 @@ public class EarthGridDisplay extends JPanel {
    * 
    * @param value the opacity value
    */
-  void setMapOpacity(float value) {
-    scales[3] = value;
+  void setColorOpacity(float value) {
+    opacity = value;
   }
 
   void reset() {
     paintInitialColors = true;
   }
+  
+  
   
 }

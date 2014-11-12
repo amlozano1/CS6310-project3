@@ -138,7 +138,7 @@ public class EarthPanel extends JPanel {
    * @param value the opacity value
    */
   public void setMapOpacity(float value) {
-	  earthGD.setMapOpacity(value);
+	  earthGD.setColorOpacity(value);
     repaint();
   }
 
