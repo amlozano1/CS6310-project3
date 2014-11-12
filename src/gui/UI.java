@@ -477,13 +477,10 @@ public class UI extends JFrame implements ActionListener {
 	
 	private ChangeListener chngSliderOpacity = new ChangeListener() {
 		public void stateChanged(ChangeEvent e) {
-			JSlider source = (JSlider)e.getSource();
-	        if (!source.getValueIsAdjusting()) {
-	        	float val = (float)0.01 * source.getValue();
-	            EarthPanel.getInstance().setMapOpacity(val);		            
-	        }  
-		}
+	        EarthPanel.getInstance().setMapOpacity(sliderOpacity.getValue() * .01f);
+	    }
 	};
+	
 	
 	//Handle timer event
     public void actionPerformed(ActionEvent e) {
