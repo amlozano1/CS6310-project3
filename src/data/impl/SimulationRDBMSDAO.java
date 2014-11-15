@@ -42,12 +42,12 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 	}
 	
 	@Override
-	public boolean removeSimulation(String name) {
+	public boolean removeSimulation(Integer id) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
 			stmnt = conn.prepareStatement(DELETE_BY_PK);
-			stmnt.setString(1, name);
+			stmnt.setInt(1, id);
 			int rows = stmnt.executeUpdate();
 			return rows>0;
 		} catch (SQLException e) {
@@ -60,13 +60,33 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 	}
 	
 	@Override
-	public Simulation getSimulation(String name) {
+	public Simulation getSimulation(Integer id) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		ResultSet rs = null;
 		Simulation simulation = null;
 		try {
 			stmnt = conn.prepareStatement(GET_BY_PK);
+			stmnt.setInt(1, id);
+			rs = stmnt.executeQuery();
+			simulation = fromResultSet(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs, stmnt);
+		}
+		
+		return simulation;
+	}
+	
+	@Override
+	public Simulation getSimulationByName(String name) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		ResultSet rs = null;
+		Simulation simulation = null;
+		try {
+			stmnt = conn.prepareStatement(GET_BY_NAME);
 			stmnt.setString(1, name);
 			rs = stmnt.executeQuery();
 			simulation = fromResultSet(rs);
@@ -86,6 +106,7 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 			if(rs != null && rs.next()){
 				simulation = new Simulation();
 				SimulationParameters simulationParameters = new SimulationParameters();
+				simulation.setId(rs.getInt(ID));
 				simulation.setName(rs.getString(NAME));
 				simulationParameters.setAxialTilt(rs.getDouble(AXIAL_TILT));
 				simulationParameters.setGridSpacing(rs.getShort(GRID_SPACING));

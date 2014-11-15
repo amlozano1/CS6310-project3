@@ -13,6 +13,7 @@ package data.impl;
 public interface SimulationDAOConstants {
 	public static final String TABLE_NAME = "simulation";
 	
+	public static final String ID 		    = "id";
 	public static final String NAME 		= "name";
 	public static final String GRID_SPACING = "grid_spacing";
 	public static final String TIME_STEP	= "time_step";
