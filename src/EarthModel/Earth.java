@@ -4,9 +4,9 @@
 package EarthModel;
 import java.util.Date;
 
-import Visualizer.TemperatureGrid;
+//import Visualizer.TemperatureGrid;
 
-public class Earth implements TemperatureGrid{
+public class Earth {//implements TemperatureGrid{
 	public static final double RADIUS = 6371;
 	public static final double CIRCUMFERENCE = 40030.14;
 	public static final double SURFACEAERA = 510072000;
