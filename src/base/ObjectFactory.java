@@ -6,10 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import mock.MockPresentationMethod;
 import mock.MockSimulationMethod;
 import controllers.MasterController;
-import data.SimualtionDAOFactory;
+import data.SimulationDAOFactory;
 import data.SimulationDAO;
-import data.SimualtionDAOFactory.DaoType;
+import data.SimulationDAOFactory.DaoType;
 import data.SimulationResultDAO;
+import data.SimulationStepDAO;
 
 /**
  * ObjectFactory provides methods of creating implementations of interface
@@ -56,6 +57,10 @@ public final class ObjectFactory {
 		return getSimualtionDAOFactory().getSimulationDAO();
 	}
 	
+	public static SimulationStepDAO getSimulationStepDAO(){
+		return getSimualtionDAOFactory().getSimulationStepDAO();
+	}
+	
 	public static SimulationResultDAO getSimulationResultDAO(){
 		return getSimualtionDAOFactory().getSimulationResultDAO();
 	}
@@ -72,7 +77,7 @@ public final class ObjectFactory {
 		return new MockSimulationMethod();
 	}
 	
-	private static SimualtionDAOFactory getSimualtionDAOFactory(){
-		return SimualtionDAOFactory.getSimualtionDAOFactory(DaoType.RDBMS);
+	private static SimulationDAOFactory getSimualtionDAOFactory(){
+		return SimulationDAOFactory.getSimualtionDAOFactory(DaoType.RDBMS);
 	}
 }

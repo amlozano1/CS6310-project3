@@ -2,6 +2,8 @@ package data.impl;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +37,7 @@ public class SimulationRDBMSDAOTest {
 		Simulation expected = create();
 		SimulationParameters parameters = expected.getSimulationParameters();
 		
-		Simulation fromDb = dao.getSimulation(SIMULATION_NAME);
+		Simulation fromDb = dao.getSimulationByName(SIMULATION_NAME);
 		assertNotNull("Simulation not found:", fromDb);
 		assertEquals("Name does not match:", expected.getName(), fromDb.getName());
 		assertNotNull("SimualtionParameters missing:", fromDb.getSimulationParameters());
@@ -43,8 +45,32 @@ public class SimulationRDBMSDAOTest {
 	}
 	
 	@Test
+	public void testFindByName() {
+		Simulation expected = create();
+		SimulationParameters parameters = expected.getSimulationParameters();
+		SimulationCriteria criteria = new SimulationCriteria();
+		criteria.withName(SIMULATION_NAME);
+		
+		List<Simulation> listFromDb = dao.findSimulationBy(criteria);
+		assertEquals("Wrong quantity returned:", 1, listFromDb.size());
+		
+		Simulation fromDb = listFromDb.get(0);
+		assertNotNull("Simulation not found:", fromDb);
+		assertEquals("Name does not match:", expected.getName(), fromDb.getName());
+		assertNotNull("SimualtionParameters missing:", fromDb.getSimulationParameters());
+		assertEquals("Parameters do not match:", parameters, fromDb.getSimulationParameters());
+		
+		criteria.clear();
+		criteria.withName(SIMULATION_NAME+"SHOULD_NOT_FIND");
+		
+		listFromDb = dao.findSimulationBy(criteria);
+		assertEquals("Wrong quantity returned:", 0, listFromDb.size());
+	}
+	
+	@Test
 	public void testRemove() {
-		boolean result = dao.removeSimulation(SIMULATION_NAME);
+		Simulation testSim = dao.getSimulationByName(SIMULATION_NAME);
+		boolean result = dao.removeSimulation(testSim.getId());
 		assertTrue("Delete failed:", result);
 	}
 
@@ -58,6 +84,9 @@ public class SimulationRDBMSDAOTest {
 		parameters.setLength((short)12);
 		parameters.setOrbitalEccentricity(.0167d);
 		parameters.setTimeStep(1440);
+		parameters.setPrecision((short)10);
+		parameters.setGeoPrecision((short)20);
+		parameters.setTempPrecision((short)30);
 		simulation.setSimulationParameters(parameters);
 		
 		return simulation;

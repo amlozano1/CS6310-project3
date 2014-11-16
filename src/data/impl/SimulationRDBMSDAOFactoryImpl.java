@@ -1,11 +1,12 @@
 package data.impl;
 
-import data.SimualtionDAOFactory;
+import data.SimulationDAOFactory;
 import data.SimulationDAO;
 import data.SimulationResultDAO;
+import data.SimulationStepDAO;
 
-public class SimulationRDBMSDAOFactoryImpl extends SimualtionDAOFactory {
-	
+public class SimulationRDBMSDAOFactoryImpl extends SimulationDAOFactory {
+
 	@Override
 	public SimulationDAO getSimulationDAO() {
 		return new SimulationRDBMSDAO();
@@ -16,4 +17,8 @@ public class SimulationRDBMSDAOFactoryImpl extends SimualtionDAOFactory {
 		return new SimulationResultRDBMSDAO();
 	}
 
+	@Override
+	public SimulationStepDAO getSimulationStepDAO() {
+		return new SimulationStepRDBMSDAO();
+	}
 }

@@ -1,6 +1,8 @@
 package data.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import base.SimulationResult;
@@ -16,20 +18,45 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 
 	@Override
 	public SimulationResult getSimulationResult(int simulationId, long simulationTime) {
-		Connection conn = dataStore.getConnection();
 		return null;
 	}
 
 	@Override
-	public void addSimulationResult(int simulationId, long simulationTime, SimulationResult simulationResult) {
-		// TODO Auto-generated method stub
+	public boolean addSimulationResult(int simulationId, int simulationStepId, SimulationResult simulationResult) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		try {
+			stmnt = conn.prepareStatement(INSERT);
+			int updatedCount = 0;
+			int cols = simulationResult.getColumnCount();
+			int rows = simulationResult.getRowCount();
+			for (short x = 0; x < cols; x++) {
+				for (short y = 0; y < rows; y++) {
+					stmnt.setInt(1, simulationId);
+					stmnt.setInt(2, simulationStepId);
+					stmnt.setShort(3, x);
+					stmnt.setShort(4, y);
+//					stmnt.setDouble(5, simulationResult.getLongitude(x, y));
+//					stmnt.setDouble(6, simulationResult.getLatitude(x, y));
+					stmnt.setDouble(7, simulationResult.getTemperature(x, y));
+					updatedCount += stmnt.executeUpdate();
+				}
+			}
+
+			return updatedCount > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(stmnt);
+		}
 		
+		return false;
 	}
 
 	@Override
-	public void removeSimulationResult(int simulationId, long simulationTime) {
+	public boolean removeSimulationResult(int simulationId, long simulationTime) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
@@ -39,9 +66,9 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 	}
 
 	@Override
-	public void removeAllForSimulation(int simulationId) {
+	public boolean removeAllForSimulation(int simulationId) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override

@@ -18,20 +18,17 @@ public class SimulationCriteria implements SimulationDAOConstants{
 		parameters.clear();
 	}
 	
-	public SimulationCriteria between(Date from, Date to){
-		after(from);
-		before(to);
-		return this;
+	public List<Object> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(List<Object> parameters) {
+		this.parameters = parameters;
 	}
 	
-	public SimulationCriteria before(Date date){
-		prepend().append("RUNDATE <= ? ");
-		parameters.add(date);
-		return this;
-	}
-	
-	public SimulationCriteria after(Date date){
-		prepend().append("RUNDATE >= ? ");
+	public SimulationCriteria includes(Date date){
+		//TODO need to calculate number of months from sim begin to date and make sure 
+		prepend().append("LENGTH >= ? ");
 		parameters.add(date);
 		return this;
 	}
@@ -83,13 +80,5 @@ public class SimulationCriteria implements SimulationDAOConstants{
 	
 	public String buildWhere(){
 		return whereClause == null ? null : whereClause.toString();
-	}
-	
-	public static void main(String[] args) {
-		SimulationCriteria criteria = new SimulationCriteria();
-		criteria.between(new Date(0), new Date(System.currentTimeMillis()));
-		criteria.withAxialTilt(100d).withGridSpacing(10).withName("SOMENAME").withOrbitalEccentricity(.5d).withTimeStep(5);
-		
-		System.out.println(criteria.buildWhere());
 	}
 }
