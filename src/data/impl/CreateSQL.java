@@ -21,7 +21,8 @@ public final class CreateSQL {
 														+ "SIMULATION_ID INTEGER NOT NULL,"
 														+ "SIMULATION_TIME BIGINT NOT NULL, "
 														+ "OCCURENCE_DATE DATE NOT NULL,"
-														+ "OCCURENCE_TIME TIME NOT NULL"
+														+ "OCCURENCE_TIME TIME NOT NULL,"
+														+ "SUN_POSITION FLOAT NOT NULL "
 														+ ")";
 	
 	public static final String CREATE_SIMULATION_RESULT = "CREATE TABLE APP.SIMULATION_RESULT "
