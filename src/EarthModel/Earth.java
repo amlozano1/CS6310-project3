@@ -163,12 +163,12 @@ public class Earth {//implements TemperatureGrid{
 		return timeElapsed;
 	}
 	
-	@Override
+	//@Override
 	public double getTemperature(int x, int y) {
 		return grid[y][x].getTemperature();
 	}
 
-	@Override
+	//@Override
 	public float getCellHeight(int x, int y) {
 		return (float)grid[y][x].getHeight();
 	}
