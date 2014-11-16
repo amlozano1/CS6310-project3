@@ -108,24 +108,24 @@ public class CellCalculations {
 		return Math.cos(latitude) * a;
 	}
 	
-	public static double getBorderEastWest(int row, double circumference, double gridSpacing) {
+	public static double getBorderEastWestProportion(int row, double circumference, double gridSpacing) {
 		return getCellHeight(circumference, gridSpacing) / getPerimeter(row, circumference, gridSpacing);
 	}
 	
-	public static double getBorderNorth(int row, double circumference, double gridSpacing) {
+	public static double getBorderNorthProportion(int row, double circumference, double gridSpacing) {
 		return getBaseWidth(row, circumference, gridSpacing) / getPerimeter(row, circumference, gridSpacing);
 	}
 	
-	public static double getBorderSouth(int row, double circumference, double gridSpacing) {
+	public static double getBorderSouthProportion(int row, double circumference, double gridSpacing) {
 		return getCeilingWidth(row, circumference, gridSpacing) / getPerimeter(row, circumference, gridSpacing);
 	}
 	
 	public static double getNeighborHeat(int row, double circumference, double gridSpacing, double northTemp, double southTemp, double eastTemp, double westTemp) {
-		double northBorder = getBorderNorth(row, circumference, gridSpacing);
-		double southBorder = getBorderSouth(row, circumference, gridSpacing);
-		double eastBorder = getBorderEastWest(row, circumference, gridSpacing);
-		double westBorder = eastBorder;
-		return (northBorder * northTemp) + (southBorder * southTemp) + (eastBorder * eastTemp) + (westBorder * westTemp);
+		double northBorderProportion = getBorderNorthProportion(row, circumference, gridSpacing);
+		double southBorderProportion = getBorderSouthProportion(row, circumference, gridSpacing);
+		double eastBorderProportion = getBorderEastWestProportion(row, circumference, gridSpacing);
+		double westBorderProportion = eastBorderProportion;
+		return (northBorderProportion * northTemp) + (southBorderProportion * southTemp) + (eastBorderProportion * eastTemp) + (westBorderProportion * westTemp);
 	}
 	
 	public static double getSolarHeat(int row, int column, double gridSpacing, int time, double circumference, double solarPowerPerMeter) {
@@ -133,6 +133,16 @@ public class CellCalculations {
 		double area = getArea(row, circumference, gridSpacing);
 		double solarPower = solarPowerPerMeter * area;
 		return solarPower - (attenuation * solarPower);
+	}
+	
+	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarPowerPerMeter) {
+		double radius = circumference / (2 * Math.PI);
+		double area = 4 * Math.PI * radius * radius;
+		double gridSize = getNumberOfRows(gridSpacing) * getNumberOfColumns(gridSpacing);
+		double averageSize = area / gridSize;
+		double cellArea = getArea(row, circumference, gridSpacing);
+		double relativeSizeFactor = cellArea / averageSize;
+		return -relativeSizeFactor * (cellTemp / averageTemp) * solarPowerPerMeter;
 	}
 	
 }

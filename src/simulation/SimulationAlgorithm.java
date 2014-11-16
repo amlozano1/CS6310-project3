@@ -12,10 +12,15 @@ public class SimulationAlgorithm implements SimulationMethod {
 		double gridSpacing = 15;
 		double circumference = 40030140.0;
 		double solarPowerPerMeter = 1366;
+		double solarYear = 525600;
+		double semiMajorAxis = 149600000;
 		int time = 0;
 		
 		int columns = previousResult.getColumnCount();
 		int rows = previousResult.getRowCount();
+		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, time, solarYear, semiMajorAxis, solarPowerPerMeter);
+		
+		double averageTemp = previousResult.getAverageTemperature();
 		
 		// TODO: Change data type to our class
 		double[][] data = new double[columns][];
@@ -23,15 +28,15 @@ public class SimulationAlgorithm implements SimulationMethod {
 			data[column] = new double[rows];
 			for (int row = 0; row < rows; row++) {
 				double previous = previousResult.getTemperature(column, row);
-				double previousNorth = row == 1 ? previous : previousResult.getTemperature(column, row - 1);
+				double previousNorth = row == 0 ? previous : previousResult.getTemperature(column, row - 1);
 				double previousSouth = row + 1 == rows ? previous : previousResult.getTemperature(column, row + 1);
-				double previousEast = column == 1 ? column : previousResult.getTemperature(column - 1, row);
-				double previousWest = column + 1 == columns ? column : previousResult.getTemperature(column + 1, row);
+				double previousEast = column == 0 ? previous : previousResult.getTemperature(column - 1, row);
+				double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
 				
-				// TODO: Apply cooling
-				data[column][row] = previous
-						+ CellCalculations.getSolarHeat(row, column, gridSpacing, time, circumference, solarPowerPerMeter)
-						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
+				data[column][row] =
+						CellCalculations.getSolarHeat(row + 1, column + 1, gridSpacing, time, circumference, adjustedSolarPowerPerMeter)
+						+ CellCalculations.getCooling(row + 1, circumference, gridSpacing, previous, averageTemp, adjustedSolarPowerPerMeter)
+						+ CellCalculations.getNeighborHeat(row + 1, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
 			}
 		}
 		

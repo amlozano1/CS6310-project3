@@ -204,11 +204,16 @@ public class CellCalculationsTests {
 	
 	@Test
 	public void testGetNeighborHeat() {
-		// TODO: Determine test cases for this
+		assertEquals(288.0, CellCalculations.getNeighborHeat(1, EARTH_CIRCUMFERENCE, 15, 288, 288, 288, 288), 0);
 	}
 	
 	@Test
 	public void testGetSolarHeat() {
+		// TODO: Determine test cases for this
+	}
+	
+	@Test
+	public void testGetCooling() {
 		// TODO: Determine test cases for this
 	}
 

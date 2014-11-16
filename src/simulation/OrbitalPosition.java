@@ -66,5 +66,10 @@ public abstract class OrbitalPosition {
 		double distanceToFoci = semiMajorAxis - distanceToSun;
 		return Math.sqrt(((distanceToSun + distanceToFoci) * (distanceToSun + distanceToFoci)) - (distanceBetweenFoci * distanceBetweenFoci));
 	}
+	
+	public static double getInverseSquare(double eccentricity, double time, double solarYear, double semiMajorAxis, double solarPower) {
+		double distance = getDistanceFromSun(eccentricity, time, solarYear, semiMajorAxis);
+		return (1 / (distance * distance)) * solarPower;
+	}
 
 }
