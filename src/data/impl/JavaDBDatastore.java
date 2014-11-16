@@ -1,12 +1,12 @@
 package data.impl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+//import java.io.BufferedReader;
+//import java.io.File;
+//import java.io.FileNotFoundException;
+//import java.io.FileReader;
+//import java.io.IOException;
+//import java.net.URISyntaxException;
+//import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -58,33 +58,38 @@ public class JavaDBDatastore extends Datastore{
 
     @Override
 	protected boolean init() {
-		BufferedReader reader = null;
+//		BufferedReader reader = null;
 		try {
 			Connection connection =  getConnection();
-			URL createScriptUrl = getClass().getClassLoader().getResource("createTables.sql");
-			reader = new BufferedReader(new FileReader(new File(createScriptUrl.toURI())));
-			for(String line = reader.readLine(); line != null; line = reader.readLine()){
+//			URL createScriptUrl = getClass().getClassLoader().getResource("createTables.sql");
+//			reader = new BufferedReader(new FileReader(new File(createScriptUrl.toURI())));
+//			for(String line = reader.readLine(); line != null; line = reader.readLine()){
+//				Statement stmt = connection.createStatement();
+//				stmt.executeUpdate(line);
+//			}
+			for(String sql :  CreateSQL.CREATE_SQL){
 				Statement stmt = connection.createStatement();
-				stmt.executeUpdate(line);
+				stmt.executeUpdate(sql);
+				stmt.close();
 			}
 			return true;
-		} catch (FileNotFoundException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
-		} catch (URISyntaxException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
-		} catch (IOException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+//		} catch (FileNotFoundException e) {
+//			log.log(Level.SEVERE, e.getMessage(), e);
+//		} catch (URISyntaxException e) {
+//			log.log(Level.SEVERE, e.getMessage(), e);
+//		} catch (IOException e) {
+//			log.log(Level.SEVERE, e.getMessage(), e);
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
-		} finally {
-			if(reader != null){
-				try {
-					reader.close();
-				} catch (IOException e) {
-					log.log(Level.WARNING, e.getMessage(), e);
-
-				}
-			}
+//		} finally {
+//			if(reader != null){
+//				try {
+//					reader.close();
+//				} catch (IOException e) {
+//					log.log(Level.WARNING, e.getMessage(), e);
+//
+//				}
+//			}
 		}
 
 		return false;

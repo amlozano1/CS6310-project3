@@ -5,14 +5,15 @@ import java.util.Arrays;
 import mock.MockSimulationDAOFatory;
 import data.impl.SimulationRDBMSDAOFactoryImpl;
 
-public abstract class SimualtionDAOFactory {
+public abstract class SimulationDAOFactory {
 	public enum DaoType{
 		RDBMS,FLATFILE,MOCK
 	}
 	public abstract SimulationDAO getSimulationDAO();
+	public abstract SimulationStepDAO getSimulationStepDAO();
 	public abstract SimulationResultDAO getSimulationResultDAO();
 	
-	public static final SimualtionDAOFactory getSimualtionDAOFactory(DaoType type){
+	public static final SimulationDAOFactory getSimualtionDAOFactory(DaoType type){
 		switch (type) {
 		case RDBMS:
 			return new SimulationRDBMSDAOFactoryImpl();

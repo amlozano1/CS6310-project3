@@ -6,7 +6,10 @@ public class SimulationParameters {
 	private short length;
 	private double axialTilt;
 	private double orbitalEccentricity;
-
+	private short precision;
+	private short geoPrecision;
+	private short tempPrecision;
+	
 	public short getGridSpacing() {
 		return gridSpacing;
 	}
@@ -37,7 +40,24 @@ public class SimulationParameters {
 	public void setOrbitalEccentricity(double orbitalEccentricity) {
 		this.orbitalEccentricity = orbitalEccentricity;
 	}
-	
+	public short getPrecision() {
+		return precision;
+	}
+	public void setPrecision(short precision) {
+		this.precision = precision;
+	}
+	public short getGeoPrecision() {
+		return geoPrecision;
+	}
+	public void setGeoPrecision(short geoPrecision) {
+		this.geoPrecision = geoPrecision;
+	}
+	public short getTempPrecision() {
+		return tempPrecision;
+	}
+	public void setTempPrecision(short tempPrecision) {
+		this.tempPrecision = tempPrecision;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -45,10 +65,13 @@ public class SimulationParameters {
 		long temp;
 		temp = Double.doubleToLongBits(axialTilt);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + geoPrecision;
 		result = prime * result + gridSpacing;
 		result = prime * result + length;
 		temp = Double.doubleToLongBits(orbitalEccentricity);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + precision;
+		result = prime * result + tempPrecision;
 		result = prime * result + timeStep;
 		return result;
 	}
@@ -64,12 +87,18 @@ public class SimulationParameters {
 		if (Double.doubleToLongBits(axialTilt) != Double
 				.doubleToLongBits(other.axialTilt))
 			return false;
+		if (geoPrecision != other.geoPrecision)
+			return false;
 		if (gridSpacing != other.gridSpacing)
 			return false;
 		if (length != other.length)
 			return false;
 		if (Double.doubleToLongBits(orbitalEccentricity) != Double
 				.doubleToLongBits(other.orbitalEccentricity))
+			return false;
+		if (precision != other.precision)
+			return false;
+		if (tempPrecision != other.tempPrecision)
 			return false;
 		if (timeStep != other.timeStep)
 			return false;

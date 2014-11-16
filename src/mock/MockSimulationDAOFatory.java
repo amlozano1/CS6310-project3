@@ -1,10 +1,11 @@
 package mock;
 
-import data.SimualtionDAOFactory;
+import data.SimulationDAOFactory;
 import data.SimulationDAO;
 import data.SimulationResultDAO;
+import data.SimulationStepDAO;
 
-public class MockSimulationDAOFatory extends SimualtionDAOFactory {
+public class MockSimulationDAOFatory extends SimulationDAOFactory {
 	@Override
 	public SimulationDAO getSimulationDAO() {
 		return new MockSimulationDAO();
@@ -13,5 +14,10 @@ public class MockSimulationDAOFatory extends SimualtionDAOFactory {
 	@Override
 	public SimulationResultDAO getSimulationResultDAO() {
 		return new MockSimulationResultDAO();
+	}
+	
+	@Override
+	public SimulationStepDAO getSimulationStepDAO() {
+		return new MockSimulationStepDAO();
 	}
 }
