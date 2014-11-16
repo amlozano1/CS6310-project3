@@ -23,35 +23,51 @@ public class JavaDBDatastore extends Datastore{
 	
 	public static final String DB_EXISTS		= "01J01";
     public static final String DRIVER 			= "org.apache.derby.jdbc.EmbeddedDriver";
-    public static final String DBNAME 			= "heatedplanetp3t1";
+    public static final String DBNAME 			= "heatedplanetp3t1-db";
     public static final String CONNECTION_URL	= "jdbc:derby:" + DBNAME + ";create=true";
 
     private static Connection conn;
     
     private JavaDBDatastore(){
-    	create();
+    	try {
+			create();
+			if(isNew(getConnection())){
+				init();
+			}
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
     }
     
     public static final JavaDBDatastore getInstance(){
     	return SINGLETON;
     }
     
-	private boolean create() {
-		BufferedReader reader = null;
+    @Override
+	protected boolean create() {
 		try {
 			Class.forName(DRIVER);
-			Connection connection =  getConnection();
-			if(isNew(connection)){
-				URL createScriptUrl = getClass().getClassLoader().getResource("createTables.sql");
-				reader = new BufferedReader(new FileReader(new File(createScriptUrl.toURI())));
-				for(String line = reader.readLine(); line != null; line = reader.readLine()){
-					Statement stmt = connection.createStatement();
-					stmt.executeUpdate(line);
-				}
-			}
+			getConnection();
 			return true;
 		} catch (ClassNotFoundException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
+		}
+
+		return false;
+	}
+
+    @Override
+	protected boolean init() {
+		BufferedReader reader = null;
+		try {
+			Connection connection =  getConnection();
+			URL createScriptUrl = getClass().getClassLoader().getResource("createTables.sql");
+			reader = new BufferedReader(new FileReader(new File(createScriptUrl.toURI())));
+			for(String line = reader.readLine(); line != null; line = reader.readLine()){
+				Statement stmt = connection.createStatement();
+				stmt.executeUpdate(line);
+			}
+			return true;
 		} catch (FileNotFoundException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 		} catch (URISyntaxException e) {
@@ -73,7 +89,7 @@ public class JavaDBDatastore extends Datastore{
 
 		return false;
 	}
-
+    
 	@Override
 	public Connection getConnection() {
 		try {
