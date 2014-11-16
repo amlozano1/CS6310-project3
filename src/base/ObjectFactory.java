@@ -6,6 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import mock.MockPresentationMethod;
 import mock.MockSimulationMethod;
 import controllers.MasterController;
+import data.SimulationDAOFactory;
+import data.SimulationDAO;
+import data.SimulationDAOFactory.DaoType;
+import data.SimulationResultDAO;
+import data.SimulationStepDAO;
 
 /**
  * ObjectFactory provides methods of creating implementations of interface
@@ -21,7 +26,7 @@ public final class ObjectFactory {
 	
 	private static final int BUFFER_CAPACITY = 10;
 	
-	private static final double INITIAL_GRID_TEMPERATURE = 10;
+	private static final double INITIAL_GRID_TEMPERATURE = 288;
 
 	/**
 	 * Private constructor is used to prevent the default constructor from being public.
@@ -31,9 +36,9 @@ public final class ObjectFactory {
 	
 	public static SimulationResult getInitialGrid(int rowCount, int columnCount) {
 		
-		double[][] initialData = new double[rowCount][];
+		double[][] initialData = new double[columnCount][];
 		for (int i = 0; i < initialData.length; i++) {
-			double[] initialRow = new double[columnCount];
+			double[] initialRow = new double[rowCount];
 			for (int j = 0; j < initialRow.length; j++) {
 				initialRow[j] = INITIAL_GRID_TEMPERATURE;
 			}
@@ -48,6 +53,18 @@ public final class ObjectFactory {
 		return new MasterController(getBlockingQueue(BUFFER_CAPACITY), getPresentationMethod(), getSimulationMethod());
 	}
 	
+	public static SimulationDAO getSimulationDAO(){
+		return getSimualtionDAOFactory().getSimulationDAO();
+	}
+	
+	public static SimulationStepDAO getSimulationStepDAO(){
+		return getSimualtionDAOFactory().getSimulationStepDAO();
+	}
+	
+	public static SimulationResultDAO getSimulationResultDAO(){
+		return getSimualtionDAOFactory().getSimulationResultDAO();
+	}
+	
 	private static BlockingQueue<SimulationResult> getBlockingQueue(int capacity) {
 		return new ArrayBlockingQueue<SimulationResult>(capacity);
 	}
@@ -60,4 +77,7 @@ public final class ObjectFactory {
 		return new MockSimulationMethod();
 	}
 	
+	private static SimulationDAOFactory getSimualtionDAOFactory(){
+		return SimulationDAOFactory.getSimualtionDAOFactory(DaoType.RDBMS);
+	}
 }
