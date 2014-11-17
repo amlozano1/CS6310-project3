@@ -24,6 +24,10 @@ public class MasterController {
 		mOnSimulationCompleteListener = new OnSimulationCompleteListener();
 	}
 	
+	public void setPresentationControllerDisplayRate(int displayRate){
+		mPresenationController.setPresentationParameters(displayRate);
+	}
+	
 	public void pause() throws ThreadException {
 		mSimulationController.pause();
 		if(this.runPresentation)

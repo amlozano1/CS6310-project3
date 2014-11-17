@@ -525,18 +525,16 @@ public class UI extends JFrame implements ActionListener {
 					btnPauseResume.setEnabled(true);
 					
 					//Disabled settings fields during sim
-					txtSimLength.setEnabled(false);
-					txtAxialTiltSim.setEnabled(false);
-					txtGridSpacing.setEnabled(false);
-					txtOrbitalEccSim.setEnabled(false);
-					cbDisplayAnimation.setEnabled(false);
-					spinnerSimTimeStep.setEnabled(false);
+					updateSimInputAvailability(false);
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
-						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()));
+						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
+						if(cbDisplayAnimation.isSelected())
+							masterController.setPresentationControllerDisplayRate(Integer.parseInt(txtPresentationDisplayRate.getText()));
 					} catch (NumberFormatException | ArgumentInvalidException | ThreadException e) {
 						System.out.println("The validate didn't throw an error but the master controller start call did.");
+						//e.printStackTrace();
 					}
 					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
 				}else{
@@ -560,12 +558,7 @@ public class UI extends JFrame implements ActionListener {
 				btnPauseResume.setText("Pause");
 				
 				//Enable settings fields during sim
-				txtSimLength.setEnabled(true);
-				txtAxialTiltSim.setEnabled(true);
-				txtOrbitalEccSim.setEnabled(true);
-				cbDisplayAnimation.setEnabled(true);
-				txtGridSpacing.setEnabled(true);
-				spinnerSimTimeStep.setEnabled(true);
+				updateSimInputAvailability(true);
 			}
 		}
 	}; 
@@ -651,5 +644,15 @@ public class UI extends JFrame implements ActionListener {
 		}
 		
 		return null;
+	}
+	
+	private void updateSimInputAvailability(boolean status){
+		txtSimLength.setEnabled(status);
+		txtAxialTiltSim.setEnabled(status);
+		txtGridSpacing.setEnabled(status);
+		txtOrbitalEccSim.setEnabled(status);
+		cbDisplayAnimation.setEnabled(status);
+		spinnerSimTimeStep.setEnabled(status);
+		txtPresentationDisplayRate.setEnabled(status);
 	}
 }

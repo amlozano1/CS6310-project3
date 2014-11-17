@@ -52,6 +52,7 @@ public class Demo {
 			
 		});
 		
+		
 		// TODO: Add the GUI here
 		UI gui = new UI(controller);
 		System.out.println("gui created");
