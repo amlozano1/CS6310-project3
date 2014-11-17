@@ -1,12 +1,14 @@
 package base;
 
+import gui.TemperatureGrid;
+
 /**
  * Contains result data from a single simulation execution.
  * 
  * @author Tyler Benfield
  *
  */
-public class SimulationResult {
+public class SimulationResult implements TemperatureGrid {
 	
 	// TODO: Add input parameters to this class
 	// TODO: Make this class persistent
