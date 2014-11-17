@@ -49,7 +49,7 @@ public class UI extends JFrame implements ActionListener {
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
-	//private EarthPanel earthPanel;
+	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private String[] queryNames = new String[0];
 	private MasterController masterController;
 
@@ -102,8 +102,8 @@ public class UI extends JFrame implements ActionListener {
 	
 	private JComponent createVisualizerDisplay(){
 		JPanel component = new JPanel();
-		EarthPanel.getInstance().drawGrid(15);
-		component.add(EarthPanel.getInstance());
+		earthPanel.drawGrid(15);
+		component.add(earthPanel);
 		
 		return component;
 	}
@@ -502,7 +502,7 @@ public class UI extends JFrame implements ActionListener {
 	
 	private ChangeListener chngSliderOpacity = new ChangeListener() {
 		public void stateChanged(ChangeEvent e) {
-	        EarthPanel.getInstance().setMapOpacity(sliderOpacity.getValue() * .01f);
+	        earthPanel.setMapOpacity(sliderOpacity.getValue() * .01f);
 	    }
 	};
 	
@@ -526,6 +526,8 @@ public class UI extends JFrame implements ActionListener {
 					
 					//Disabled settings fields during sim
 					updateSimInputAvailability(false);
+					
+					earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
