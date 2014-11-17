@@ -53,9 +53,10 @@ public class Demo {
 		});
 		
 		// TODO: Add the GUI here
-		// TODO: The below code is an example of user behavior and should be removed with the GUI is implemented
-		UI gui = new UI();
+		UI gui = new UI(controller);
 		System.out.println("gui created");
+		// TODO: The below code is an example of user behavior and should be removed with the GUI is implemented
+		/*
 		try {
 			controller.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 		
@@ -73,6 +74,7 @@ public class Demo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 }
