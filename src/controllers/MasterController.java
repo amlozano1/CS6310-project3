@@ -26,7 +26,7 @@ public class MasterController {
 	
 	public void pause() throws ThreadException {
 		mSimulationController.pause();
-		
+		if(this.runPresentation)
 			mPresenationController.pause();
 	}
 	
