@@ -10,7 +10,7 @@ public class CellCalculationsTests {
 
 	@Test
 	public void testGetCellHeight() {
-		assertEquals(1667922.5, CellCalculations.getCellHeight(EARTH_CIRCUMFERENCE, 15), 0.0);
+		assertEquals(1667922.5, CellCalculations.getCellVerticalSideLength(EARTH_CIRCUMFERENCE, 15), 0.0);
 	}
 	
 	@Test
@@ -182,6 +182,9 @@ public class CellCalculationsTests {
 	@Test
 	public void testGetHeatAttenuation() {
 		// TODO: Determine test cases for this
+		System.out.println(CellCalculations.getNumberOfColumns(180));
+		System.out.println(CellCalculations.getNumberOfRows(180));
+		System.out.println(CellCalculations.getHeatAttenuation(1, 1, 180, 720));
 	}
 	
 	@Test

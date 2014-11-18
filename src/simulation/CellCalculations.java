@@ -2,56 +2,128 @@ package simulation;
 
 public class CellCalculations {
 	
-	public static double getCellHeight(double circumference, double gridSpacing) {
+	/**
+	 * Gets the length of a vertical side of a cell in a grid with the specified grid spacing on a planet of the specified circumference in meters.
+	 * 
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The height of the vertical side in meters.
+	 */
+	public static double getCellVerticalSideLength(double circumference, double gridSpacing) {
 		double p = gridSpacing / 360;
 		return circumference * p;
 	}
 	
+	/**
+	 * Gets the number of columns in a grid with the specified grid spacing.
+	 * 
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The number of columns in a grid with the specified grid spacing.
+	 */
 	public static int getNumberOfColumns(double gridSpacing) {
 		return (int)(360 / gridSpacing);
 	}
 	
+	/**
+	 * Gets the number of rows in a grid with the specified grid spacing.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The number of rows in a grid with the specified grid spacing.
+	 */
 	public static int getNumberOfRows(double gridSpacing) {
 		return (int)(180 / gridSpacing);
 	}
 
+	/**
+	 * Gets the latitude of a cell in the specified row in degrees.
+	 * 
+	 * @param row The row to examine
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The latitude of a cell in the specified row in degrees.
+	 */
 	public static double getLatitudeOfCellsInRow(int row, double gridSpacing) {
 		double totalRows = getNumberOfRows(gridSpacing);
 		return (row - (totalRows / 2.0)) * gridSpacing;
 	}
 	
+	/**
+	 * Gets the longitude of a cell in the specified column in degrees.
+	 * 
+	 * @param column The column to examine.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The longitude of a cell in the specified column in degrees.
+	 */
 	public static double getLongitudeOfCellsInColumn(int column, double gridSpacing) {
 		double totalColumns = getNumberOfColumns(gridSpacing);
 		double d = (column + 1) * gridSpacing;
 		return column < (totalColumns / 2) ? -d : 360 - d;
 	}
 	
+	/**
+	 * Gets the width of the base of a cell in the specified row in meters.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The width of the base of a cell in the specified row in meters.
+	 */
 	public static double getBaseWidth(int row, double circumference, double gridSpacing) {
 		double latitude = getLatitudeOfCellsInRow(row, gridSpacing);
-		double height = getCellHeight(circumference, gridSpacing);
+		double height = getCellVerticalSideLength(circumference, gridSpacing);
 		return Math.cos(getRadiansFromDegrees(latitude)) * height;
 	}
 	
+	/**
+	 * Gets the width of the ceiling (top) of a cell in the specified row in meters.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The width of the ceiling (top) of a cell in the specified row in meters.
+	 */
 	public static double getCeilingWidth(int row, double circumference, double gridSpacing) {
 		double latitude = getLatitudeOfCellsInRow(row, gridSpacing);
-		double height = getCellHeight(circumference, gridSpacing);
+		double height = getCellVerticalSideLength(circumference, gridSpacing);
 		return Math.cos(getRadiansFromDegrees(latitude + gridSpacing)) * height;
 	}
 	
+	/**
+	 * Gets the altitude (height) of a cell in the specified row in meters.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The altitude of a cell in the specified row in meters.
+	 */
 	public static double getAltitude(int row, double circumference, double gridSpacing) {
-		double height = getCellHeight(circumference, gridSpacing);
+		double height = getCellVerticalSideLength(circumference, gridSpacing);
 		double base = getBaseWidth(row, circumference, gridSpacing);
 		double ceiling = getCeilingWidth(row, circumference, gridSpacing);
 		return Math.sqrt((height * height) - (1 / 4) * (base - ceiling) * (base - ceiling));
 	}
 	
+	/**
+	 * Gets the length of the perimeter of a cell in the specified row in meters.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The length of the perimeter of a cell in the specified row in meters.
+	 */
 	public static double getPerimeter(int row, double circumference, double gridSpacing) {
-		double height = getCellHeight(circumference, gridSpacing);
+		double height = getCellVerticalSideLength(circumference, gridSpacing);
 		double base = getBaseWidth(row, circumference, gridSpacing);
 		double ceiling = getCeilingWidth(row, circumference, gridSpacing);
 		return ceiling + base + 2 * height;
 	}
 	
+	/**
+	 * The area of a cell in the specified row in meters squared.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The area of a cell in the specified row in meters squared.
+	 */
 	public static double getArea(int row, double circumference, double gridSpacing) {
 		double base = getBaseWidth(row, circumference, gridSpacing);
 		double ceiling = getCeilingWidth(row, circumference, gridSpacing);
@@ -66,9 +138,9 @@ public class CellCalculations {
 	/**
 	 * Gets the column distance West of the Prime Meridian.
 	 * 
-	 * @param column
-	 * @param circumference
-	 * @param gridSpacing
+	 * @param column The column to examine.
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
 	 * @return
 	 */
 	public static double getDistanceFromPrimeMeridian(int column, double circumference, double gridSpacing) {
@@ -79,9 +151,9 @@ public class CellCalculations {
 	/**
 	 * Gets the row distance North of the Equator.
 	 * 
-	 * @param row
-	 * @param circumference
-	 * @param gridSpacing
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
 	 * @return
 	 */
 	public static double getDistanceFromEquator(int row, double circumference, double gridSpacing) {
@@ -93,10 +165,25 @@ public class CellCalculations {
 		return degrees * Math.PI / 180;
 	}
 	
+	/**
+	 * Gets the rotational angle at the specified time in degrees.
+	 * 
+	 * @param time The time to measure the angle for in minutes passed.
+	 * @return The rotational angle at the specified time in degrees.
+	 */
 	public static double getRotationalAngle(int time) {
 		return (time % 1440.0) * 360.0 / 1440.0;
 	}
 	
+	/**
+	 * Calculates the heat attenuation (reduction factor) for the specified cell at the specified time.
+	 * 
+	 * @param row The row to examine
+	 * @param column The column to examine
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @param time The time to measure attenuation at in minutes passed.
+	 * @return The heat attenuation (reduction factor) for the specified cell at the specified time.
+	 */
 	public static double getHeatAttenuation(int row, int column, double gridSpacing, int time) {
 		// TODO: Account for tilt here? then apply to rotationAngle
 		double rotationalAngle = getRotationalAngle(time);
@@ -109,7 +196,7 @@ public class CellCalculations {
 	}
 	
 	public static double getBorderEastWestProportion(int row, double circumference, double gridSpacing) {
-		return getCellHeight(circumference, gridSpacing) / getPerimeter(row, circumference, gridSpacing);
+		return getCellVerticalSideLength(circumference, gridSpacing) / getPerimeter(row, circumference, gridSpacing);
 	}
 	
 	public static double getBorderNorthProportion(int row, double circumference, double gridSpacing) {
@@ -128,26 +215,77 @@ public class CellCalculations {
 		return (northBorderProportion * northTemp) + (southBorderProportion * southTemp) + (eastBorderProportion * eastTemp) + (westBorderProportion * westTemp);
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param row The row to examine
+	 * @param column The column to examine
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @param time The time to measure attenuation at in minutes passed.
+	 * @param circumference The circumference of the planet in meters.
+	 * @param solarPowerPerMeter
+	 * @return
+	 */
 	public static double getSolarHeat(int row, int column, double gridSpacing, int time, double circumference, double solarPowerPerMeter) {
 		double attenuation = getHeatAttenuation(row, column, gridSpacing, time);
-		double radius = circumference / (2 * Math.PI);
-		double area = 4 * Math.PI * radius * radius;
-		double cellArea = getArea(row, circumference, gridSpacing);
-		double gridSize = getNumberOfRows(gridSpacing) * getNumberOfColumns(gridSpacing);
-		double averageSize = area / gridSize;
-		double relativeSizeFactor = cellArea / averageSize;
+		double relativeSizeFactor = getRelativeSizeFactor(row, circumference, gridSpacing);
 		double solarPower = solarPowerPerMeter * relativeSizeFactor;
-		return solarPower + (attenuation * solarPower);
+		return (solarPower - (attenuation * solarPower)) / getArea(row, circumference, gridSpacing);
+		//return Math.pow(((1 - 0.3) * solarPowerPerMeter) / (0.0000000567 * 0.612), 0.25) * relativeSizeFactor * getArea(row, circumference, gridSpacing) * attenuation;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @param cellTemp The current temperature of the cell in degrees.
+	 * @param averageTemp The average temperature of a cell in degrees.
+	 * @param solarPowerPerMeter
+	 * @return
+	 */
 	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarPowerPerMeter) {
+		double relativeSizeFactor = getRelativeSizeFactor(row, circumference, gridSpacing);
+		return (-relativeSizeFactor * (cellTemp / averageTemp) * solarPowerPerMeter) / getArea(row, circumference, gridSpacing);
+	}
+	
+	/**
+	 * Calculates the planets surface area in meters squared.
+	 * 
+	 * @param circumference The circumference of the planet in meters.
+	 * @return The planet surface area in meters squared.
+	 */
+	public static double getPlanetSurfaceArea(double circumference) {
 		double radius = circumference / (2 * Math.PI);
-		double area = 4 * Math.PI * radius * radius;
+		return 4 * Math.PI * radius * radius;
+	}
+	
+	/**
+	 * Calculates the average cell size of the grid in meters squared.
+	 * 
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return The average cell size of the grid in meters squared.
+	 */
+	public static double getAverageCellSize(double circumference, double gridSpacing) {
+		double area = getPlanetSurfaceArea(circumference);
 		double gridSize = getNumberOfRows(gridSpacing) * getNumberOfColumns(gridSpacing);
-		double averageSize = area / gridSize;
+		return area / gridSize;
+	}
+	
+	/**
+	 * Calculates a factor representing the relative size of this cell to the rest of the grid cells.
+	 * 
+	 * @param row The row to examine
+	 * @param circumference The circumference of the planet in meters.
+	 * @param gridSpacing The grid spacing in degrees.
+	 * @return A factor representing the relative size of this cell to the rest of the grid cells.
+	 */
+	public static double getRelativeSizeFactor(int row, double circumference, double gridSpacing) {
+		double averageCellSize = getAverageCellSize(circumference, gridSpacing);
 		double cellArea = getArea(row, circumference, gridSpacing);
-		double relativeSizeFactor = cellArea / averageSize;
-		return -relativeSizeFactor * (cellTemp / averageTemp) * solarPowerPerMeter;
+		return cellArea / averageCellSize;
 	}
 	
 }

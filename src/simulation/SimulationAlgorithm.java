@@ -40,12 +40,12 @@ public class SimulationAlgorithm implements SimulationMethod {
 				double previousEast = column == 0 ? previous : previousResult.getTemperature(column - 1, row);
 				double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
 
-				heating += CellCalculations.getSolarHeat(row + 1, column + 1, gridSpacing, sunPosition, circumference, adjustedSolarPowerPerMeter);
-				cooling += CellCalculations.getCooling(row + 1, circumference, gridSpacing, previous, averageTemp, adjustedSolarPowerPerMeter);
+				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, adjustedSolarPowerPerMeter);
+				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, previous, averageTemp, adjustedSolarPowerPerMeter);
 				
 				data[column][row] =
 						heating + cooling
-						+ CellCalculations.getNeighborHeat(row + 1, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
+						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
 			}
 		}
 		LOGGER.info(String.format("Heating: %.5f", heating));
