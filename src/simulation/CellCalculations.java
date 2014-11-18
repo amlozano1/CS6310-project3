@@ -94,7 +94,7 @@ public class CellCalculations {
 	}
 	
 	public static double getRotationalAngle(int time) {
-		return (time % 1440) * 360 / 1440;
+		return (time % 1440.0) * 360.0 / 1440.0;
 	}
 	
 	public static double getHeatAttenuation(int row, int column, double gridSpacing, int time) {
@@ -130,8 +130,13 @@ public class CellCalculations {
 	
 	public static double getSolarHeat(int row, int column, double gridSpacing, int time, double circumference, double solarPowerPerMeter) {
 		double attenuation = getHeatAttenuation(row, column, gridSpacing, time);
-		double area = getArea(row, circumference, gridSpacing);
-		double solarPower = solarPowerPerMeter * area;
+		double radius = circumference / (2 * Math.PI);
+		double area = 4 * Math.PI * radius * radius;
+		double cellArea = getArea(row, circumference, gridSpacing);
+		double gridSize = getNumberOfRows(gridSpacing) * getNumberOfColumns(gridSpacing);
+		double averageSize = area / gridSize;
+		double relativeSizeFactor = cellArea / averageSize;
+		double solarPower = solarPowerPerMeter * relativeSizeFactor;
 		return solarPower + (attenuation * solarPower);
 	}
 	
