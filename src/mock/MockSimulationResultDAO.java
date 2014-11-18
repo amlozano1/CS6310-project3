@@ -8,21 +8,20 @@ import data.SimulationResultDAO;
 public class MockSimulationResultDAO implements SimulationResultDAO {
 
 	@Override
-	public SimulationResult getSimulationResult(int simulationId,
-			long simulationTime) {
+	public SimulationResult getSimulationResult(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean addSimulationResult(int simulationId, int simulationStepId,
+	public Integer addSimulationResult(int simulationId,
 			SimulationResult simulationResult) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean removeSimulationResult(int simulationId, long simulationTime) {
+	public boolean removeSimulationResult(int id) {
 		// TODO Auto-generated method stub
 		return false;
 	}

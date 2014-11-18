@@ -28,8 +28,8 @@ public class SimulationRDBMSDAOTest {
 
 	@Test
 	public void testAdd() {
-		boolean result = dao.saveSimulation(create());
-		assertTrue("Insert failed:", result);
+		Integer id = dao.saveSimulation(create());
+		assertNotNull("Insert failed:", id);
 	}
 	
 	@Test
@@ -75,20 +75,6 @@ public class SimulationRDBMSDAOTest {
 	}
 
 	private Simulation create(){
-		Simulation simulation = new Simulation();
-		simulation.setName(SIMULATION_NAME);
-		
-		SimulationParameters parameters = new SimulationParameters();
-		parameters.setAxialTilt(23.44d);
-		parameters.setGridSpacing((short)15);
-		parameters.setLength((short)12);
-		parameters.setOrbitalEccentricity(.0167d);
-		parameters.setTimeStep(1440);
-		parameters.setPrecision((short)10);
-		parameters.setGeoPrecision((short)20);
-		parameters.setTempPrecision((short)30);
-		simulation.setSimulationParameters(parameters);
-		
-		return simulation;
+		return TestHelper.createSimulation(SIMULATION_NAME);
 	}
 }

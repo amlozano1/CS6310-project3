@@ -6,21 +6,34 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import data.SimulationDAO;
 import data.SimulationResultDAO;
 import base.Cell;
 import base.ObjectFactory;
+import base.Simulation;
 import base.SimulationResult;
 
 public class SimulationResultRDBMSDAOTest {
+	private static final String SIMULATION_NAME = "SIMULATIONRESULT_TEST";
+	
 	private SimulationResultDAO dao;
+	private SimulationDAO simulationDAO;
+
+	private Integer simulationId;
+	private Integer simulationResultId;
 	
 	@Before
 	public void setUp() throws Exception {
+		simulationDAO = ObjectFactory.getSimulationDAO();
+		simulationId = simulationDAO.saveSimulation(TestHelper.createSimulation(SIMULATION_NAME));
+
 		dao = ObjectFactory.getSimulationResultDAO();
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		dao.removeSimulationResult(simulationResultId);
+		simulationDAO.removeSimulation(simulationId);
 	}
 
 	@Test
@@ -30,9 +43,8 @@ public class SimulationResultRDBMSDAOTest {
 
 	@Test
 	public void testAddSimulationResult() {
-		fail("Not yet implemented");
-
-//		dao.addSimulationResult(simulationId, simulationStepId, simulationResult);
+		simulationResultId = dao.addSimulationResult(simulationId, create());
+		assertNotNull("Not successful:",  simulationResultId);
 	}
 
 	@Test
@@ -56,15 +68,6 @@ public class SimulationResultRDBMSDAOTest {
 	}
 
 	private SimulationResult create(){
-		Cell[][] resultData = new Cell[10][10];
-//		for(int x = 1; x<=10; x++){
-//			for (int y = 1; y <= 10; y++) {
-//				Cell cell = new Cell();
-//				cell.setLongitude(x * 100);
-//				cell.setLatitude(y);
-//				cell.setTemperture(x*y);
-//			}
-//		}
-		return ObjectFactory.getInitialGrid(10, 10);
+		return TestHelper.createSimulationResult();
 	}
 }

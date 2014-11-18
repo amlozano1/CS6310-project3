@@ -10,8 +10,9 @@ import data.impl.SimulationCriteria;
 public class MockSimulationDAO implements SimulationDAO {
 
 	@Override
-	public boolean saveSimulation(Simulation simulation) {
-		return true;
+	public Integer saveSimulation(Simulation simulation) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -37,4 +38,5 @@ public class MockSimulationDAO implements SimulationDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

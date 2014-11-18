@@ -1,11 +1,17 @@
 package data.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Time;
 import java.util.List;
 
+import base.ObjectFactory;
 import base.SimulationResult;
+import data.CellDAO;
 import data.Datastore;
 import data.SimulationResultDAO;
 
@@ -17,45 +23,78 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 	}
 
 	@Override
-	public SimulationResult getSimulationResult(int simulationId, long simulationTime) {
-		return null;
+	public SimulationResult getSimulationResult(int id) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		ResultSet rs = null;
+		SimulationResult simulationResult = null;
+		try {
+			stmnt = conn.prepareStatement(GET_BY_PK);
+			stmnt.setInt(1, id);
+			rs = stmnt.executeQuery();
+			if(rs.next()){
+				simulationResult = fromResultSet(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(stmnt);
+		}
+		
+		return simulationResult;
 	}
 
 	@Override
-	public boolean addSimulationResult(int simulationId, int simulationStepId, SimulationResult simulationResult) {
+	public Integer addSimulationResult(int simulationId, SimulationResult simulationResult) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
-			stmnt = conn.prepareStatement(INSERT);
-			int updatedCount = 0;
-			int cols = simulationResult.getColumnCount();
-			int rows = simulationResult.getRowCount();
-			for (short x = 0; x < cols; x++) {
-				for (short y = 0; y < rows; y++) {
-					stmnt.setInt(1, simulationId);
-					stmnt.setInt(2, simulationStepId);
-					stmnt.setShort(3, x);
-					stmnt.setShort(4, y);
-//					stmnt.setDouble(5, simulationResult.getLongitude(x, y));
-//					stmnt.setDouble(6, simulationResult.getLatitude(x, y));
-					stmnt.setDouble(7, simulationResult.getTemperature(x, y));
-					updatedCount += stmnt.executeUpdate();
-				}
+			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+ 
+			stmnt.setInt(1, simulationId);
+			stmnt.setLong(2, simulationResult.getSimulationTime());
+			stmnt.setDate(3, toDate(simulationResult.getSimulationTime()));
+			stmnt.setTime(4, toTime(simulationResult.getSimulationTime()));
+			stmnt.setDouble(5, simulationResult.getSunLongitude());
+			stmnt.setDouble(6, simulationResult.getSunLatitude());
+			
+			stmnt.executeUpdate();
+			
+			ResultSet rs = stmnt.getGeneratedKeys();
+			Integer simulationResultId = null;
+			if(rs.next()){
+				simulationResultId = rs.getInt(1);
 			}
-
-			return updatedCount > 0;
+			
+			CellDAO cellDAO = ObjectFactory.getCellDAO();
+			cellDAO.saveCells(simulationId, simulationResultId, simulationResult);
+			
+			return simulationResultId;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(stmnt);
 		}
 		
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean removeSimulationResult(int simulationId, long simulationTime) {
-		// TODO Auto-generated method stub
+	public boolean removeSimulationResult(int id) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		try {
+			stmnt = conn.prepareStatement(DELETE_BY_PK);
+			stmnt.setInt(1, id);
+			int rows = stmnt.executeUpdate();
+			return rows>0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(stmnt);
+		}
+		
 		return false;
 	}
 
@@ -72,11 +111,26 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 	}
 
 	@Override
-	public List<SimulationResult> findForTimeRange(int simulationId,
-			long simulationTimeStart, long simulationTimeStop) {
+	public List<SimulationResult> findForTimeRange(int simulationId, long simulationTimeStart, long simulationTimeStop) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	private SimulationResult fromResultSet(ResultSet rs) {
+		SimulationResult result = null;
+		try {
+			if(rs != null){
+				result = new SimulationResult(null);
+				Date date = rs.getDate(OCCURENCE_DATE);
+				Time time = rs.getTime(OCCURENCE_TIME);
+				result.setSimulationTime(toSimulationTime(date, time));
+				result.setSunLatitude(rs.getDouble(SUN_LATITUDE));
+				result.setSunLongitude(rs.getDouble(SUN_LONGITUDE));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 }

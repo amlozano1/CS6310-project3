@@ -5,9 +5,9 @@ import java.util.List;
 import base.SimulationResult;
 
 public interface SimulationResultDAO {
-	public SimulationResult getSimulationResult(int simulationId, long simulationTime);
-	public boolean addSimulationResult(int simulationId, int simulationStepId, SimulationResult simulationResult);
-	public boolean removeSimulationResult(int simulationId, long simulationTime);
+	public SimulationResult getSimulationResult(int id);
+	public Integer addSimulationResult(int simulationId, SimulationResult simulationResult);
+	public boolean removeSimulationResult(int id);
 
 	public List<SimulationResult> getAllForSimulation(int simulationId);
 	public boolean removeAllForSimulation(int simulationId);

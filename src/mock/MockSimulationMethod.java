@@ -1,5 +1,6 @@
 package mock;
 
+import base.Cell;
 import base.SimulationMethod;
 import base.SimulationResult;
 
@@ -18,11 +19,13 @@ public class MockSimulationMethod implements SimulationMethod {
 		int columnCount = previousResult.getColumnCount();
 		int rowCount = previousResult.getRowCount();
 		
-		double[][] mockData = new double[rowCount][];
+		Cell[][] mockData = new Cell[rowCount][];
 		for (int i = 0; i < mockData.length; i++) {
-			double[] mockRow = new double[columnCount];
+			Cell[] mockRow = new Cell[columnCount];
 			for (int j = 0; j < mockRow.length; j++) {
-				mockRow[j] = previousResult.getTemperature(i, j) + TEMPERATURE_INCREMENT + i * 5;
+				Cell c = new Cell();
+				c.setTemperature(previousResult.getTemperature(i, j) + TEMPERATURE_INCREMENT + i * 5);
+				mockRow[j] = c;
 			}
 			mockData[i] = mockRow;
 		}

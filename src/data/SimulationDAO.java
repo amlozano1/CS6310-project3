@@ -6,7 +6,7 @@ import data.impl.SimulationCriteria;
 import base.Simulation;
 
 public interface SimulationDAO {
-	public boolean saveSimulation(Simulation simulation);
+	public Integer saveSimulation(Simulation simulation);
 	public Simulation getSimulation(Integer id);
 	public Simulation getSimulationByName(String name);
 	public boolean removeSimulation(Integer id);

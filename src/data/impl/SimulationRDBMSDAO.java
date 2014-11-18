@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +20,12 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 		dataStore = JavaDBDatastore.getInstance();
 	}
 	@Override
-	public boolean saveSimulation(Simulation simulation) {
+	public Integer saveSimulation(Simulation simulation) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
 			SimulationParameters parameters = simulation.getSimulationParameters();
-			stmnt = conn.prepareStatement(INSERT);
+			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 			stmnt.setString(1, simulation.getName());
 			stmnt.setShort(2, parameters.getGridSpacing());
 			stmnt.setInt(3, parameters.getTimeStep());
@@ -35,15 +36,18 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 			stmnt.setShort(8, parameters.getGeoPrecision());
 			stmnt.setShort(9, parameters.getTempPrecision());
 
-			int rows = stmnt.executeUpdate();
-			return rows > 0;
+			stmnt.executeUpdate();
+			ResultSet rs = stmnt.getGeneratedKeys();
+			if(rs.next()){
+				return rs.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(stmnt);
 		}
 		
-		return false;
+		return null;
 	}
 	
 	@Override

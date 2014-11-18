@@ -12,9 +12,12 @@ public class SimulationResult {
 	// TODO: Make this class persistent
 	
 	// TODO: Change the type of this to our cell class
-	private double[][] mResultData;
-	
-	public SimulationResult(double[][] resultData) {
+	private Cell[][] mResultData;
+	private long simulationTime;
+	private double sunLongitude;
+	private double sunLatitude;
+
+	public SimulationResult(Cell[][] resultData) {
 		// TODO: Change the parameter type to our cell class
 		mResultData = resultData;
 	}
@@ -48,8 +51,39 @@ public class SimulationResult {
 	/**
 	 * Retrieves the temperature of the specified grid cell.
 	 */
-	public double getTemperature(int x, int y) {
-		return mResultData[x][y];
+	public Double getTemperature(int x, int y) {
+		return mResultData[x][y] == null ? null : mResultData[x][y].getTemperature();
 	}
 	
+	public Double getLongitude(int x, int y) {
+		return mResultData[x][y] == null ? null : mResultData[x][y].getLongitude();
+	}
+	
+	public Double getLatitude(int x, int y) {
+		return mResultData[x][y] == null ? null : mResultData[x][y].getLatitude();
+	}
+
+	public long getSimulationTime() {
+		return simulationTime;
+	}
+
+	public void setSimulationTime(long simulationTime) {
+		this.simulationTime = simulationTime;
+	}
+
+	public double getSunLongitude() {
+		return sunLongitude;
+	}
+
+	public void setSunLongitude(double sunLongitude) {
+		this.sunLongitude = sunLongitude;
+	}
+
+	public double getSunLatitude() {
+		return sunLatitude;
+	}
+
+	public void setSunLatitude(double sunLatitude) {
+		this.sunLatitude = sunLatitude;
+	}
 }

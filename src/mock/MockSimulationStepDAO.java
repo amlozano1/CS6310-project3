@@ -1,7 +1,7 @@
 package mock;
 
-import data.SimulationStepDAO;
+import data.CellDAO;
 
-public class MockSimulationStepDAO implements SimulationStepDAO {
+public class MockSimulationStepDAO implements CellDAO {
 
 }

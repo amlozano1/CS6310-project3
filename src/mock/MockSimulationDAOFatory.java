@@ -3,7 +3,7 @@ package mock;
 import data.SimulationDAOFactory;
 import data.SimulationDAO;
 import data.SimulationResultDAO;
-import data.SimulationStepDAO;
+import data.CellDAO;
 
 public class MockSimulationDAOFatory extends SimulationDAOFactory {
 	@Override
@@ -17,7 +17,8 @@ public class MockSimulationDAOFatory extends SimulationDAOFactory {
 	}
 	
 	@Override
-	public SimulationStepDAO getSimulationStepDAO() {
-		return new MockSimulationStepDAO();
+	public CellDAO getCellDAO() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

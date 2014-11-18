@@ -10,7 +10,7 @@ public abstract class SimulationDAOFactory {
 		RDBMS,FLATFILE,MOCK
 	}
 	public abstract SimulationDAO getSimulationDAO();
-	public abstract SimulationStepDAO getSimulationStepDAO();
+	public abstract CellDAO getCellDAO();
 	public abstract SimulationResultDAO getSimulationResultDAO();
 	
 	public static final SimulationDAOFactory getSimualtionDAOFactory(DaoType type){

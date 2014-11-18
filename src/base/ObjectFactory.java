@@ -10,7 +10,7 @@ import data.SimulationDAOFactory;
 import data.SimulationDAO;
 import data.SimulationDAOFactory.DaoType;
 import data.SimulationResultDAO;
-import data.SimulationStepDAO;
+import data.CellDAO;
 
 /**
  * ObjectFactory provides methods of creating implementations of interface
@@ -36,11 +36,11 @@ public final class ObjectFactory {
 	
 	public static SimulationResult getInitialGrid(int rowCount, int columnCount) {
 		
-		double[][] initialData = new double[rowCount][];
+		Cell[][] initialData = new Cell[rowCount][];
 		for (int i = 0; i < initialData.length; i++) {
-			double[] initialRow = new double[columnCount];
+			Cell[] initialRow = new Cell[columnCount];
 			for (int j = 0; j < initialRow.length; j++) {
-				initialRow[j] = INITIAL_GRID_TEMPERATURE;
+				initialRow[j].setTemperature(INITIAL_GRID_TEMPERATURE);
 			}
 			initialData[i] = initialRow;
 		}
@@ -57,8 +57,8 @@ public final class ObjectFactory {
 		return getSimualtionDAOFactory().getSimulationDAO();
 	}
 	
-	public static SimulationStepDAO getSimulationStepDAO(){
-		return getSimualtionDAOFactory().getSimulationStepDAO();
+	public static CellDAO getCellDAO(){
+		return getSimualtionDAOFactory().getCellDAO();
 	}
 	
 	public static SimulationResultDAO getSimulationResultDAO(){
