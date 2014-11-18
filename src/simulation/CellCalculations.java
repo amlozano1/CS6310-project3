@@ -132,7 +132,7 @@ public class CellCalculations {
 		double attenuation = getHeatAttenuation(row, column, gridSpacing, time);
 		double area = getArea(row, circumference, gridSpacing);
 		double solarPower = solarPowerPerMeter * area;
-		return solarPower - (attenuation * solarPower);
+		return solarPower + (attenuation * solarPower);
 	}
 	
 	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarPowerPerMeter) {

@@ -9,6 +9,7 @@ public class OrbitalPositionTests {
 	private static final double EARTH_SOLAR_YEAR = 525600;
 	private static final double EARTH_ECCENTRICITY = 0.0167;
 	private static final double EARTH_MAJOR_AXIS = 149600000.0;
+	private static final double SUN_ENERGY = 29555656845976000000.0;
 
 	@Test
 	public void meanAnomaly() {
@@ -60,6 +61,11 @@ public class OrbitalPositionTests {
 		result = OrbitalPosition.getCoordinates(EARTH_ECCENTRICITY, 3 * EARTH_SOLAR_YEAR / 4, EARTH_SOLAR_YEAR, EARTH_MAJOR_AXIS);
 		System.out.println(result[0] + ", " + result[1]);
 		fail();
+	}
+	
+	@Test
+	public void inverseSquare() {
+		assertEquals(1366.0, OrbitalPosition.getInverseSquare(EARTH_ECCENTRICITY, 0, EARTH_SOLAR_YEAR, EARTH_MAJOR_AXIS, SUN_ENERGY), 1.0);
 	}
 
 }
