@@ -87,7 +87,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
-			ObjectFactory.getCellDAO().removeCellsForSimulationResult(id);
+			ObjectFactory.getCellDAO().removeAllForSimulationResult(id);
 			stmnt = conn.prepareStatement(DELETE_BY_PK);
 			stmnt.setInt(1, id);
 			int rows = stmnt.executeUpdate();
@@ -109,7 +109,20 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 
 	@Override
 	public boolean removeAllForSimulation(int simulationId) {
-		// TODO Auto-generated method stub
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		try {
+			ObjectFactory.getCellDAO().removeAllForSimulation(simulationId);
+			stmnt = conn.prepareStatement(DELETE_BY_SIMULATION_ID);
+			stmnt.setInt(1, simulationId);
+			int rows = stmnt.executeUpdate();
+			return rows>0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(stmnt);
+		}
+		
 		return false;
 	}
 

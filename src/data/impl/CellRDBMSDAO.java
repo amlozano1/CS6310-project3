@@ -97,12 +97,30 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 	}
 	
 	@Override
-	public boolean removeCellsForSimulationResult(int simulationResultId) {
+	public boolean removeAllForSimulationResult(int simulationResultId) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
 			stmnt = conn.prepareStatement(DELETE_BY_SIMULATION_RESULT_ID);
 			stmnt.setInt(1, simulationResultId);
+			int rows = stmnt.executeUpdate();
+			return rows>0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(stmnt);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean removeAllForSimulation(int simulationId) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		try {
+			stmnt = conn.prepareStatement(DELETE_BY_SIMULATION_ID);
+			stmnt.setInt(1, simulationId);
 			int rows = stmnt.executeUpdate();
 			return rows>0;
 		} catch (SQLException e) {

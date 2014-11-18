@@ -11,6 +11,7 @@ import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
 import base.Simulation;
 import base.SimulationMethod;
+import base.SimulationParameters;
 import base.SimulationResult;
 import base.ThreadedProcess;
 
@@ -79,13 +80,7 @@ public class SimulationController extends ThreadedProcess {
 		mGridSpacing = gridSpacing;
 		mSimulationTimestep = simulationTimestep;
 		mSimulationLength = simulationLength;
-		
-		/*
-		 * TODO this assumes simulation information (Physical Factors, Simulation Settings and Invocation Parameters) already persisted
-		 * if this is not the case need to check if simulation exists, delete previous simulation, then save new simualtion information
-		 * but must pass all into here
-		 */
-		simulation = simulationDAO.getSimulationByName(name);
+		simulation = getSimulation(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 	}
 	
 	/**
@@ -123,8 +118,10 @@ public class SimulationController extends ThreadedProcess {
 						// TODO: Add stabilization check here
 						
 						// TODO: need to handle geo precision (is this result saved)
-						// TODO: temporal precision (which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this 
-						resultDAO.addSimulationResult(simulation.getId(), newResult);
+						// TODO: temporal precision (which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
+						if(simulation != null){
+							resultDAO.addSimulationResult(simulation.getId(), newResult);
+						}
 						
 						mQueue.put(newResult);
 						
@@ -215,4 +212,33 @@ public class SimulationController extends ThreadedProcess {
 		}
 	}
 	
+	private Simulation getSimulation(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength) {
+		/*
+		 * TODO this assumes simulation information (Physical Factors, Simulation Settings and Invocation Parameters) already persisted
+		 * if this is not the case need to check if simulation exists, delete previous simulation, then save new simualtion information
+		 * but must pass all into here
+		 */
+		Simulation simulation = simulationDAO.getSimulationByName(name);
+		if(simulation == null){
+			simulation = new Simulation();
+			simulation.setName(name);
+			SimulationParameters parameters = new SimulationParameters();
+			parameters.setAxialTilt(axialTilt);
+//			parameters.setGeoPrecision(geoPrecision);
+			parameters.setGridSpacing((short)gridSpacing);
+			parameters.setLength((short)simulationLength);
+			parameters.setOrbitalEccentricity(orbitalEccentricity);
+//			parameters.setPrecision(precision);
+//			parameters.setTempPrecision(tempPrecision);
+			parameters.setTimeStep(simulationTimestep);
+			
+			simulation.setSimulationParameters(parameters);
+			int id = simulationDAO.saveSimulation(simulation);
+			simulation.setId(id);
+		} else {
+			resultDAO.removeAllForSimulation(simulation.getId());
+		}
+		
+		return simulation;
+	}
 }

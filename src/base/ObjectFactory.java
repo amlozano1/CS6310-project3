@@ -40,7 +40,7 @@ public final class ObjectFactory {
 		for (int i = 0; i < initialData.length; i++) {
 			Cell[] initialRow = new Cell[rowCount];
 			for (int j = 0; j < initialRow.length; j++) {
-				initialRow[j].setTemperature(INITIAL_GRID_TEMPERATURE);
+				initialRow[j] = new Cell(INITIAL_GRID_TEMPERATURE, 0d, 0d);
 			}
 			initialData[i] = initialRow;
 		}

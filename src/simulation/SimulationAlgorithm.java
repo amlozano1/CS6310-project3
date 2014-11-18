@@ -46,8 +46,8 @@ public class SimulationAlgorithm implements SimulationMethod {
 				
 				double temp  = heating + cooling
 						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
-				Double longitude = null;
-				Double latitude = null;
+				double longitude = 0;
+				double latitude = 0;
 				
 				data[column][row] = new Cell(temp, longitude, latitude);
 			}

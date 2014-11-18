@@ -3,7 +3,6 @@ package mock;
 import java.util.List;
 
 import base.Simulation;
-import base.SimulationParameters;
 import data.SimulationDAO;
 import data.impl.SimulationCriteria;
 

@@ -57,11 +57,11 @@ public class SimulationResult implements TemperatureGrid {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getTemperature();
 	}
 	
-	public Double getLongitude(int x, int y) {
+	public double getLongitude(int x, int y) {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getLongitude();
 	}
 	
-	public Double getLatitude(int x, int y) {
+	public double getLatitude(int x, int y) {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getLatitude();
 	}
 

@@ -8,5 +8,7 @@ public interface SimulationResultSQL {
 			                          + "(SIMULATION_ID,SIMULATION_TIME,OCCURENCE_DATE,OCCURENCE_TIME,SUN_LONGITUDE,SUN_LATITUDE) "
 			                          + "VALUES (?,?,?,?,?,?)";
 	
-	public static final String DELETE_BY_PK = "DELETE FROM SIMULATION_RESULT WHERE ID = ?";
+	public static final String DELETE_BY_PK            = "DELETE FROM SIMULATION_RESULT WHERE ID = ?";
+	public static final String DELETE_BY_SIMULATION_ID = "DELETE FROM SIMULATION_RESULT WHERE SIMULATION_ID = ?";
+
 }
