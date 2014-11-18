@@ -26,7 +26,7 @@ public final class ObjectFactory {
 	
 	private static final int BUFFER_CAPACITY = 10;
 	
-	private static final double INITIAL_GRID_TEMPERATURE = 10;
+	private static final double INITIAL_GRID_TEMPERATURE = 288;
 
 	/**
 	 * Private constructor is used to prevent the default constructor from being public.
@@ -36,9 +36,9 @@ public final class ObjectFactory {
 	
 	public static SimulationResult getInitialGrid(int rowCount, int columnCount) {
 		
-		Cell[][] initialData = new Cell[rowCount][];
+		Cell[][] initialData = new Cell[columnCount][];
 		for (int i = 0; i < initialData.length; i++) {
-			Cell[] initialRow = new Cell[columnCount];
+			Cell[] initialRow = new Cell[rowCount];
 			for (int j = 0; j < initialRow.length; j++) {
 				initialRow[j].setTemperature(INITIAL_GRID_TEMPERATURE);
 			}

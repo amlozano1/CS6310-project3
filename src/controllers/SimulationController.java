@@ -184,7 +184,7 @@ public class SimulationController extends ThreadedProcess {
 		if (axialTilt < -180 || axialTilt > 180) {
 			throw new ArgumentInvalidException("axialTilt", "Axial tilt must be between -180 and 180 degrees");
 		}
-		if (orbitalEccentricity < 0 || orbitalEccentricity > 1) {
+		if (orbitalEccentricity < 0 || orbitalEccentricity >= 1) {
 			throw new ArgumentInvalidException("orbitalEccentricity", "Orbital eccentricity must be between 0 and 1");
 		}
 		if (name == null || name == "") {
