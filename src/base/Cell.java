@@ -1,37 +1,37 @@
 package base;
 
 public class Cell {
-	private double temperature;
-	private double longitude;
-	private double latitude;
+	private Double temperature;
+	private Double longitude;
+	private Double latitude;
 	
 	public Cell(){
 		super();
 	}
 	
-	public Cell(double temperature, double longitude, double latitude) {
+	public Cell(Double temperature, Double longitude, Double latitude) {
 		this();
 		this.temperature = temperature;
 		this.longitude = longitude;
 		this.latitude = latitude;
 	}
 	
-	public double getTemperature() {
+	public Double getTemperature() {
 		return temperature;
 	}
-	public void setTemperature(double temperature) {
+	public void setTemperature(Double temperature) {
 		this.temperature = temperature;
 	}
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 }
