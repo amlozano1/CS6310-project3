@@ -26,12 +26,14 @@ public class TestHelper {
 	
 	public static SimulationResult createSimulationResult(){
 		Cell[][] resultData = new Cell[10][10];
-		for(int x = 1; x<=10; x++){
-			for (int y = 1; y <= 10; y++) {
+		for(int x = 0; x < 10; x++){
+			for (int y = 0; y < 10; y++) {
 				Cell cell = new Cell();
-				cell.setLongitude(x * 100);
-				cell.setLatitude(y);
-				cell.setTemperature(x*y);
+				cell.setLongitude((double)x * 100);
+				cell.setLatitude((double)y);
+				cell.setTemperature((double)x*y);
+				
+				resultData[x][y] = cell;
 			}
 		}
 		SimulationResult result = new SimulationResult(resultData);

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.util.List;
 
+import base.Cell;
 import base.ObjectFactory;
 import base.SimulationResult;
 import data.CellDAO;
@@ -29,11 +30,12 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		ResultSet rs = null;
 		SimulationResult simulationResult = null;
 		try {
+			Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(id);
 			stmnt = conn.prepareStatement(GET_BY_PK);
 			stmnt.setInt(1, id);
 			rs = stmnt.executeQuery();
 			if(rs.next()){
-				simulationResult = fromResultSet(rs);
+				simulationResult = fromResultSet(rs, data);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -85,6 +87,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
+			ObjectFactory.getCellDAO().removeCellsForSimulationResult(id);
 			stmnt = conn.prepareStatement(DELETE_BY_PK);
 			stmnt.setInt(1, id);
 			int rows = stmnt.executeUpdate();
@@ -116,11 +119,11 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		return null;
 	}
 	
-	private SimulationResult fromResultSet(ResultSet rs) {
+	private SimulationResult fromResultSet(ResultSet rs, Cell[][] data) {
 		SimulationResult result = null;
 		try {
 			if(rs != null){
-				result = new SimulationResult(null);
+				result = new SimulationResult(data);
 				Date date = rs.getDate(OCCURENCE_DATE);
 				Time time = rs.getTime(OCCURENCE_TIME);
 				result.setSimulationTime(toSimulationTime(date, time));

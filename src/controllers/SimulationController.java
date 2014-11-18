@@ -5,8 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import callbacks.OnCompleteListener;
+import data.SimulationDAO;
+import data.SimulationResultDAO;
 import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
+import base.Simulation;
 import base.SimulationMethod;
 import base.SimulationResult;
 import base.ThreadedProcess;
@@ -23,10 +26,13 @@ public class SimulationController extends ThreadedProcess {
 	
 	private double mAxialTilt = DEFAULT_AXIAL_TILT;
 	private double mOrbitalEccentricity = DEFAULT_ORBITAL_ECCENTRICITY;
-	private String mName = "Simulation";
+	private Simulation simulation  = null;
 	private int mGridSpacing = DEFAULT_GRID_SPACING;
 	private int mSimulationTimestep = DEFAULT_TIME_STEP;
 	private int mSimulationLength = DEFAULT_LENGTH;
+	
+	private SimulationDAO simulationDAO = ObjectFactory.getSimulationDAO();
+	private SimulationResultDAO resultDAO = ObjectFactory.getSimulationResultDAO();
 	
 	private OnCompleteListener mOnCompleteListener;
 	
@@ -70,10 +76,16 @@ public class SimulationController extends ThreadedProcess {
 		validateParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 		mAxialTilt = axialTilt;
 		mOrbitalEccentricity = orbitalEccentricity;
-		mName = name;
 		mGridSpacing = gridSpacing;
 		mSimulationTimestep = simulationTimestep;
 		mSimulationLength = simulationLength;
+		
+		/*
+		 * TODO this assumes simulation information (Physical Factors, Simulation Settings and Invocation Parameters) already persisted
+		 * if this is not the case need to check if simulation exists, delete previous simulation, then save new simualtion information
+		 * but must pass all into here
+		 */
+		simulation = simulationDAO.getSimulationByName(name);
 	}
 	
 	/**
@@ -110,8 +122,10 @@ public class SimulationController extends ThreadedProcess {
 						
 						// TODO: Add stabilization check here
 						
-						// TODO: Insert simulation result into the database if it did not exist
-
+						// TODO: need to handle geo precision (is this result saved)
+						// TODO: temporal precision (which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this 
+						resultDAO.addSimulationResult(simulation.getId(), newResult);
+						
 						mQueue.put(newResult);
 						
 						// Store result as previous result to input into next pass

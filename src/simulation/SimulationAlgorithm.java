@@ -2,6 +2,7 @@ package simulation;
 
 import java.util.logging.Logger;
 
+import base.Cell;
 import base.SimulationMethod;
 import base.SimulationResult;
 
@@ -30,9 +31,9 @@ public class SimulationAlgorithm implements SimulationMethod {
 		// TODO: Change data type to our class
 		double cooling = 0;
 		double heating = 0;
-		double[][] data = new double[columns][];
+		Cell[][] data = new Cell[columns][];
 		for (int column = 0; column < columns; column++) {
-			data[column] = new double[rows];
+			data[column] = new Cell[rows];
 			for (int row = 0; row < rows; row++) {
 				double previous = previousResult.getTemperature(column, row);
 				double previousNorth = row == 0 ? previous : previousResult.getTemperature(column, row - 1);
@@ -43,9 +44,12 @@ public class SimulationAlgorithm implements SimulationMethod {
 				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, adjustedSolarPowerPerMeter);
 				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, previous, averageTemp, adjustedSolarPowerPerMeter);
 				
-				data[column][row] =
-						heating + cooling
+				double temp  = heating + cooling
 						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
+				Double longitude = null;
+				Double latitude = null;
+				
+				data[column][row] = new Cell(temp, longitude, latitude);
 			}
 		}
 		LOGGER.info(String.format("Heating: %.5f", heating));

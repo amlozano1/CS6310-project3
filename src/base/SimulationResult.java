@@ -53,7 +53,7 @@ public class SimulationResult implements TemperatureGrid {
 	/**
 	 * Retrieves the temperature of the specified grid cell.
 	 */
-	public Double getTemperature(int x, int y) {
+	public double getTemperature(int x, int y) {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getTemperature();
 	}
 	

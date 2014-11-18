@@ -1,17 +1,17 @@
 package data.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import base.ObjectFactory;
+import base.SimulationResult;
 import data.SimulationDAO;
 import data.SimulationResultDAO;
-import base.Cell;
-import base.ObjectFactory;
-import base.Simulation;
-import base.SimulationResult;
 
 public class SimulationResultRDBMSDAOTest {
 	private static final String SIMULATION_NAME = "SIMULATIONRESULT_TEST";
@@ -38,7 +38,12 @@ public class SimulationResultRDBMSDAOTest {
 
 	@Test
 	public void testGetSimulationResult() {
-		fail("Not yet implemented");
+		simulationResultId = dao.addSimulationResult(simulationId, create());
+		
+		SimulationResult result = dao.getSimulationResult(simulationResultId);
+		assertNotNull("Result not returned:", result);
+		assertEquals("Result data not correct:", result.getRowCount(), 10);
+		assertEquals("Result data not correct:", result.getColumnCount(), 10);
 	}
 
 	@Test
