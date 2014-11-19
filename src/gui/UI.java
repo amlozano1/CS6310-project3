@@ -132,6 +132,7 @@ public class UI extends JFrame implements ActionListener {
 		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
+		queryNames = (String[])ObjectFactory.getSimulationDAO().getSimulationNames().toArray();
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
@@ -616,6 +617,9 @@ public class UI extends JFrame implements ActionListener {
 	 * Validates the Grid Spacing and Simulation Time Step
 	 */
 	private String validValues(){
+		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) < 0)
+			return "Simulation Name already exists.";
+					
 		try{
 			int simTimeStep = (Integer)spinnerSimTimeStep.getValue();
 			if(simTimeStep < 1)

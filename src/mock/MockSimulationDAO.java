@@ -38,4 +38,10 @@ public class MockSimulationDAO implements SimulationDAO {
 		return null;
 	}
 
+	@Override
+	public List<String> getSimulationNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
