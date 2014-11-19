@@ -90,6 +90,26 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 	}
 	
 	@Override
+	public List<String> getSimulationNames() {
+		Connection conn = dataStore.getConnection();
+		List<String> names = new ArrayList<String>();
+		PreparedStatement stmnt = null;
+		ResultSet rs = null;
+		try {
+			stmnt = conn.prepareStatement(GET_NAMES);
+			rs = stmnt.executeQuery();
+			while(rs.next())
+				names.add(rs.getString(NAME));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs, stmnt);
+		}
+		
+		return names;
+	}
+	
+	@Override
 	public Simulation getSimulationByName(String name) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
