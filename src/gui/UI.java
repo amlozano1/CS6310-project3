@@ -42,10 +42,10 @@ public class UI extends JFrame implements ActionListener {
 
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
-	private JTextField txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
+	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
-	private JComboBox<String> queryNameSelect;
+	private JComboBox queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
@@ -128,7 +128,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		queryNameSelect = new JComboBox<String>(queryNames);
+		queryNameSelect = new JComboBox(queryNames);
 		component.add(queryNameSelect, layoutConstraint);
 		
 		//update currentY
@@ -330,6 +330,23 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.ipady = 5;
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		int currentY = 0;
+		
+		//add the label for Simulation Name
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelSimulationName = new JLabel("Simulation Name");
+		component.add(labelSimulationName, layoutConstraint);
+		
+		//add the textbox for Simulation Name
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtSimulationName = new JTextField("23.44");
+		component.add(txtSimulationName, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
 		
 		//add the label for Axial Tilt
 		layoutConstraint.gridx = 0;
@@ -534,9 +551,12 @@ public class UI extends JFrame implements ActionListener {
 						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
 						if(cbDisplayAnimation.isSelected())
 							masterController.setPresentationControllerDisplayRate(Integer.parseInt(txtPresentationDisplayRate.getText()));
-					} catch (NumberFormatException | ArgumentInvalidException | ThreadException e) {
-						System.out.println("The validate didn't throw an error but the master controller start call did.");
-						//e.printStackTrace();
+					} catch (NumberFormatException e){
+						System.out.println("NumberFormatException: The validate didn't throw an error but the master controller start call did.");
+					} catch(ArgumentInvalidException e) {
+						System.out.println("ArgumentInvalidException: The validate didn't throw an error but the master controller start call did.");
+					}catch (ThreadException e) {
+						System.out.println("ThreadException: The validate didn't throw an error but the master controller start call did.");
 					}
 					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
 				}else{
