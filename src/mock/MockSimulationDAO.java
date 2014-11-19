@@ -43,5 +43,4 @@ public class MockSimulationDAO implements SimulationDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

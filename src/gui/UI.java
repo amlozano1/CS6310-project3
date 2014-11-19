@@ -11,7 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -132,7 +134,11 @@ public class UI extends JFrame implements ActionListener {
 		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
-		queryNames = (String[])ObjectFactory.getSimulationDAO().getSimulationNames().toArray();
+		List<String> qNames = ObjectFactory.getSimulationDAO().getSimulationNames();
+		queryNames = new String[qNames.size()];
+		for(int i = 0; i<qNames.size(); i++){
+			queryNames[i] = qNames.get(i);
+		}
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
