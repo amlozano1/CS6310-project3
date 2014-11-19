@@ -32,6 +32,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import callbacks.OnCompleteListener;
+
+import base.ObjectFactory;
+import base.PresentationMethod;
+import base.SimulationResult;
+
 import controllers.MasterController;
 
 
@@ -57,6 +63,7 @@ public class UI extends JFrame implements ActionListener {
 	
 	public UI(MasterController controller){
 		super("Earth Simulation");
+		
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
@@ -66,7 +73,7 @@ public class UI extends JFrame implements ActionListener {
 		this.masterController = controller;
 		
 		Dimension dim = new Dimension (800,825);
-		EarthPanel.getInstance().init(dim, dim, dim);
+		earthPanel.init(dim, dim, dim);
 		
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints layoutConstraint = new GridBagConstraints();
@@ -677,4 +684,5 @@ public class UI extends JFrame implements ActionListener {
 		spinnerSimTimeStep.setEnabled(status);
 		txtPresentationDisplayRate.setEnabled(status);
 	}
+	
 }

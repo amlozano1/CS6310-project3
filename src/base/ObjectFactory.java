@@ -1,5 +1,8 @@
 package base;
 
+import gui.PresentationLayer;
+import gui.UI;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -70,7 +73,8 @@ public final class ObjectFactory {
 	}
 	
 	private static PresentationMethod getPresentationMethod() {
-		return new MockPresentationMethod();
+		return new PresentationLayer();
+		//return new UI();
 	}
 	
 	private static SimulationMethod getSimulationMethod() {
