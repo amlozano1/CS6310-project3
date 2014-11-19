@@ -11,4 +11,5 @@ public interface SimulationDAO {
 	public Simulation getSimulationByName(String name);
 	public boolean removeSimulation(Integer id);
 	public List<Simulation> findSimulationBy(SimulationCriteria criteria);
+	public List<String> getSimulationNames();
 }
