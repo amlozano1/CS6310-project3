@@ -1,6 +1,8 @@
 package data.impl;
 
 public interface SimulationSQL {
+	public static final String GET_NAMES    =    "SELECT NAME FROM SIMULATION";
+
 	public static final String GET_BY_PK    =    "SELECT * FROM SIMULATION WHERE ID = ?";
 	public static final String GET_BY_NAME  =    "SELECT * FROM SIMULATION WHERE NAME = ?";
 

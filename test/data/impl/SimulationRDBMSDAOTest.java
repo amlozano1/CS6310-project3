@@ -74,6 +74,15 @@ public class SimulationRDBMSDAOTest {
 		assertTrue("Delete failed:", result);
 	}
 
+	@Test
+	public void testGetNames(){
+		int id = dao.saveSimulation(create());
+		List<String> names = dao.getSimulationNames();
+		assertNotNull(names);
+		assertTrue("Empty list of names:", names.size() > 0);
+		dao.removeSimulation(id);
+	}
+	
 	private Simulation create(){
 		return TestHelper.createSimulation(SIMULATION_NAME);
 	}
