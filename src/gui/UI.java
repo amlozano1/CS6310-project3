@@ -1,5 +1,7 @@
 package gui;
 
+import exceptions.ArgumentInvalidException;
+import exceptions.ThreadException;
 import gui.EarthPanel;
 
 import java.awt.Dimension;
@@ -30,6 +32,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import controllers.MasterController;
+
 
 
 public class UI extends JFrame implements ActionListener {
@@ -38,19 +42,20 @@ public class UI extends JFrame implements ActionListener {
 
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
-	private JTextField txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim;
+	private JTextField txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
 	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
-	private EarthPanel earthPanel;
+	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private String[] queryNames = new String[0];
+	private MasterController masterController;
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
-	public UI(){
+	public UI(MasterController controller){
 		super("Earth Simulation");
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
@@ -58,6 +63,7 @@ public class UI extends JFrame implements ActionListener {
 		this.setLocation(10, 10);
 		this.setSize(1200, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.masterController = controller;
 		
 		Dimension dim = new Dimension (800,825);
 		EarthPanel.getInstance().init(dim, dim, dim);
@@ -96,8 +102,8 @@ public class UI extends JFrame implements ActionListener {
 	
 	private JComponent createVisualizerDisplay(){
 		JPanel component = new JPanel();
-		EarthPanel.getInstance().drawGrid(15);
-		component.add(EarthPanel.getInstance());
+		earthPanel.drawGrid(15);
+		component.add(earthPanel);
 		
 		return component;
 	}
@@ -425,9 +431,28 @@ public class UI extends JFrame implements ActionListener {
 		cbDisplayAnimation.setSelected(true);
 		component.add(cbDisplayAnimation, layoutConstraint);
 		layoutConstraint.gridwidth = 1;
+		
 		//updated currentY
 		currentY += layoutConstraint.gridheight;
 
+		//add the label for Presentation Display Rate
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelPresDispRate = new JLabel("Presentation Display Rate");
+		component.add(labelPresDispRate, layoutConstraint);
+		
+		//add the textbox for Presentation Display Rate
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		txtPresentationDisplayRate = new JTextField("5");
+		component.add(txtPresentationDisplayRate, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;
+
+		
 		//add Start Button
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -477,7 +502,7 @@ public class UI extends JFrame implements ActionListener {
 	
 	private ChangeListener chngSliderOpacity = new ChangeListener() {
 		public void stateChanged(ChangeEvent e) {
-	        EarthPanel.getInstance().setMapOpacity(sliderOpacity.getValue() * .01f);
+	        earthPanel.setMapOpacity(sliderOpacity.getValue() * .01f);
 	    }
 	};
 	
@@ -500,13 +525,19 @@ public class UI extends JFrame implements ActionListener {
 					btnPauseResume.setEnabled(true);
 					
 					//Disabled settings fields during sim
-					txtSimLength.setEnabled(false);
-					txtAxialTiltSim.setEnabled(false);
-					txtGridSpacing.setEnabled(false);
-					txtOrbitalEccSim.setEnabled(false);
-					cbDisplayAnimation.setEnabled(false);
-					spinnerSimTimeStep.setEnabled(false);
+					updateSimInputAvailability(false);
 					
+					earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
+					
+					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
+					try {
+						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
+						if(cbDisplayAnimation.isSelected())
+							masterController.setPresentationControllerDisplayRate(Integer.parseInt(txtPresentationDisplayRate.getText()));
+					} catch (NumberFormatException | ArgumentInvalidException | ThreadException e) {
+						System.out.println("The validate didn't throw an error but the master controller start call did.");
+						//e.printStackTrace();
+					}
 					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
 				}else{
 					btnStartStop.setText("Start");
@@ -514,21 +545,22 @@ public class UI extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(frame, valuesMessage);
 				}
 			}else{//Stop has been pressed
+				try {
+					masterController.stop();
+				} catch (ThreadException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				btnStartStop.setText("Start");
 				EarthPanel.getInstance().reset();
-				
 				//Reset pause button
 				btnPauseResume.setEnabled(false);
 				btnPauseResume.setSelected(false);
 				btnPauseResume.setText("Pause");
 				
 				//Enable settings fields during sim
-				txtSimLength.setEnabled(true);
-				txtAxialTiltSim.setEnabled(true);
-				txtOrbitalEccSim.setEnabled(true);
-				cbDisplayAnimation.setEnabled(true);
-				txtGridSpacing.setEnabled(true);
-				spinnerSimTimeStep.setEnabled(true);
+				updateSimInputAvailability(true);
 			}
 		}
 	}; 
@@ -537,11 +569,17 @@ public class UI extends JFrame implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			//Pause Selected
-			if(btnPauseResume.isSelected()) 
-			{ 
-				btnPauseResume.setText("Resume");
-			} else { //Resume Selected
-				btnPauseResume.setText("Pause");
+			try{
+				if(btnPauseResume.isSelected()) { 
+					masterController.pause();
+					btnPauseResume.setText("Resume");
+				} else { //Resume Selected
+					masterController.resume();
+					btnPauseResume.setText("Pause");
+				}
+			}catch (ThreadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	};
@@ -599,6 +637,24 @@ public class UI extends JFrame implements ActionListener {
 			return "Error processing Orbital Eccentricity.";
 		}
 		
+		try{
+			int presDispRate = Integer.parseInt(txtPresentationDisplayRate.getText());
+			if(presDispRate <1)
+				return "The Presentation Display Rate must be greater than 0.";
+		}catch(NumberFormatException e){
+			return "Error processing Presentation Display Rate.";
+		}
+		
 		return null;
+	}
+	
+	private void updateSimInputAvailability(boolean status){
+		txtSimLength.setEnabled(status);
+		txtAxialTiltSim.setEnabled(status);
+		txtGridSpacing.setEnabled(status);
+		txtOrbitalEccSim.setEnabled(status);
+		cbDisplayAnimation.setEnabled(status);
+		spinnerSimTimeStep.setEnabled(status);
+		txtPresentationDisplayRate.setEnabled(status);
 	}
 }

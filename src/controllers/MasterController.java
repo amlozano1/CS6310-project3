@@ -16,6 +16,7 @@ public class MasterController {
 	private final OnSimulationCompleteListener mOnSimulationCompleteListener;
 	
 	private OnCompleteListener mOnCompleteListener;
+	private boolean runPresentation = false;
 	
 	public MasterController(BlockingQueue<SimulationResult> queue, PresentationMethod presentationMethod, SimulationMethod simulationMethod) {
 		mPresenationController = new PresentationController(queue, presentationMethod);
@@ -23,14 +24,20 @@ public class MasterController {
 		mOnSimulationCompleteListener = new OnSimulationCompleteListener();
 	}
 	
+	public void setPresentationControllerDisplayRate(int displayRate){
+		mPresenationController.setPresentationParameters(displayRate);
+	}
+	
 	public void pause() throws ThreadException {
-		mPresenationController.pause();
 		mSimulationController.pause();
+		if(this.runPresentation)
+			mPresenationController.pause();
 	}
 	
 	public void resume() throws ThreadException {
-		mPresenationController.resume();
 		mSimulationController.resume();
+		if(this.runPresentation) 
+			mPresenationController.resume();
 	}
 
 	/**
@@ -42,16 +49,20 @@ public class MasterController {
 		mOnCompleteListener = listener;
 	}
 	
-	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength, int presentationDisplayRate) throws ArgumentInvalidException, ThreadException {
+	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength, int presentationDisplayRate, boolean startPresentation) throws ArgumentInvalidException, ThreadException {
 		mSimulationController.setSimulationParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 		mSimulationController.setOnCompleteListener(mOnSimulationCompleteListener);
-		mPresenationController.start();
 		mSimulationController.start();
+		this.runPresentation = startPresentation;
+		if(this.runPresentation) 
+			mPresenationController.start();
+		
 	}
 	
 	public void stop() throws ThreadException {
-		mPresenationController.stop();
 		mSimulationController.stop();
+		if(this.runPresentation) 
+			mPresenationController.stop();
 		
 		// If the complete listener is set, call it
 		if (mOnCompleteListener != null) {
@@ -71,7 +82,8 @@ public class MasterController {
 			try {
 				// Stop and flush the presentation so that any results that have not been displayed will not be lost
 				// Pass the complete lister in so that any outside actions will be called when the flush is finished
-				mPresenationController.stopAndFlush(mOnCompleteListener);
+				if(runPresentation)
+					mPresenationController.stopAndFlush(mOnCompleteListener);
 			} catch (ThreadException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
