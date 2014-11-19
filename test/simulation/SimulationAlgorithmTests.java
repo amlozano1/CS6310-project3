@@ -25,7 +25,7 @@ public class SimulationAlgorithmTests {
 		try {
 			SimulationResult result = ObjectFactory.getInitialGrid(CellCalculations.getNumberOfRows(15), CellCalculations.getNumberOfColumns(15));
 			int sunPosition = 0;
-			for (int i = 0; i < 324; i++) {
+			for (int i = 0; i < 20; i++) {
 				result = alg.simulate(result, EARTH_OBLIQUITY, EARTH_ECCENTRICITY, sunPosition);
 				sunPosition = (sunPosition + 15 ) % 360;
 			}

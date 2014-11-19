@@ -18,12 +18,16 @@ public class SimulationAlgorithm implements SimulationMethod {
 		double circumference = 40030140.0;
 		double solarPowerPerMeter = 29555656845976000000.0;
 		double solarYear = 525600;
+		double aldebo = 0.3;
+		double emissivity = 0.612;
 		double semiMajorAxis = 149600000;
 		
 		int columns = previousResult.getColumnCount();
 		int rows = previousResult.getRowCount();
 		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, semiMajorAxis, solarPowerPerMeter);
 		LOGGER.info(String.format("Adjusted power per meter: %.5f", adjustedSolarPowerPerMeter));
+		
+		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, aldebo, emissivity);
 		
 		double averageTemp = previousResult.getAverageTemperature();
 		LOGGER.info(String.format("Average cell temperature: %.5f", averageTemp));
@@ -41,8 +45,8 @@ public class SimulationAlgorithm implements SimulationMethod {
 				double previousEast = column == 0 ? previous : previousResult.getTemperature(column - 1, row);
 				double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
 
-				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, adjustedSolarPowerPerMeter);
-				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, previous, averageTemp, adjustedSolarPowerPerMeter);
+				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, solarTemperatureAverage);
+				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, previous, averageTemp, solarTemperatureAverage);
 				
 				double temp  = heating + cooling
 						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
