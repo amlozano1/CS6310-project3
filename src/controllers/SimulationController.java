@@ -117,11 +117,15 @@ public class SimulationController extends ThreadedProcess {
 						
 						// TODO: Add stabilization check here
 						
-						// TODO: need to handle geo precision (is this result saved)
-						// TODO: temporal precision (which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
+						// TODO: need to handle geo precision (aka is this result saved)
+						// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
 						if(simulation != null){
 							resultDAO.addSimulationResult(simulation.getId(), newResult);
 						}
+						//TODO: need conversion to lat long
+						newResult.setSunLatitude(0);
+						newResult.setSunLongitude(sunPosition);
+						newResult.setSimulationTime(minutesPassed);
 						
 						mQueue.put(newResult);
 						

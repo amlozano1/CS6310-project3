@@ -1,5 +1,10 @@
 package base;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import exceptions.ArgumentInvalidException;
@@ -11,6 +16,17 @@ public final class Utils {
 	// TODO: Lookup the max value for our data implementation
 	private static final int MAX_PRECISION_VALUE = 10;
 
+	private static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	static{
+		START_TIME.set(Calendar.YEAR, 2014);
+		START_TIME.set(Calendar.MONTH, Calendar.JANUARY);
+		START_TIME.set(Calendar.DAY_OF_MONTH, 4);
+		START_TIME.set(Calendar.HOUR, 0);
+		START_TIME.set(Calendar.MINUTE, 0);
+		START_TIME.set(Calendar.SECOND, 0);
+		START_TIME.set(Calendar.MILLISECOND, 0);
+	}
+	
 	/**
 	 * Private constructor is used to prevent the default constructor from being public.
 	 * This makes the entire class static.
@@ -88,4 +104,38 @@ public final class Utils {
 		public int temporalPrecision = 100;
 	}
 
+	public static final Time toTime(long simulationTime) {
+		Calendar c = getForMinutesSinceStart((int) simulationTime);
+		return new Time(c.getTimeInMillis());
+	}
+
+	public static final Date toDate(long simulationTime) {
+		Calendar c = getForMinutesSinceStart((int) simulationTime);
+		return new Date(c.getTimeInMillis());
+	}
+	
+	public static final long toSimulationTime(Date date, Time time) {
+		  Calendar dateCal = Calendar.getInstance();
+		  dateCal.setTime(date);
+		  Calendar timeCal = Calendar.getInstance();
+		  timeCal.setTime(time);
+
+		  dateCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
+		  dateCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
+		  dateCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+		  
+		  return dateCal.getTimeInMillis()/1000;
+	}
+	
+	public static final double setPrecision(double value, int decimalPlaces){
+		BigDecimal bd = new BigDecimal(value);
+		return bd.setScale(decimalPlaces, BigDecimal.ROUND_HALF_UP).doubleValue();
+	}
+	
+	private static final Calendar getForMinutesSinceStart(int minutesSinceStart){
+		Calendar c = (Calendar)START_TIME.clone();
+		c.add(Calendar.MINUTE, minutesSinceStart);
+		
+		return c;
+	}
 }

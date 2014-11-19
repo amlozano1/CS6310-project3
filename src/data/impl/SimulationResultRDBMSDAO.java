@@ -12,6 +12,7 @@ import java.util.List;
 import base.Cell;
 import base.ObjectFactory;
 import base.SimulationResult;
+import base.Utils;
 import data.CellDAO;
 import data.Datastore;
 import data.SimulationResultDAO;
@@ -56,8 +57,8 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
  
 			stmnt.setInt(1, simulationId);
 			stmnt.setLong(2, simulationResult.getSimulationTime());
-			stmnt.setDate(3, toDate(simulationResult.getSimulationTime()));
-			stmnt.setTime(4, toTime(simulationResult.getSimulationTime()));
+			stmnt.setDate(3, Utils.toDate(simulationResult.getSimulationTime()));
+			stmnt.setTime(4, Utils.toTime(simulationResult.getSimulationTime()));
 			stmnt.setDouble(5, simulationResult.getSunLongitude());
 			stmnt.setDouble(6, simulationResult.getSunLatitude());
 			
@@ -139,7 +140,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 				result = new SimulationResult(data);
 				Date date = rs.getDate(OCCURENCE_DATE);
 				Time time = rs.getTime(OCCURENCE_TIME);
-				result.setSimulationTime(toSimulationTime(date, time));
+				result.setSimulationTime(Utils.toSimulationTime(date, time));
 				result.setSunLatitude(rs.getDouble(SUN_LATITUDE));
 				result.setSunLongitude(rs.getDouble(SUN_LONGITUDE));
 			}
