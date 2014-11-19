@@ -7,6 +7,9 @@ import org.junit.Test;
 public class CellCalculationsTests {
 	
 	private static final double EARTH_CIRCUMFERENCE = 40030140.0;
+	private static final double EARTH_ALDEBO = 0.3;
+	private static final double EARTH_EMISSIVITY = 0.612;
+	private static final double SOLAR_ENERGY_FROM_SUN = 1366;
 
 	@Test
 	public void testGetCellHeight() {
@@ -218,6 +221,11 @@ public class CellCalculationsTests {
 	@Test
 	public void testGetCooling() {
 		// TODO: Determine test cases for this
+	}
+	
+	@Test
+	public void testGetKelvinFromSolarEnergy() {
+		assertEquals(288.0, CellCalculations.getKelvinFromSolarEnergy(SOLAR_ENERGY_FROM_SUN, EARTH_ALDEBO, EARTH_EMISSIVITY), 1.0);
 	}
 
 }

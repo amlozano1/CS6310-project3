@@ -2,6 +2,8 @@ package simulation;
 
 public class CellCalculations {
 	
+	public static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567;
+	
 	/**
 	 * Gets the length of a vertical side of a cell in a grid with the specified grid spacing on a planet of the specified circumference in meters.
 	 * 
@@ -223,15 +225,14 @@ public class CellCalculations {
 	 * @param gridSpacing The grid spacing in degrees.
 	 * @param time The time to measure attenuation at in minutes passed.
 	 * @param circumference The circumference of the planet in meters.
-	 * @param solarPowerPerMeter
+	 * @param solarAverageTempApplied The temperature of solar energy in Kelvin.
 	 * @return
 	 */
-	public static double getSolarHeat(int row, int column, double gridSpacing, int time, double circumference, double solarPowerPerMeter) {
+	public static double getSolarHeat(int row, int column, double gridSpacing, int time, double circumference, double solarAverageTempApplied) {
 		double attenuation = getHeatAttenuation(row, column, gridSpacing, time);
 		double relativeSizeFactor = getRelativeSizeFactor(row, circumference, gridSpacing);
-		double solarPower = solarPowerPerMeter * relativeSizeFactor;
-		return (solarPower - (attenuation * solarPower)) / getArea(row, circumference, gridSpacing);
-		//return Math.pow(((1 - 0.3) * solarPowerPerMeter) / (0.0000000567 * 0.612), 0.25) * relativeSizeFactor * getArea(row, circumference, gridSpacing) * attenuation;
+		double solarPower = solarAverageTempApplied * relativeSizeFactor;
+		return (solarPower - (attenuation * solarPower));
 	}
 	
 	/**
@@ -242,12 +243,12 @@ public class CellCalculations {
 	 * @param gridSpacing The grid spacing in degrees.
 	 * @param cellTemp The current temperature of the cell in degrees.
 	 * @param averageTemp The average temperature of a cell in degrees.
-	 * @param solarPowerPerMeter
+	 * @param solarAverageTempApplied The temperature of solar energy in Kelvin.
 	 * @return
 	 */
-	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarPowerPerMeter) {
+	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarAverageTempApplied) {
 		double relativeSizeFactor = getRelativeSizeFactor(row, circumference, gridSpacing);
-		return (-relativeSizeFactor * (cellTemp / averageTemp) * solarPowerPerMeter) / getArea(row, circumference, gridSpacing);
+		return (-relativeSizeFactor * (cellTemp / averageTemp) * solarAverageTempApplied);
 	}
 	
 	/**
@@ -286,6 +287,10 @@ public class CellCalculations {
 		double averageCellSize = getAverageCellSize(circumference, gridSpacing);
 		double cellArea = getArea(row, circumference, gridSpacing);
 		return cellArea / averageCellSize;
+	}
+	
+	public static double getKelvinFromSolarEnergy(double wattsPerMeter, double aldebo, double emissivity) {
+		return Math.pow(((1 - aldebo) * wattsPerMeter) / (4 * emissivity * STEFAN_BOLTZMANN_CONSTANT), 0.25);
 	}
 	
 }
