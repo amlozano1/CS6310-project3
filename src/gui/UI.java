@@ -342,7 +342,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		txtSimulationName = new JTextField("23.44");
+		txtSimulationName = new JTextField();
 		component.add(txtSimulationName, layoutConstraint);
 		
 		//update currentY
