@@ -31,12 +31,13 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		ResultSet rs = null;
 		SimulationResult simulationResult = null;
 		try {
-			Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(id);
 			stmnt = conn.prepareStatement(GET_BY_PK);
 			stmnt.setInt(1, id);
 			rs = stmnt.executeQuery();
 			if(rs.next()){
-				simulationResult = fromResultSet(rs, data);
+				simulationResult = fromResultSet(rs);
+				Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(id);
+				simulationResult.setmResultData(data);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -47,7 +48,33 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		
 		return simulationResult;
 	}
-
+	
+	@Override
+	public SimulationResult findSimulationResult(int simulationId, long simulationTime) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		ResultSet rs = null;
+		SimulationResult simulationResult = null;
+		try {
+			stmnt = conn.prepareStatement(GET_BY_SIMULATION_TIME);
+			stmnt.setInt(1, simulationId);
+			stmnt.setLong(2, simulationTime);
+			rs = stmnt.executeQuery();
+			if(rs.next()){
+				simulationResult = fromResultSet(rs);
+				Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(simulationResult.getId());
+				simulationResult.setmResultData(data);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(stmnt);
+		}
+		
+		return simulationResult;
+	}
+	
 	@Override
 	public Integer addSimulationResult(int simulationId, SimulationResult simulationResult) {
 		Connection conn = dataStore.getConnection();
@@ -133,13 +160,14 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		return null;
 	}
 	
-	private SimulationResult fromResultSet(ResultSet rs, Cell[][] data) {
+	private SimulationResult fromResultSet(ResultSet rs) {
 		SimulationResult result = null;
 		try {
 			if(rs != null){
-				result = new SimulationResult(data);
+				result = new SimulationResult();
 				Date date = rs.getDate(OCCURENCE_DATE);
 				Time time = rs.getTime(OCCURENCE_TIME);
+				result.setId(rs.getInt(ID));
 				result.setSimulationTime(Utils.toSimulationTime(date, time));
 				result.setSunLatitude(rs.getDouble(SUN_LATITUDE));
 				result.setSunLongitude(rs.getDouble(SUN_LONGITUDE));
