@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import base.ObjectFactory;
@@ -45,6 +46,17 @@ public class SimulationResultRDBMSDAOTest {
 		assertEquals("Result data not correct:", result.getRowCount(), 10);
 		assertEquals("Result data not correct:", result.getColumnCount(), 10);
 	}
+	
+	@Test
+	public void testFindSimulationResult() {
+		SimulationResult mock = create();
+		simulationResultId = dao.addSimulationResult(simulationId, mock);
+		
+		SimulationResult result = dao.findSimulationResult(simulationId, 0);
+		assertNotNull("Result not returned:", result);
+		assertEquals("Result data not correct:", 10, result.getRowCount());
+		assertEquals("Result data not correct:", 10, result.getColumnCount());
+	}
 
 	@Test
 	public void testAddSimulationResult() {
@@ -52,22 +64,22 @@ public class SimulationResultRDBMSDAOTest {
 		assertNotNull("Not successful:",  simulationResultId);
 	}
 
-	@Test
+	@Test @Ignore
 	public void testRemoveSimulationResult() {
 		fail("Not yet implemented");
 	}
 
-	@Test
+	@Test @Ignore
 	public void testGetAllForSimulation() {
 		fail("Not yet implemented");
 	}
 
-	@Test
+	@Test @Ignore
 	public void testRemoveAllForSimulation() {
 		fail("Not yet implemented");
 	}
 
-	@Test
+	@Test @Ignore
 	public void testFindForTimeRange() {
 		fail("Not yet implemented");
 	}

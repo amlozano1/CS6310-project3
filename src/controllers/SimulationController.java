@@ -112,8 +112,13 @@ public class SimulationController extends ThreadedProcess {
 						checkPaused();
 						
 						// TODO: Check if database had simulation result for this sun position
+						SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
 
 						SimulationResult newResult = simulate(previousResult, sunPosition);
+						//TODO: need conversion to lat long
+						newResult.setSunLatitude(0);
+						newResult.setSunLongitude(sunPosition);
+						newResult.setSimulationTime(minutesPassed);
 						
 						// TODO: Add stabilization check here
 						
@@ -122,10 +127,6 @@ public class SimulationController extends ThreadedProcess {
 						if(simulation != null){
 							resultDAO.addSimulationResult(simulation.getId(), newResult);
 						}
-						//TODO: need conversion to lat long
-						newResult.setSunLatitude(0);
-						newResult.setSunLongitude(sunPosition);
-						newResult.setSimulationTime(minutesPassed);
 						
 						mQueue.put(newResult);
 						

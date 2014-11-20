@@ -6,6 +6,9 @@ import base.SimulationResult;
 
 public interface SimulationResultDAO {
 	public SimulationResult getSimulationResult(int id);
+	
+	public SimulationResult findSimulationResult(int simulationId, long simulationTime);
+
 	public Integer addSimulationResult(int simulationId, SimulationResult simulationResult);
 	public boolean removeSimulationResult(int id);
 

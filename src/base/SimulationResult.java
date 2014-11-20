@@ -14,16 +14,37 @@ public class SimulationResult implements TemperatureGrid {
 	// TODO: Make this class persistent
 	
 	// TODO: Change the type of this to our cell class
+	private int id;
 	private Cell[][] mResultData;
 	private long simulationTime;
 	private double sunLongitude;
 	private double sunLatitude;
 
+	public SimulationResult() {
+		this(null);
+	}
+	
 	public SimulationResult(Cell[][] resultData) {
 		// TODO: Change the parameter type to our cell class
 		mResultData = resultData;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Cell[][] getmResultData() {
+		return mResultData;
+	}
+
+	public void setmResultData(Cell[][] mResultData) {
+		this.mResultData = mResultData;
+	}
+
 	/**
 	 * Gets the number of columns in the result grid data
 	 * 

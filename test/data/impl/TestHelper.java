@@ -25,6 +25,15 @@ public class TestHelper {
 	}
 	
 	public static SimulationResult createSimulationResult(){
+		SimulationResult result = new SimulationResult(createCellData());
+		result.setSimulationTime(0);
+		result.setSunLatitude(45);
+		result.setSunLongitude(54);
+
+		return result;
+	}
+	
+	public static Cell[][] createCellData(){
 		Cell[][] resultData = new Cell[10][10];
 		for(int x = 0; x < 10; x++){
 			for (int y = 0; y < 10; y++) {
@@ -36,11 +45,7 @@ public class TestHelper {
 				resultData[x][y] = cell;
 			}
 		}
-		SimulationResult result = new SimulationResult(resultData);
-		result.setSimulationTime(0);
-		result.setSunLatitude(45);
-		result.setSimulationTime(54);
-
-		return result;
+		
+		return resultData;
 	}
 }

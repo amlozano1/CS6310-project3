@@ -23,7 +23,7 @@ public class MockSimulationMethod implements SimulationMethod {
 		for (int i = 0; i < mockData.length; i++) {
 			Cell[] mockRow = new Cell[columnCount];
 			for (int j = 0; j < mockRow.length; j++) {
-				double temp = previousResult.getTemperature(i, j) + TEMPERATURE_INCREMENT + i * 5;
+				double temp = (previousResult.getTemperature(i, j) + TEMPERATURE_INCREMENT + i * 5) + j;
 				Cell c = new Cell(temp, 0d, 0d);
 				mockRow[j] = c;
 			}
