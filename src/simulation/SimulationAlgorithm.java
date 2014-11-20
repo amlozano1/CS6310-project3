@@ -27,6 +27,9 @@ public class SimulationAlgorithm implements SimulationMethod {
 		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, semiMajorAxis, solarPowerPerMeter);
 		LOGGER.info(String.format("Adjusted power per meter: %.5f", adjustedSolarPowerPerMeter));
 		
+		double[] coordinates = OrbitalPosition.getCoordinates( orbitalEccentricity,  sunPosition,  solarYear,  semiMajorAxis) ;
+		LOGGER.info("Planet coordinates: " + Double.toString(coordinates[0]) + " " + Double.toString(coordinates[1]));
+		
 		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, aldebo, emissivity);
 
 		
@@ -46,8 +49,6 @@ public class SimulationAlgorithm implements SimulationMethod {
 				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, solarTemperatureAverage);
 				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, solarTemperatureAverage);
 				
-				//double temp  = heating + cooling
-				//		+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
 				double temp = ((previous + heating + cooling) + previousNorth + previousSouth + previousEast + previousWest)/5;
 				double longitude = 0;
 				double latitude = 0;
