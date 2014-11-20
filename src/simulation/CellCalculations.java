@@ -246,9 +246,9 @@ public class CellCalculations {
 	 * @param solarAverageTempApplied The temperature of solar energy in Kelvin.
 	 * @return
 	 */
-	public static double getCooling(int row, double circumference, double gridSpacing, double cellTemp, double averageTemp, double solarAverageTempApplied) {
+	public static double getCooling(int row, double circumference, double gridSpacing,double solarAverageTempApplied) {
 		double relativeSizeFactor = getRelativeSizeFactor(row, circumference, gridSpacing);
-		return (-relativeSizeFactor * (cellTemp / averageTemp) * solarAverageTempApplied);
+		return (-relativeSizeFactor * solarAverageTempApplied);
 	}
 	
 	/**
