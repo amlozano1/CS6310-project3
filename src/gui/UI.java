@@ -623,8 +623,11 @@ public class UI extends JFrame implements ActionListener {
 	 * Validates the Grid Spacing and Simulation Time Step
 	 */
 	private String validValues(){
+		if(txtSimulationName.getText().trim().equals(""))
+			return "Simulation name cannot be blank.";
 		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) < 0)
 			return "Simulation Name already exists.";
+		
 					
 		try{
 			int simTimeStep = (Integer)spinnerSimTimeStep.getValue();
