@@ -28,9 +28,7 @@ public class SimulationAlgorithm implements SimulationMethod {
 		LOGGER.info(String.format("Adjusted power per meter: %.5f", adjustedSolarPowerPerMeter));
 		
 		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, aldebo, emissivity);
-		
-		double averageTemp = previousResult.getAverageTemperature();
-		LOGGER.info(String.format("Average cell temperature: %.5f", averageTemp));
+
 		
 		// TODO: Change data type to our class
 		double cooling = 0;
@@ -46,10 +44,11 @@ public class SimulationAlgorithm implements SimulationMethod {
 				double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
 
 				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, solarTemperatureAverage);
-				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, previous, averageTemp, solarTemperatureAverage);
+				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, solarTemperatureAverage);
 				
-				double temp  = heating + cooling
-						+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
+				//double temp  = heating + cooling
+				//		+ CellCalculations.getNeighborHeat(row, circumference, gridSpacing, previousNorth, previousSouth, previousEast, previousWest);
+				double temp = ((previous + heating + cooling) + previousNorth + previousSouth + previousEast + previousWest)/5;
 				double longitude = 0;
 				double latitude = 0;
 				
