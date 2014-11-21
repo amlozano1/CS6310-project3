@@ -562,6 +562,7 @@ public class UI extends JFrame implements ActionListener {
 					updateSimInputAvailability(false);
 					
 					//create simulation parameters
+					/*
 					InvocationParms parms = new Utils.InvocationParms();
 					SimulationParameters simParameters = new SimulationParameters();
 					simParameters.setAxialTilt(Double.parseDouble(txtAxialTiltSim.getText()));
@@ -572,10 +573,10 @@ public class UI extends JFrame implements ActionListener {
 					simParameters.setPrecision((short) parms.precision);
 					simParameters.setTempPrecision((short) parms.temporalPrecision);
 					simParameters.setTimeStep((Integer)spinnerSimTimeStep.getValue());
-					
+					*/
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
-						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
+						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
 						if(cbDisplayAnimation.isSelected()){							
 							//Update earth map with new gridspacing
 							earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
@@ -642,8 +643,8 @@ public class UI extends JFrame implements ActionListener {
 	private String validValues(){
 		if(txtSimulationName.getText().trim().equals(""))
 			return "Simulation name cannot be blank.";
-		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) < 0)
-			return "Simulation Name already exists.";
+		//if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) < 0)
+		//	return "Simulation Name already exists.";
 					
 		try{
 			int simTimeStep = (Integer)spinnerSimTimeStep.getValue();
