@@ -1,13 +1,13 @@
 package data.impl;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import base.Cell;
 import base.ObjectFactory;
@@ -18,6 +18,8 @@ import data.Datastore;
 import data.SimulationResultDAO;
 
 public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResultDAO, SimulationResultSQL, SimulationResultDAOConstants {
+	private static final Calendar TIME_ZONE = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+
 	private Datastore dataStore;
 
 	public SimulationResultRDBMSDAO() {
@@ -81,11 +83,10 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		PreparedStatement stmnt = null;
 		try {
 			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
- 
 			stmnt.setInt(1, simulationId);
 			stmnt.setLong(2, simulationResult.getSimulationTime());
-			stmnt.setDate(3, Utils.toDate(simulationResult.getSimulationTime()));
-			stmnt.setTime(4, Utils.toTime(simulationResult.getSimulationTime()));
+			stmnt.setDate(3, Utils.toDate(simulationResult.getSimulationTime()), TIME_ZONE);
+			stmnt.setTime(4, Utils.toTime(simulationResult.getSimulationTime()), TIME_ZONE);
 			stmnt.setDouble(5, simulationResult.getSunLongitude());
 			stmnt.setDouble(6, simulationResult.getSunLatitude());
 			
@@ -165,10 +166,8 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		try {
 			if(rs != null){
 				result = new SimulationResult();
-				Date date = rs.getDate(OCCURENCE_DATE);
-				Time time = rs.getTime(OCCURENCE_TIME);
 				result.setId(rs.getInt(ID));
-				result.setSimulationTime(Utils.toSimulationTime(date, time));
+				result.setSimulationTime(rs.getLong(SIMULATION_TIME));
 				result.setSunLatitude(rs.getDouble(SUN_LATITUDE));
 				result.setSunLongitude(rs.getDouble(SUN_LONGITUDE));
 			}
