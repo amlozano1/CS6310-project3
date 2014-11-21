@@ -3,6 +3,7 @@ package base;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import simulation.SimulationAlgorithm;
 import mock.MockPresentationMethod;
 import mock.MockSimulationMethod;
 import controllers.MasterController;
@@ -74,7 +75,7 @@ public final class ObjectFactory {
 	}
 	
 	private static SimulationMethod getSimulationMethod() {
-		return new MockSimulationMethod();
+		return new SimulationAlgorithm();
 	}
 	
 	private static SimulationDAOFactory getSimualtionDAOFactory(){
