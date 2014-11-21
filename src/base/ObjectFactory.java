@@ -75,7 +75,6 @@ public final class ObjectFactory {
 	
 	private static PresentationMethod getPresentationMethod() {
 		return new PresentationLayer();
-		//return new UI();
 	}
 	
 	private static SimulationMethod getSimulationMethod() {

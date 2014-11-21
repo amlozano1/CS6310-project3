@@ -34,20 +34,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import callbacks.OnCompleteListener;
-
 import base.ObjectFactory;
-import base.PresentationMethod;
-import base.SimulationParameters;
-import base.SimulationResult;
-import base.Utils;
-import base.Utils.InvocationParms;
-
+import base.Simulation;
 import controllers.MasterController;
 
 
 
-public class UI extends JFrame implements ActionListener {
+public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1061316348359815659L;
 
@@ -99,16 +92,6 @@ public class UI extends JFrame implements ActionListener {
 		tabs.add("Query",this.createQueryControlsComponent());
 		this.add(tabs, layoutConstraint);
 		
-		/*
-		tabs.addTab("Simulation Controls", this.createSimControlsComponent()); 
-		tabs.addTab("Query Controls", this.createQueryControlsComponent());
-		this.add(tabs,layoutConstraint);
-		
-		layoutConstraint.gridx=1;
-		layoutConstraint.gridy=0;
-		layoutConstraint.gridheight = GridBagConstraints.REMAINDER;
-		this.add(this.createVisualizerDisplay(),layoutConstraint);
-		*/
 		this.setVisible(true);
 	}
 	
@@ -137,16 +120,20 @@ public class UI extends JFrame implements ActionListener {
 		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
-		//List<String> qNames = ObjectFactory.getSimulationDAO().getSimulationNames();
-		//queryNames = new String[qNames.size()];
-		//for(int i = 0; i<qNames.size(); i++){
-		//	queryNames[i] = qNames.get(i);
-		//}
 		queryNames = ObjectFactory.getSimulationDAO().getSimulationNames();
+		queryNames.add(0, null);
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
 		queryNameSelect = new JComboBox(queryNames.toArray());
+		queryNameSelect.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				loadSimulationSettingsFromQueryNameList();
+				
+			}
+		});
 		component.add(queryNameSelect, layoutConstraint);
 		
 		//update currentY
@@ -333,6 +320,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridheight = 1;
 		layoutConstraint.gridwidth = 2;
 		JButton btnQueryGo = new JButton("Query");
+		btnQueryGo.addActionListener(actListQuery);
 		component.add(btnQueryGo, layoutConstraint);
 		
 		
@@ -541,13 +529,6 @@ public class UI extends JFrame implements ActionListener {
 	    }
 	};
 	
-	
-	//Handle timer event
-    public void actionPerformed(ActionEvent e) {
-
-    	System.out.println("Memory Usage: "+(guiRuntime.totalMemory()-guiRuntime.freeMemory()));
-    }
-	
 	private ActionListener actListStartStop = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -561,7 +542,6 @@ public class UI extends JFrame implements ActionListener {
 					
 					//Disabled settings fields during sim
 					updateSimInputAvailability(false);
-					
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
@@ -577,6 +557,7 @@ public class UI extends JFrame implements ActionListener {
 					} catch(ArgumentInvalidException e) {
 						System.out.println("ArgumentInvalidException: The validate didn't throw an error but the master controller start call did.");
 					}catch (ThreadException e) {
+						e.printStackTrace();
 						System.out.println("ThreadException: The validate didn't throw an error but the master controller start call did.");
 					}
 					queryNameSelect.addItem(txtSimulationName.getText());
@@ -624,7 +605,15 @@ public class UI extends JFrame implements ActionListener {
 			}
 		}
 	};
-	
+
+	private ActionListener actListQuery = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			;
+			
+		}
+	};
 	
 	/*
 	 * Validates the Grid Spacing and Simulation Time Step
@@ -704,5 +693,24 @@ public class UI extends JFrame implements ActionListener {
 		txtPresentationDisplayRate.setEnabled(status);
 	}
 	
+	private void updateQueryInputAvailability(boolean status){
+		txtAxialTiltQuery.setEnabled(status);
+		txtOrbitalEccQuery.setEnabled(status);
+	}
+	
+	private void loadSimulationSettingsFromQueryNameList(){
+		if(queryNameSelect.getSelectedItem() == null){
+			updateQueryInputAvailability(true);
+			return;
+		}
+		Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
+		if(sim != null){
+			txtAxialTiltQuery.setText(sim.getSimulationParameters().getAxialTilt()+"");
+			txtOrbitalEccQuery.setText(sim.getSimulationParameters().getOrbitalEccentricity()+"");
+			updateQueryInputAvailability(false);
+		}else
+			System.out.println("its null.");
+	}
+
 	
 }

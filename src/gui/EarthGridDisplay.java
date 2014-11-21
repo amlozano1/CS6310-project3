@@ -139,7 +139,7 @@ public class EarthGridDisplay extends JPanel {
 	        
 	        g.setColor(colorPicker.getColor(colorValue, opacity));
 	        g.fillRect(cellX, cellY, cellWidth, cellHeight);
-	        System.out.println("("+cellX+","+cellY+","+cellWidth+","+cellHeight+")");
+	        //System.out.println("("+cellX+","+cellY+","+cellWidth+","+cellHeight+")");
 	        cellX += cellWidth;
 	       //System.out.print("\n["+x+", "+y+"] color: " + colorValue);
 	        top = bot;
