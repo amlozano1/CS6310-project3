@@ -11,7 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -32,11 +34,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import base.ObjectFactory;
+import base.Simulation;
 import controllers.MasterController;
 
 
 
-public class UI extends JFrame implements ActionListener {
+public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1061316348359815659L;
 
@@ -50,13 +54,14 @@ public class UI extends JFrame implements ActionListener {
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel = EarthPanel.getInstance();
-	private String[] queryNames = new String[0];
+	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
 
 	private Runtime guiRuntime = Runtime.getRuntime();
 	
 	public UI(MasterController controller){
 		super("Earth Simulation");
+		
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
@@ -66,7 +71,7 @@ public class UI extends JFrame implements ActionListener {
 		this.masterController = controller;
 		
 		Dimension dim = new Dimension (800,825);
-		EarthPanel.getInstance().init(dim, dim, dim);
+		earthPanel.init(dim, dim, dim);
 		
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints layoutConstraint = new GridBagConstraints();
@@ -87,16 +92,6 @@ public class UI extends JFrame implements ActionListener {
 		tabs.add("Query",this.createQueryControlsComponent());
 		this.add(tabs, layoutConstraint);
 		
-		/*
-		tabs.addTab("Simulation Controls", this.createSimControlsComponent()); 
-		tabs.addTab("Query Controls", this.createQueryControlsComponent());
-		this.add(tabs,layoutConstraint);
-		
-		layoutConstraint.gridx=1;
-		layoutConstraint.gridy=0;
-		layoutConstraint.gridheight = GridBagConstraints.REMAINDER;
-		this.add(this.createVisualizerDisplay(),layoutConstraint);
-		*/
 		this.setVisible(true);
 	}
 	
@@ -125,10 +120,20 @@ public class UI extends JFrame implements ActionListener {
 		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
+		queryNames = ObjectFactory.getSimulationDAO().getSimulationNames();
+		queryNames.add(0, null);
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		queryNameSelect = new JComboBox(queryNames);
+		queryNameSelect = new JComboBox(queryNames.toArray());
+		queryNameSelect.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				loadSimulationSettingsFromQueryNameList();
+				
+			}
+		});
 		component.add(queryNameSelect, layoutConstraint);
 		
 		//update currentY
@@ -315,6 +320,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridheight = 1;
 		layoutConstraint.gridwidth = 2;
 		JButton btnQueryGo = new JButton("Query");
+		btnQueryGo.addActionListener(actListQuery);
 		component.add(btnQueryGo, layoutConstraint);
 		
 		
@@ -342,7 +348,7 @@ public class UI extends JFrame implements ActionListener {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		txtSimulationName = new JTextField("23.44");
+		txtSimulationName = new JTextField();
 		component.add(txtSimulationName, layoutConstraint);
 		
 		//update currentY
@@ -523,13 +529,6 @@ public class UI extends JFrame implements ActionListener {
 	    }
 	};
 	
-	
-	//Handle timer event
-    public void actionPerformed(ActionEvent e) {
-
-    	System.out.println("Memory Usage: "+(guiRuntime.totalMemory()-guiRuntime.freeMemory()));
-    }
-	
 	private ActionListener actListStartStop = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -544,21 +543,24 @@ public class UI extends JFrame implements ActionListener {
 					//Disabled settings fields during sim
 					updateSimInputAvailability(false);
 					
-					earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
-					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
-						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()),"name", Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
-						if(cbDisplayAnimation.isSelected())
+						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
+						if(cbDisplayAnimation.isSelected()){							
+							//Update earth map with new gridspacing
+							earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
+
 							masterController.setPresentationControllerDisplayRate(Integer.parseInt(txtPresentationDisplayRate.getText()));
+						}
 					} catch (NumberFormatException e){
 						System.out.println("NumberFormatException: The validate didn't throw an error but the master controller start call did.");
 					} catch(ArgumentInvalidException e) {
 						System.out.println("ArgumentInvalidException: The validate didn't throw an error but the master controller start call did.");
 					}catch (ThreadException e) {
+						e.printStackTrace();
 						System.out.println("ThreadException: The validate didn't throw an error but the master controller start call did.");
 					}
-					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
+					queryNameSelect.addItem(txtSimulationName.getText());
 				}else{
 					btnStartStop.setText("Start");
 					btnStartStop.setSelected(false);
@@ -603,12 +605,25 @@ public class UI extends JFrame implements ActionListener {
 			}
 		}
 	};
-	
+
+	private ActionListener actListQuery = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			;
+			
+		}
+	};
 	
 	/*
 	 * Validates the Grid Spacing and Simulation Time Step
 	 */
 	private String validValues(){
+		if(txtSimulationName.getText().trim().equals(""))
+			return "Simulation name cannot be blank.";
+		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) >= 0){
+			return "Simulation Name already exists.";
+		}			
 		try{
 			int simTimeStep = (Integer)spinnerSimTimeStep.getValue();
 			if(simTimeStep < 1)
@@ -677,4 +692,25 @@ public class UI extends JFrame implements ActionListener {
 		spinnerSimTimeStep.setEnabled(status);
 		txtPresentationDisplayRate.setEnabled(status);
 	}
+	
+	private void updateQueryInputAvailability(boolean status){
+		txtAxialTiltQuery.setEnabled(status);
+		txtOrbitalEccQuery.setEnabled(status);
+	}
+	
+	private void loadSimulationSettingsFromQueryNameList(){
+		if(queryNameSelect.getSelectedItem() == null){
+			updateQueryInputAvailability(true);
+			return;
+		}
+		Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
+		if(sim != null){
+			txtAxialTiltQuery.setText(sim.getSimulationParameters().getAxialTilt()+"");
+			txtOrbitalEccQuery.setText(sim.getSimulationParameters().getOrbitalEccentricity()+"");
+			updateQueryInputAvailability(false);
+		}else
+			System.out.println("its null.");
+	}
+
+	
 }

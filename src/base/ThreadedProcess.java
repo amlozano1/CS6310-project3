@@ -32,7 +32,7 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void pause() throws ThreadException {
-		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
+		if (mRunningThread == null && mRunningThread.isAlive()) {
 			throw new ThreadException("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
@@ -49,7 +49,7 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void resume() throws ThreadException {
-		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
+		if (mRunningThread == null && mRunningThread.isAlive()) {
 			throw new ThreadException("Thread has not been started");
 		} else {
 			synchronized (mPaused) {
@@ -67,7 +67,7 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has already been started.
 	 */
 	public void start() throws ThreadException {
-		if (mRunningThread == null || mRunningThread.isInterrupted()) {
+		if (mRunningThread == null || !mRunningThread.isAlive()) {
 			String threadName = getThreadName();
 			logWithThreadName(Level.INFO, "Starting %s thread");
 			mRunningThread = threadName == null ? new Thread(getRunnableAction()) : new Thread(getRunnableAction(), threadName);
@@ -84,7 +84,7 @@ public abstract class ThreadedProcess {
 	 * @throws Exception Thrown if the thread has not been started.
 	 */
 	public void stop() throws ThreadException {
-		if (mRunningThread == null && !mRunningThread.isInterrupted()) {
+		if (mRunningThread == null && mRunningThread.isAlive()) {
 			throw new ThreadException("Thread has not been started");
 		} else {
 			logWithThreadName(Level.INFO, "Stopping %s thread");

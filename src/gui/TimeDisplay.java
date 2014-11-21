@@ -25,13 +25,18 @@ public class TimeDisplay extends JPanel {
 	
 	public void reset() {
 		// reset the time back to December 31st 1999
-		currentDate.set(1999, 11, 31, 12, 0, 0);
+		currentDate.set(2014, 3, 1, 12, 0, 0);
 		this.repaint();
 	}
 	
 	public void addTime ( int minutes ) {
-		currentDate.set(1999, 11, 31, 12, 0, 0);
+		currentDate.set(2014, 3, 1, 12, 0, 0);
 		currentDate.add(Calendar.MINUTE, minutes);
+		this.repaint();
+	}
+	
+	public void setTime(long time){
+		currentDate.setTimeInMillis(time);
 		this.repaint();
 	}
 	
