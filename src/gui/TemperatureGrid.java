@@ -20,4 +20,18 @@ public interface TemperatureGrid {
    */
   public float getCellHeight(int x, int y);
   
+  
+  /**
+   * Gets the Sun's longitude position
+   * @return
+   */
+  public double getSunLongitude();
+  
+  
+  /**
+   * Gets the Sun's latitude position
+   * @return
+   */
+  public double getSunLatitude();
+  
 }
