@@ -643,9 +643,15 @@ public class UI extends JFrame implements ActionListener {
 	private String validValues(){
 		if(txtSimulationName.getText().trim().equals(""))
 			return "Simulation name cannot be blank.";
-		//if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) < 0)
-		//	return "Simulation Name already exists.";
-					
+		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) >= 0){
+			List<String> simNames = ObjectFactory.getSimulationDAO().getSimulationNames();
+			System.out.print("|"+txtSimulationName.getText()+"|");
+			System.out.println(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()));
+			
+			for(String s : simNames)
+				System.out.println(s);
+			return "Simulation Name already exists.";
+		}			
 		try{
 			int simTimeStep = (Integer)spinnerSimTimeStep.getValue();
 			if(simTimeStep < 1)
