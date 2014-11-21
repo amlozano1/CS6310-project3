@@ -14,6 +14,7 @@ import base.SimulationMethod;
 import base.SimulationParameters;
 import base.SimulationResult;
 import base.ThreadedProcess;
+import base.Utils.InvocationParms;
 
 public class SimulationController extends ThreadedProcess {
 	
@@ -27,7 +28,8 @@ public class SimulationController extends ThreadedProcess {
 	
 	private double mAxialTilt = DEFAULT_AXIAL_TILT;
 	private double mOrbitalEccentricity = DEFAULT_ORBITAL_ECCENTRICITY;
-	private Simulation simulation  = null;
+	private String mName = null;
+	private Simulation simulation = null;
 	private int mGridSpacing = DEFAULT_GRID_SPACING;
 	private int mSimulationTimestep = DEFAULT_TIME_STEP;
 	private int mSimulationLength = DEFAULT_LENGTH;
@@ -62,6 +64,13 @@ public class SimulationController extends ThreadedProcess {
 		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
 	}
 	
+	public SimulationResult interpolate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
+		// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
+		//TODO: uncomment when 'interpolate' methosd ready
+//		return mSimulationMethod.interpolate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
+		return previousResult;
+	}
+	
 	/**
 	 * Sets the simulation parameters to the specified values.
 	 * 
@@ -80,7 +89,6 @@ public class SimulationController extends ThreadedProcess {
 		mGridSpacing = gridSpacing;
 		mSimulationTimestep = simulationTimestep;
 		mSimulationLength = simulationLength;
-		simulation = getSimulation(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 	}
 	
 	/**
@@ -93,12 +101,26 @@ public class SimulationController extends ThreadedProcess {
 			@Override
 			public void run() {
 				try {
+					boolean isNewSimulation = false;
+					if(mName != null){
+						simulation = simulationDAO.getSimulationByName(mName);
+					}
+					if(simulation == null){
+						isNewSimulation = true;
+						simulation = createSimulation(mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength);
+					} else {
+						//TODO set globals from Simualtion? -mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength
+					}
+					
 					// Track previous result to use as start of next simulation
 					// Initialize to initial grid as starting point
 					final int gridSize = getGridSize();
 					SimulationResult previousResult = ObjectFactory.getInitialGrid(gridSize, gridSize);
-
 					int minutesPassed = 0;
+					
+					if(!isNewSimulation){
+						//TODO: get DB previous and setup minutesPassed NEED to figure out beginning of sim
+					}
 					boolean reachedSimulationEnd = false;
 					
 					// TODO: Decide if this should be a double or integer
@@ -111,23 +133,27 @@ public class SimulationController extends ThreadedProcess {
 					while (!checkStopped() && !reachedSimulationEnd) {
 						checkPaused();
 						
-						// TODO: Check if database had simulation result for this sun position
-						SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
-
-						SimulationResult newResult = simulate(previousResult, sunPosition);
+						SimulationResult newResult = null;
+						if(isNewSimulation){
+							newResult = simulate(previousResult, sunPosition);
+							
+							// TODO: need to handle geo precision (aka is this result saved)
+							// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
+							resultDAO.addSimulationResult(simulation.getId(), newResult);
+						} else {
+							SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
+							if(dbResult == null){
+								newResult = simulate(previousResult, sunPosition);
+							}
+							newResult = interpolate(previousResult, sunPosition);
+						}
 						//TODO: need conversion to lat long
 						newResult.setSunLatitude(0);
 						newResult.setSunLongitude(sunPosition);
 						newResult.setSimulationTime(minutesPassed);
 						
 						// TODO: Add stabilization check here
-						
-						// TODO: need to handle geo precision (aka is this result saved)
-						// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
-						if(simulation != null){
-							resultDAO.addSimulationResult(simulation.getId(), newResult);
-						}
-						
+												
 						mQueue.put(newResult);
 						
 						// Store result as previous result to input into next pass
@@ -217,32 +243,27 @@ public class SimulationController extends ThreadedProcess {
 		}
 	}
 	
-	private Simulation getSimulation(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength) {
-		/*
-		 * TODO this assumes simulation information (Physical Factors, Simulation Settings and Invocation Parameters) already persisted
-		 * if this is not the case need to check if simulation exists, delete previous simulation, then save new simualtion information
-		 * but must pass all into here
-		 */
-		Simulation simulation = simulationDAO.getSimulationByName(name);
-		if(simulation == null){
-			simulation = new Simulation();
-			simulation.setName(name);
-			SimulationParameters parameters = new SimulationParameters();
-			parameters.setAxialTilt(axialTilt);
-//			parameters.setGeoPrecision(geoPrecision);
-			parameters.setGridSpacing((short)gridSpacing);
-			parameters.setLength((short)simulationLength);
-			parameters.setOrbitalEccentricity(orbitalEccentricity);
-//			parameters.setPrecision(precision);
-//			parameters.setTempPrecision(tempPrecision);
-			parameters.setTimeStep(simulationTimestep);
-			
-			simulation.setSimulationParameters(parameters);
-			int id = simulationDAO.saveSimulation(simulation);
-			simulation.setId(id);
-		} else {
-			resultDAO.removeAllForSimulation(simulation.getId());
+	private Simulation createSimulation(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength) {
+		simulation = new Simulation();
+		simulation.setName(name);
+
+		SimulationParameters parameters = new SimulationParameters();
+		parameters.setAxialTilt(axialTilt);
+		parameters.setGridSpacing((short)gridSpacing);
+		parameters.setLength((short)simulationLength);
+		parameters.setOrbitalEccentricity(orbitalEccentricity);
+		parameters.setTimeStep(simulationTimestep);
+
+		InvocationParms invocationParms = (InvocationParms)System.getProperties().get("InvocationParms");
+		if(invocationParms != null){
+			parameters.setGeoPrecision(invocationParms.geographicPrecision);
+			parameters.setPrecision(invocationParms.precision);
+			parameters.setTempPrecision(invocationParms.temporalPrecision);
 		}
+		
+		simulation.setSimulationParameters(parameters);
+		int id = simulationDAO.saveSimulation(simulation);
+		simulation.setId(id);
 		
 		return simulation;
 	}
