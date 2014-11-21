@@ -19,12 +19,12 @@ public class JavaDBDatastore extends Datastore{
     public static final String DBNAME 			= "heatedplanetp3t1-db";
     public static final String CONNECTION_URL	= "jdbc:derby:" + DBNAME + ";create=true";
 
-    private static Connection conn;
+    private static ThreadLocal<Connection> threadLocalConn;
     
     private JavaDBDatastore(){
     	try {
 			create();
-			if(isNew(getConnection())){
+			if(isNew()){
 				init();
 			}
 		} catch (SQLException e) {
@@ -39,6 +39,7 @@ public class JavaDBDatastore extends Datastore{
     @Override
 	protected boolean create() {
 		try {
+			threadLocalConn = new ThreadLocal<Connection>();
 			Class.forName(DRIVER);
 			getConnection();
 			return true;
@@ -69,21 +70,25 @@ public class JavaDBDatastore extends Datastore{
 	@Override
 	public Connection getConnection() {
 		try {
-			if(conn == null || !conn.isClosed()){
+			if(threadLocalConn.get() == null){
+				createConnection();
+			} else if(threadLocalConn.get().isClosed()){
+				threadLocalConn.remove();
 				createConnection();
 			}
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
-		return conn;
+		return threadLocalConn.get();
 	}
 	
 	private void createConnection() throws SQLException{
-		conn = DriverManager.getConnection(CONNECTION_URL);
+		Connection c = DriverManager.getConnection(CONNECTION_URL);
+		threadLocalConn.set(c);
 	}
 	
-	private boolean isNew(Connection conn) throws SQLException{
+	private boolean isNew() throws SQLException{
 		List<String> tableNames = getTableNames();
 		
 		return tableNames == null || tableNames.size() == 0;
