@@ -86,6 +86,7 @@ public class SimulationController extends ThreadedProcess {
 		validateParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 		mAxialTilt = axialTilt;
 		mOrbitalEccentricity = orbitalEccentricity;
+		mName = name;
 		mGridSpacing = gridSpacing;
 		mSimulationTimestep = simulationTimestep;
 		mSimulationLength = simulationLength;
@@ -117,18 +118,16 @@ public class SimulationController extends ThreadedProcess {
 					final int gridSize = getGridSize();
 					SimulationResult previousResult = ObjectFactory.getInitialGrid(gridSize, gridSize);
 					int minutesPassed = 0;
+					// TODO: Decide if this should be a double or integer
+					int sunPosition = 0;
 					
 					if(!isNewSimulation){
-						//TODO: get DB previous and setup minutesPassed NEED to figure out beginning of sim
+						//TODO: get DB previous, minutesPassed  and sunPosition NEED to figure out beginning of sim
 					}
 					boolean reachedSimulationEnd = false;
 					
-					// TODO: Decide if this should be a double or integer
-					int sunPosition = 0;
 					final int sunIncrement = getDegreesFromTimestep();
-					
-					// TODO: Ask database for matching simulation results to know what must be calculated and what is cached
-					
+									
 					// TODO: Check if we have reached the end of the simulation
 					while (!checkStopped() && !reachedSimulationEnd) {
 						checkPaused();
@@ -136,10 +135,6 @@ public class SimulationController extends ThreadedProcess {
 						SimulationResult newResult = null;
 						if(isNewSimulation){
 							newResult = simulate(previousResult, sunPosition);
-							
-							// TODO: need to handle geo precision (aka is this result saved)
-							// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
-							resultDAO.addSimulationResult(simulation.getId(), newResult);
 						} else {
 							SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
 							if(dbResult == null){
@@ -147,13 +142,20 @@ public class SimulationController extends ThreadedProcess {
 							}
 							newResult = interpolate(previousResult, sunPosition);
 						}
-						//TODO: need conversion to lat long
-						newResult.setSunLatitude(0);
-						newResult.setSunLongitude(sunPosition);
-						newResult.setSimulationTime(minutesPassed);
-						
+
 						// TODO: Add stabilization check here
-												
+						
+						if(isNewSimulation){
+							//TODO: need conversion to lat long or other positioning info
+							newResult.setSunLatitude(0);
+							newResult.setSunLongitude(sunPosition);
+							newResult.setSimulationTime(minutesPassed);
+				
+							// TODO: need to handle geo precision (aka is this result saved)
+							// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
+							resultDAO.addSimulationResult(simulation.getId(), newResult);
+						}
+						
 						mQueue.put(newResult);
 						
 						// Store result as previous result to input into next pass
