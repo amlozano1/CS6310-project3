@@ -45,7 +45,7 @@ public class EarthPanel extends JPanel {
     
     add(sunDisplay);
     add(earthGD);
-    add(timeDisplay);
+    //add(timeDisplay);
   }
   
   private EarthPanel() {
@@ -120,7 +120,7 @@ public class EarthPanel extends JPanel {
   public void addTime( int minutes ) {
 	  timeDisplay.addTime(minutes);
   }
-  
+   
   /**
    * Resets the earth display and sun position.
    */

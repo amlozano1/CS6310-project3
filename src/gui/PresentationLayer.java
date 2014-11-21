@@ -15,7 +15,7 @@ public class PresentationLayer implements PresentationMethod {
 			for (int j = 0; j < result.getColumnCount(); j++) {
 				EarthPanel.getInstance().updateGrid(result);
 				//EarthPanel.getInstance().moveSunPosition(Buffer.getInstance().getHead().getfColumnUnderSun());
-				//EarthPanel.getInstance().addTime(Buffer.getInstance().getHead().getElapsedTime());
+				//EarthPanel.getInstance().setTime(result.getSimulationTime());
 			}
 			//System.out.println();
 		}

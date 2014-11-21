@@ -61,7 +61,7 @@ public class UI extends JFrame implements ActionListener {
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel = EarthPanel.getInstance();
-	private String[] queryNames = new String[0];
+	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
 
 	private Runtime guiRuntime = Runtime.getRuntime();
@@ -137,15 +137,16 @@ public class UI extends JFrame implements ActionListener {
 		component.add(labelSimName, layoutConstraint);
 		
 		//add the textbox for Simulation Name
-		List<String> qNames = ObjectFactory.getSimulationDAO().getSimulationNames();
-		queryNames = new String[qNames.size()];
-		for(int i = 0; i<qNames.size(); i++){
-			queryNames[i] = qNames.get(i);
-		}
+		//List<String> qNames = ObjectFactory.getSimulationDAO().getSimulationNames();
+		//queryNames = new String[qNames.size()];
+		//for(int i = 0; i<qNames.size(); i++){
+		//	queryNames[i] = qNames.get(i);
+		//}
+		queryNames = ObjectFactory.getSimulationDAO().getSimulationNames();
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		queryNameSelect = new JComboBox(queryNames);
+		queryNameSelect = new JComboBox(queryNames.toArray());
 		component.add(queryNameSelect, layoutConstraint);
 		
 		//update currentY
@@ -561,19 +562,7 @@ public class UI extends JFrame implements ActionListener {
 					//Disabled settings fields during sim
 					updateSimInputAvailability(false);
 					
-					//create simulation parameters
-					/*
-					InvocationParms parms = new Utils.InvocationParms();
-					SimulationParameters simParameters = new SimulationParameters();
-					simParameters.setAxialTilt(Double.parseDouble(txtAxialTiltSim.getText()));
-					simParameters.setGeoPrecision((short) parms.geographicPrecision);
-					simParameters.setGridSpacing(Short.parseShort(txtGridSpacing.getText()));
-					simParameters.setLength(Short.parseShort(txtSimLength.getText()));
-					simParameters.setOrbitalEccentricity(Double.parseDouble(txtOrbitalEccSim.getText()));
-					simParameters.setPrecision((short) parms.precision);
-					simParameters.setTempPrecision((short) parms.temporalPrecision);
-					simParameters.setTimeStep((Integer)spinnerSimTimeStep.getValue());
-					*/
+					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
 						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
@@ -590,7 +579,7 @@ public class UI extends JFrame implements ActionListener {
 					}catch (ThreadException e) {
 						System.out.println("ThreadException: The validate didn't throw an error but the master controller start call did.");
 					}
-					EarthPanel.getInstance().drawGrid(Integer.parseInt(txtGridSpacing.getText()));
+					queryNameSelect.addItem(txtSimulationName.getText());
 				}else{
 					btnStartStop.setText("Start");
 					btnStartStop.setSelected(false);
@@ -644,12 +633,6 @@ public class UI extends JFrame implements ActionListener {
 		if(txtSimulationName.getText().trim().equals(""))
 			return "Simulation name cannot be blank.";
 		if(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()) >= 0){
-			List<String> simNames = ObjectFactory.getSimulationDAO().getSimulationNames();
-			System.out.print("|"+txtSimulationName.getText()+"|");
-			System.out.println(ObjectFactory.getSimulationDAO().getSimulationNames().indexOf(txtSimulationName.getText()));
-			
-			for(String s : simNames)
-				System.out.println(s);
 			return "Simulation Name already exists.";
 		}			
 		try{
@@ -720,5 +703,6 @@ public class UI extends JFrame implements ActionListener {
 		spinnerSimTimeStep.setEnabled(status);
 		txtPresentationDisplayRate.setEnabled(status);
 	}
+	
 	
 }

@@ -35,6 +35,11 @@ public class TimeDisplay extends JPanel {
 		this.repaint();
 	}
 	
+	public void setTime(long time){
+		currentDate.setTimeInMillis(time);
+		this.repaint();
+	}
+	
 	public void paint ( Graphics g ) {
 		g.setColor(Color.black);
 		g.drawString("Current Time:  "+String.format("%02d:%02d %02d-%02d-%02d", currentDate.get(Calendar.HOUR_OF_DAY),currentDate.get(Calendar.MINUTE),currentDate.get(Calendar.DAY_OF_MONTH),(currentDate.get(Calendar.MONTH)+1),currentDate.get(Calendar.YEAR)), 0, 12);
