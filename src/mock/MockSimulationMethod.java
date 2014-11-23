@@ -15,7 +15,12 @@ public class MockSimulationMethod implements SimulationMethod {
 	private static final double TEMPERATURE_INCREMENT = 5;
 
 	@Override
-	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition) throws InterruptedException {
+	public SimulationResult simulate(SimulationResult previousResult,
+			double axialTilt, double orbitalEccentricity, int sunPosition,
+			int gridSpacing, double planetCircumference, double planetAldebo,
+			double planetEmissivity, double orbitSemiMajorAxis,
+			double solarYear, double solarPowerPerMeter)
+			throws InterruptedException {
 		int columnCount = previousResult.getColumnCount();
 		int rowCount = previousResult.getRowCount();
 		
