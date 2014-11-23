@@ -38,12 +38,19 @@ public class PersistenceManager {
 	public void saveCells(int simulationId, int simulationResultId, Cell[][] data) {
 		int cellsSaved = 0;
 		int totalCells = 0;
-		
+		short decimalPlaces = ((InvocationParms)System.getProperties().get(Utils.INVOCATION_PARAMETERS_KEY)).precision;
 		for (int x = 0; x < data.length; x++) {
 			for (int y = 0; y < data[x].length; y++) {
 				float ratio = (float)cellsSaved/(float)(++totalCells);
 				if((ratio) * 100 < gPrecision){
-					cellDAO.saveCell(simulationId, simulationResultId, data[x][y], x, y);
+					Cell cell = data[x][y];
+					if(cell != null){
+						double temp = Utils.setPrecision(cell.getTemperature(), decimalPlaces);
+						double longitude = Utils.setPrecision(cell.getLongitude(), decimalPlaces);
+						double latitude = Utils.setPrecision(cell.getLatitude(), decimalPlaces);
+
+						cellDAO.saveCell(simulationId, simulationResultId, temp, longitude, latitude, x, y);
+					}
 				}
 			}
 		}		
