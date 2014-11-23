@@ -87,15 +87,16 @@ public class UI extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.add(createSimControlsComponent());
-		panel.add(createVisualizerDisplay());
 		tabs.add("Simulation",panel);
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.add(createQueryControlsComponent());
-		panel.add(createQueryResultsArea());
 		tabs.add("Query",panel);
 		this.add(tabs, layoutConstraint);
 		
+		layoutConstraint.gridx=1;
+		layoutConstraint.gridy=0;
+		this.add(createVisualizerDisplay(), layoutConstraint);
 		this.setVisible(true);
 	}
 	
@@ -116,74 +117,7 @@ public class UI extends JFrame {
 		layoutConstraint.ipady = 5;
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		int currentY = 0;
-		
-		//add the label for Min Temp
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		JLabel labelMinTemp = new JLabel("Minimum Temperature");
-		component.add(labelMinTemp, layoutConstraint);
-		
-		//add the place holder for Min Temp value
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMinTempResult = new JLabel("--");
-		component.add(lblMinTempResult, layoutConstraint);
-		
-		//update currentY
-		currentY += layoutConstraint.gridheight;
-		
-		//add the label for Max Temp
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		JLabel labelMaxTemp = new JLabel("Maximum Temperature");
-		component.add(labelMaxTemp, layoutConstraint);
-		
-		//add the place holder for Max Temp
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMaxTempResult = new JLabel("--");
-		component.add(lblMaxTempResult, layoutConstraint);
-		
-		//update currentY
-		currentY += layoutConstraint.gridheight;
-		
-		//add the label for Mean Temp over Region
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		JLabel labelMeanRegionTemp = new JLabel("Mean Temperature(Region)");
-		component.add(labelMeanRegionTemp, layoutConstraint);
-		
-		//add the place holder for Mean Temp over region
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMeanTempRegionResult = new JLabel("--");
-		component.add(lblMeanTempRegionResult, layoutConstraint);
-		
-		//update currentY
-		currentY += layoutConstraint.gridheight;
-		
-		//add the label for mean temp over time
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		JLabel labelMeanTimeTemp = new JLabel("Mean Temperature(Time)");
-		component.add(labelMeanTimeTemp, layoutConstraint);
-		
-		//add the place holder for Mean Temp over time
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMeanTempTimeResult = new JLabel("--");
-		component.add(lblMeanTempTimeResult, layoutConstraint);
-		
-		//update currentY
-		currentY += layoutConstraint.gridheight;
+
 		
 		return component;
 	}
@@ -408,6 +342,76 @@ public class UI extends JFrame {
 		btnQueryGo.addActionListener(actListQuery);
 		component.add(btnQueryGo, layoutConstraint);
 		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Min Temp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMinTemp = new JLabel("Minimum Temperature");
+		component.add(labelMinTemp, layoutConstraint);
+		
+		//add the place holder for Min Temp value
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMinTempResult = new JLabel("--");
+		component.add(lblMinTempResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Max Temp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMaxTemp = new JLabel("Maximum Temperature");
+		component.add(labelMaxTemp, layoutConstraint);
+		
+		//add the place holder for Max Temp
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMaxTempResult = new JLabel("--");
+		component.add(lblMaxTempResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Mean Temp over Region
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMeanRegionTemp = new JLabel("Mean Temperature(Region)");
+		component.add(labelMeanRegionTemp, layoutConstraint);
+		
+		//add the place holder for Mean Temp over region
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMeanTempRegionResult = new JLabel("--");
+		component.add(lblMeanTempRegionResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for mean temp over time
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMeanTimeTemp = new JLabel("Mean Temperature(Time)");
+		component.add(labelMeanTimeTemp, layoutConstraint);
+		
+		//add the place holder for Mean Temp over time
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMeanTempTimeResult = new JLabel("--");
+		component.add(lblMeanTempTimeResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
 		
 		return component;
 	}
@@ -698,8 +702,10 @@ public class UI extends JFrame {
 			if(queryNameSelect.getSelectedItem()!=null){
 				//TODO: Load simulation by name
 				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
-				List<SimulationResult> simResulsts = ObjectFactory.getSimulationResultDAO().getAllForSimulation(sim.getId());
-				
+				List<SimulationResult> simResults = ObjectFactory.getSimulationResultDAO().getAllForSimulation(sim.getId());
+				for(SimulationResult simResult : simResults){
+					//simResult.getAverageTemperature()
+				}
 			}else{
 				//TODO: See if simulation exists
 			}
