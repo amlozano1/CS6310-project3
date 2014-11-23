@@ -9,11 +9,13 @@ import data.SimulationDAO;
 import data.SimulationResultDAO;
 import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
+import base.PersistenceManager;
 import base.Simulation;
 import base.SimulationMethod;
 import base.SimulationParameters;
 import base.SimulationResult;
 import base.ThreadedProcess;
+import base.Utils;
 import base.Utils.InvocationParms;
 
 public class SimulationController extends ThreadedProcess {
@@ -127,7 +129,8 @@ public class SimulationController extends ThreadedProcess {
 					boolean reachedSimulationEnd = false;
 					
 					final int sunIncrement = getDegreesFromTimestep();
-									
+					PersistenceManager manager = new PersistenceManager();
+					
 					// TODO: Check if we have reached the end of the simulation
 					while (!checkStopped() && !reachedSimulationEnd) {
 						checkPaused();
@@ -150,10 +153,8 @@ public class SimulationController extends ThreadedProcess {
 							newResult.setSunLatitude(0);
 							newResult.setSunLongitude(sunPosition);
 							newResult.setSimulationTime(minutesPassed);
-				
-							// TODO: need to handle geo precision (aka is this result saved)
-							// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
-							resultDAO.addSimulationResult(simulation.getId(), newResult);
+	
+							manager.saveResult(simulation, newResult);
 						}
 						
 						mQueue.put(newResult);
@@ -256,7 +257,7 @@ public class SimulationController extends ThreadedProcess {
 		parameters.setOrbitalEccentricity(orbitalEccentricity);
 		parameters.setTimeStep(simulationTimestep);
 
-		InvocationParms invocationParms = (InvocationParms)System.getProperties().get("InvocationParms");
+		InvocationParms invocationParms = (InvocationParms)System.getProperties().get(Utils.INVOCATION_PARAMETERS_KEY);
 		if(invocationParms != null){
 			parameters.setGeoPrecision(invocationParms.geographicPrecision);
 			parameters.setPrecision(invocationParms.precision);
