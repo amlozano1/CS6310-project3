@@ -41,7 +41,7 @@ public class PersistenceManager {
 		
 		for (int x = 0; x < data.length; x++) {
 			for (int y = 0; y < data[x].length; y++) {
-				float ratio = (float)cellsSaved/(float)totalCells;
+				float ratio = (float)cellsSaved/(float)(++totalCells);
 				if((ratio) * 100 < gPrecision){
 					cellDAO.saveCell(simulationId, simulationResultId, data[x][y], x, y);
 				}
