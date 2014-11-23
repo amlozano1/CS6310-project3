@@ -36,6 +36,7 @@ import javax.swing.event.ChangeListener;
 
 import base.ObjectFactory;
 import base.Simulation;
+import base.SimulationResult;
 import controllers.MasterController;
 
 
@@ -49,6 +50,7 @@ public class UI extends JFrame {
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
+	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JComboBox queryNameSelect;
 	private JCheckBox cbDisplayAnimation;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
@@ -56,8 +58,6 @@ public class UI extends JFrame {
 	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
-
-	private Runtime guiRuntime = Runtime.getRuntime();
 	
 	public UI(MasterController controller){
 		super("Earth Simulation");
@@ -89,7 +89,11 @@ public class UI extends JFrame {
 		panel.add(createSimControlsComponent());
 		panel.add(createVisualizerDisplay());
 		tabs.add("Simulation",panel);
-		tabs.add("Query",this.createQueryControlsComponent());
+		panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.add(createQueryControlsComponent());
+		panel.add(createQueryResultsArea());
+		tabs.add("Query",panel);
 		this.add(tabs, layoutConstraint);
 		
 		this.setVisible(true);
@@ -99,6 +103,87 @@ public class UI extends JFrame {
 		JPanel component = new JPanel();
 		earthPanel.drawGrid(15);
 		component.add(earthPanel);
+		
+		return component;
+	}
+	
+	private JComponent createQueryResultsArea(){
+		JPanel component = new JPanel();
+		
+		component.setLayout(new GridBagLayout());
+		GridBagConstraints layoutConstraint = new GridBagConstraints();
+		layoutConstraint.ipadx = 5;
+		layoutConstraint.ipady = 5;
+		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
+		int currentY = 0;
+		
+		//add the label for Min Temp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMinTemp = new JLabel("Minimum Temperature");
+		component.add(labelMinTemp, layoutConstraint);
+		
+		//add the place holder for Min Temp value
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMinTempResult = new JLabel("--");
+		component.add(lblMinTempResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Max Temp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMaxTemp = new JLabel("Maximum Temperature");
+		component.add(labelMaxTemp, layoutConstraint);
+		
+		//add the place holder for Max Temp
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMaxTempResult = new JLabel("--");
+		component.add(lblMaxTempResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Mean Temp over Region
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMeanRegionTemp = new JLabel("Mean Temperature(Region)");
+		component.add(labelMeanRegionTemp, layoutConstraint);
+		
+		//add the place holder for Mean Temp over region
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMeanTempRegionResult = new JLabel("--");
+		component.add(lblMeanTempRegionResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for mean temp over time
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelMeanTimeTemp = new JLabel("Mean Temperature(Time)");
+		component.add(labelMeanTimeTemp, layoutConstraint);
+		
+		//add the place holder for Mean Temp over time
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMeanTempTimeResult = new JLabel("--");
+		component.add(lblMeanTempTimeResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
 		
 		return component;
 	}
@@ -610,7 +695,14 @@ public class UI extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			;
+			if(queryNameSelect.getSelectedItem()!=null){
+				//TODO: Load simulation by name
+				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
+				List<SimulationResult> simResulsts = ObjectFactory.getSimulationResultDAO().getAllForSimulation(sim.getId());
+				
+			}else{
+				//TODO: See if simulation exists
+			}
 			
 		}
 	};
