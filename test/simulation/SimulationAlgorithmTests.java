@@ -17,6 +17,9 @@ public class SimulationAlgorithmTests {
 	private static final double EARTH_OBLIQUITY = 0;// 23.44;
 	private static final double EARTH_ARGUMENT_OF_PERIAPSIS = 116640;
 	private static final double EARTH_CIRCUMFERENCE = 40030140.0;
+	private static final double EARTH_SOLAR_POWER_PER_METER = 29555656845976000000.0;
+	private static final double EARTH_ALDEBO = 0.3;
+	private static final double EARTH_EMISSIVITY = 0.612;
 
 
 	@Test
@@ -26,7 +29,7 @@ public class SimulationAlgorithmTests {
 			SimulationResult result = ObjectFactory.getInitialGrid(CellCalculations.getNumberOfRows(15), CellCalculations.getNumberOfColumns(15));
 			int sunPosition = 0;
 			for (int i = 0; i < 20; i++) {
-				result = alg.simulate(result, EARTH_OBLIQUITY, EARTH_ECCENTRICITY, sunPosition);
+				result = alg.simulate(result, EARTH_OBLIQUITY, EARTH_ECCENTRICITY, sunPosition, 15, EARTH_CIRCUMFERENCE, EARTH_ALDEBO, EARTH_EMISSIVITY, EARTH_MAJOR_AXIS, EARTH_SOLAR_YEAR, EARTH_SOLAR_POWER_PER_METER);
 				sunPosition = (sunPosition + 15 ) % 360;
 			}
 
