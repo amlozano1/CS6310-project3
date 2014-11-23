@@ -13,7 +13,6 @@ import base.Cell;
 import base.ObjectFactory;
 import base.SimulationResult;
 import base.Utils;
-import data.CellDAO;
 import data.Datastore;
 import data.SimulationResultDAO;
 
@@ -39,7 +38,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 			if(rs.next()){
 				simulationResult = fromResultSet(rs);
 				Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(id);
-				simulationResult.setmResultData(data);
+				simulationResult.setResultData(data);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -65,7 +64,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 			if(rs.next()){
 				simulationResult = fromResultSet(rs);
 				Cell[][] data = ObjectFactory.getCellDAO().getCellsForSimulationResult(simulationResult.getId());
-				simulationResult.setmResultData(data);
+				simulationResult.setResultData(data);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -98,8 +97,8 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 				simulationResultId = rs.getInt(1);
 			}
 			
-			CellDAO cellDAO = ObjectFactory.getCellDAO();
-			cellDAO.saveCells(simulationId, simulationResultId, simulationResult);
+//			CellDAO cellDAO = ObjectFactory.getCellDAO();
+//			cellDAO.saveCells(simulationId, simulationResultId, simulationResult);
 			
 			return simulationResultId;
 		} catch (SQLException e) {

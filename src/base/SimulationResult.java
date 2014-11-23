@@ -37,11 +37,11 @@ public class SimulationResult implements TemperatureGrid {
 		this.id = id;
 	}
 
-	public Cell[][] getmResultData() {
+	public Cell[][] getResultData() {
 		return mResultData;
 	}
 
-	public void setmResultData(Cell[][] mResultData) {
+	public void setResultData(Cell[][] mResultData) {
 		this.mResultData = mResultData;
 	}
 
