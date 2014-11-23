@@ -178,10 +178,12 @@ public class EarthGridDisplay extends JPanel {
   }
   
   private void drawSun(Graphics g){
-	  //TODO calculate xcoor and y coord from long/lat
-	  int xcoord = (int)(grid.getSunLongitude());
-	  int ycoord = (int)(grid.getSunLatitude());
-      g.drawImage(sunImage, 100/*replace with xcoord*/, 100/*replace with ycoord*/, 30, 30, this);
+	  double pixels_per_lat_degree = imgWidth / 360.0;
+	  double pixels_per_lon_degree = imgHeight / 180.0;
+	  
+	  int xcoord = (int)(pixels_per_lon_degree * (grid.getSunLongitude() + 180)); // shift [-180, 180] -> [0,360]
+	  int ycoord = (int)(pixels_per_lat_degree * (grid.getSunLatitude() + 90)); // shift [-90, 90] -> [0,180]
+      g.drawImage(sunImage, xcoord, ycoord, 30, 30, this);
   }
   
   /**
