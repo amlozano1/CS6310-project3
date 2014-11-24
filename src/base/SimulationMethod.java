@@ -14,7 +14,8 @@ package base;
  */
 public interface SimulationMethod {
 	
-	// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
-	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition) throws InterruptedException;
+	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException;
+	
+	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException;
 
 }

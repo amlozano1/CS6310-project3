@@ -11,34 +11,26 @@ public class SimulationAlgorithm implements SimulationMethod {
 	private final static Logger LOGGER = Logger.getLogger(SimulationAlgorithm.class.getName());
 
 	@Override
-	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition) throws InterruptedException {
-		
-		// TODO: Decide where these belong as parameters
-		double gridSpacing = 15;
-		double circumference = 40030140.0;
-		double solarPowerPerMeter = 29555656845976000000.0;
-		double solarYear = 525600;
-		double aldebo = 0.3;
-		double emissivity = 0.612;
-		double semiMajorAxis = 149600000;
+	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference,
+			double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException {
 		
 		int columns = previousResult.getColumnCount();
 		int rows = previousResult.getRowCount();
-		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, semiMajorAxis, solarPowerPerMeter);
+		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, orbitSemiMajorAxis, solarPowerPerMeter);
 		LOGGER.info(String.format("Adjusted power per meter: %.5f", adjustedSolarPowerPerMeter));
 		
-		double[] coordinates = OrbitalPosition.getCoordinates( orbitalEccentricity,  sunPosition,  solarYear,  semiMajorAxis) ;
+		double[] coordinates = OrbitalPosition.getCoordinates( orbitalEccentricity,  sunPosition,  solarYear,  orbitSemiMajorAxis) ;
 		LOGGER.info("Planet coordinates: " + Double.toString(coordinates[0]) + " " + Double.toString(coordinates[1]));
 		
-		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, aldebo, emissivity);
-
+		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, planetAldebo, planetEmissivity);
 		
-		// TODO: Change data type to our class
 		double cooling = 0;
 		double heating = 0;
 		Cell[][] data = new Cell[columns][];
 		for (int column = 0; column < columns; column++) {
 			data[column] = new Cell[rows];
+			double longitude = CellCalculations.getLongitudeOfCellsInColumn(column, gridSpacing);
+			
 			for (int row = 0; row < rows; row++) {
 				double previous = previousResult.getTemperature(column, row);
 				double previousNorth = row == 0 ? previous : previousResult.getTemperature(column, row - 1);
@@ -46,21 +38,68 @@ public class SimulationAlgorithm implements SimulationMethod {
 				double previousEast = column == 0 ? previous : previousResult.getTemperature(column - 1, row);
 				double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
 
-				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, circumference, solarTemperatureAverage);
-				cooling += CellCalculations.getCooling(row, circumference, gridSpacing, solarTemperatureAverage);
+				heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, planetCircumference, solarTemperatureAverage);
+				cooling += CellCalculations.getCooling(row, planetCircumference, gridSpacing, solarTemperatureAverage);
 				
 				double temp = ((previous + heating + cooling) + previousNorth + previousSouth + previousEast + previousWest)/5;
-				double longitude = 0;
-				double latitude = 0;
+				double latitude = CellCalculations.getLatitudeOfCellsInRow(row, gridSpacing);;
 				
 				data[column][row] = new Cell(temp, longitude, latitude);
 			}
 		}
+		
+		// Note: these should balance out
 		LOGGER.info(String.format("Heating: %.5f", heating));
 		LOGGER.info(String.format("Cooling: %.5f", cooling));
 		
-		// TODO: Set additional simulation properties
 		return new SimulationResult(data);
+	}
+
+	@Override
+	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing,
+			double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException {
+		
+		int columns = partialResult.getColumnCount();
+		int rows = partialResult.getRowCount();
+		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, orbitSemiMajorAxis, solarPowerPerMeter);
+		LOGGER.info(String.format("Adjusted power per meter: %.5f", adjustedSolarPowerPerMeter));
+		
+		double[] coordinates = OrbitalPosition.getCoordinates( orbitalEccentricity,  sunPosition,  solarYear,  orbitSemiMajorAxis) ;
+		LOGGER.info("Planet coordinates: " + Double.toString(coordinates[0]) + " " + Double.toString(coordinates[1]));
+		
+		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, planetAldebo, planetEmissivity);
+		
+		double cooling = 0;
+		double heating = 0;
+		for (int column = 0; column < columns; column++) {
+			double longitude = CellCalculations.getLongitudeOfCellsInColumn(column, gridSpacing);
+			
+			for (int row = 0; row < rows; row++) {
+				Cell value = partialResult.getCell(column, row);
+				
+				if (value == null) {
+					double previous = previousResult.getTemperature(column, row);
+					double previousNorth = row == 0 ? previous : previousResult.getTemperature(column, row - 1);
+					double previousSouth = row + 1 == rows ? previous : previousResult.getTemperature(column, row + 1);
+					double previousEast = column == 0 ? previous : previousResult.getTemperature(column - 1, row);
+					double previousWest = column + 1 == columns ? previous : previousResult.getTemperature(column + 1, row);
+
+					heating += CellCalculations.getSolarHeat(row, column, gridSpacing, sunPosition, planetCircumference, solarTemperatureAverage);
+					cooling += CellCalculations.getCooling(row, planetCircumference, gridSpacing, solarTemperatureAverage);
+					
+					double temp = ((previous + heating + cooling) + previousNorth + previousSouth + previousEast + previousWest)/5;
+					double latitude = CellCalculations.getLatitudeOfCellsInRow(row, gridSpacing);;
+					
+					partialResult.setCell(column, row, new Cell(temp, longitude, latitude));
+				}
+			}
+		}
+		
+		// Note: these should balance out
+		LOGGER.info(String.format("Heating: %.5f", heating));
+		LOGGER.info(String.format("Cooling: %.5f", cooling));
+		
+		return partialResult;
 	}
 
 }

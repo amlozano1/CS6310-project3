@@ -61,16 +61,14 @@ public class SimulationController extends ThreadedProcess {
 		mOnCompleteListener = listener;
 	}
 	
-	public SimulationResult simulate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
-		// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
-		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
+	public SimulationResult simulate(SimulationResult previousResult, int sunPosition, int gridSpacing) throws InterruptedException {
+		// TODO: Move hardcoded planetary values as high as possible
+		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
-	public SimulationResult interpolate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
-		// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
-		//TODO: uncomment when 'interpolate' methosd ready
-//		return mSimulationMethod.interpolate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
-		return previousResult;
+	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, int sunPosition, int gridSpacing) throws InterruptedException {
+		// TODO: Move hardcoded planetary values as high as possible
+		return mSimulationMethod.interpolate(previousResult, partialResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
 	/**
@@ -137,13 +135,14 @@ public class SimulationController extends ThreadedProcess {
 						
 						SimulationResult newResult = null;
 						if(isNewSimulation){
-							newResult = simulate(previousResult, sunPosition);
+							newResult = simulate(previousResult, sunPosition, mGridSpacing);
 						} else {
 							SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
 							if(dbResult == null){
-								newResult = simulate(previousResult, sunPosition);
+								newResult = simulate(previousResult, sunPosition, mGridSpacing);
+							} else {
+								newResult = interpolate(previousResult, dbResult, sunPosition, mGridSpacing);
 							}
-							newResult = interpolate(previousResult, sunPosition);
 						}
 
 						// TODO: Add stabilization check here
