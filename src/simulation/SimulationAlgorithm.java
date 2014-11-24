@@ -23,14 +23,13 @@ public class SimulationAlgorithm implements SimulationMethod {
 		LOGGER.info("Planet coordinates: " + Double.toString(coordinates[0]) + " " + Double.toString(coordinates[1]));
 		
 		double solarTemperatureAverage = CellCalculations.getKelvinFromSolarEnergy(adjustedSolarPowerPerMeter, planetAldebo, planetEmissivity);
-
 		
-		// TODO: Change data type to our class
 		double cooling = 0;
 		double heating = 0;
 		Cell[][] data = new Cell[columns][];
 		for (int column = 0; column < columns; column++) {
 			data[column] = new Cell[rows];
+			double longitude = CellCalculations.getLongitudeOfCellsInColumn(column, gridSpacing);
 			for (int row = 0; row < rows; row++) {
 				double previous = previousResult.getTemperature(column, row);
 				double previousNorth = row == 0 ? previous : previousResult.getTemperature(column, row - 1);
@@ -42,16 +41,16 @@ public class SimulationAlgorithm implements SimulationMethod {
 				cooling += CellCalculations.getCooling(row, planetCircumference, gridSpacing, solarTemperatureAverage);
 				
 				double temp = ((previous + heating + cooling) + previousNorth + previousSouth + previousEast + previousWest)/5;
-				double longitude = 0;
-				double latitude = 0;
+				double latitude = CellCalculations.getLatitudeOfCellsInRow(row, gridSpacing);;
 				
 				data[column][row] = new Cell(temp, longitude, latitude);
 			}
 		}
+		
+		// Note: these should balance out
 		LOGGER.info(String.format("Heating: %.5f", heating));
 		LOGGER.info(String.format("Cooling: %.5f", cooling));
 		
-		// TODO: Set additional simulation properties
 		return new SimulationResult(data);
 	}
 
