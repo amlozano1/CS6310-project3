@@ -49,7 +49,9 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 				for (int row = 0; row < cells.getRowCount(); row++) {
 					for (int column = 0; column < cells.getColumnCount(); column++) {
 						Cell cell = cells.getResultData()[row][column];
-						saveCell(stmnt, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+						if(cell != null){
+							saveCell(stmnt, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+						}
 					}
 				}
 			}

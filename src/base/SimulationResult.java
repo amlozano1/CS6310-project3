@@ -110,6 +110,10 @@ public class SimulationResult implements TemperatureGrid {
 		this.sunLatitude = sunLatitude;
 	}
 
+	public Cell getCell(int x, int y){
+		return mResultData[x][y];
+	}
+	
 	/**
 	 * Gets the average temperature of the simulation data.
 	 * 
