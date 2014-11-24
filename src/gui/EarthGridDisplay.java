@@ -81,12 +81,14 @@ public class EarthGridDisplay extends JPanel {
 	
 	if(paintInitialColors)
 		initCellColors(g);
-	else {
+	else
 		fillCellColors(g);
-		drawSun(g);
-	}
+
 	//drawTransparentImage(g);
 	drawGrid(g);
+	
+	if(!paintInitialColors)
+		drawSun(g);
   }
   
   private void initCellColors(Graphics g) {
