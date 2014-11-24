@@ -1,14 +1,11 @@
 package base;
 
 import gui.PresentationLayer;
-import gui.UI;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import simulation.SimulationAlgorithm;
-import mock.MockPresentationMethod;
-import mock.MockSimulationMethod;
 import controllers.MasterController;
 import data.SimulationDAOFactory;
 import data.SimulationDAO;

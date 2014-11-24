@@ -9,4 +9,6 @@ public interface CellDAO {
 	public Cell[][] getCellsForSimulationResult(int simulationResultId);
 	public boolean removeAllForSimulationResult(int simulationResultId);
 	public boolean removeAllForSimulation(int simulationId);
+	public boolean saveCell(int simulationId, int simulationResultId, Cell cell, int row, int column);
+	public boolean saveCell(int simulationId, int simulationResultId, double temp, double lon, double lat, int row, int column);
 }

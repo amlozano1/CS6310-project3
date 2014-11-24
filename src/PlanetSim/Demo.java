@@ -43,6 +43,7 @@ public class Demo {
 		}
 		
 		MasterController controller = ObjectFactory.getMasterController();
+		/*
 		controller.setOnCompleteListener(new OnCompleteListener() {
 			
 			@Override
@@ -51,10 +52,11 @@ public class Demo {
 			}
 			
 		});
-		
+		*/
 		
 		// TODO: Add the GUI here
-		UI gui = new UI(controller);
+		UI gui = UI.getInstance();
+		gui.setController(controller);
 		System.out.println("gui created");
 		// TODO: The below code is an example of user behavior and should be removed with the GUI is implemented
 		/*

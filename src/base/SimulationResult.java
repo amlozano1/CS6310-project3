@@ -37,11 +37,11 @@ public class SimulationResult implements TemperatureGrid {
 		this.id = id;
 	}
 
-	public Cell[][] getmResultData() {
+	public Cell[][] getResultData() {
 		return mResultData;
 	}
 
-	public void setmResultData(Cell[][] mResultData) {
+	public void setResultData(Cell[][] mResultData) {
 		this.mResultData = mResultData;
 	}
 
@@ -84,6 +84,14 @@ public class SimulationResult implements TemperatureGrid {
 	
 	public double getLatitude(int x, int y) {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getLatitude();
+	}
+	
+	public Cell getCell(int x, int y) {
+		return mResultData[x][y];
+	}
+	
+	public void setCell(int x, int y, Cell value) {
+		mResultData[x][y] = value;
 	}
 
 	public long getSimulationTime() {

@@ -43,4 +43,14 @@ public class CellRDBMSDAOTest {
 		assertEquals("Cell column data not valid:", 10, data[0].length);
 	}
 
+	@Test
+	public void testSaveCell() {
+		Cell cell = new Cell();
+		cell.setLatitude(45d);
+		cell.setLongitude(54d);
+		cell.setTemperature(100d);
+		
+		boolean success = dao.saveCell(simulationId, simulationResultId, cell, 0, 0);
+		assertTrue("Save failed:", success);
+	}
 }

@@ -13,6 +13,8 @@ public final class Utils {
 
 	private final static Logger LOGGER = Logger.getLogger(Utils.class.getName());
 	
+	public static String INVOCATION_PARAMETERS_KEY = "InvocationParms";
+	
 	// TODO: Lookup the max value for our data implementation
 	private static final int MAX_PRECISION_VALUE = 10;
 
@@ -45,7 +47,7 @@ public final class Utils {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == "-p") {
 				try {
-					int precision = Integer.parseInt(args[i + 1]);
+					short precision = Short.parseShort(args[i + 1]);
 					if (precision < 0 || precision > MAX_PRECISION_VALUE) {
 						throw new ArgumentInvalidException("-p", "-p must be a valid integer value from 0 to " + MAX_PRECISION_VALUE);
 					}
@@ -56,7 +58,7 @@ public final class Utils {
 				}
 			} else if (args[i] == "-g") {
 				try {
-					int geographicPrecision = Integer.parseInt(args[i + 1]);
+					short geographicPrecision = Short.parseShort(args[i + 1]);
 					if (geographicPrecision < 0 || geographicPrecision > 100) {
 						throw new ArgumentInvalidException("-g", "-g must be a valid integer value from 0 to 100");
 					}
@@ -67,7 +69,7 @@ public final class Utils {
 				}
 			} else if (args[i] == "-t") {
 				try {
-					int temporalPrecision = Integer.parseInt(args[i + 1]);
+					short temporalPrecision = Short.parseShort(args[i + 1]);
 					if (temporalPrecision < 0 || temporalPrecision > 100) {
 						throw new ArgumentInvalidException("-t", "-t must be a valid integer value from 0 to 100");
 					}
@@ -81,6 +83,9 @@ public final class Utils {
 		LOGGER.info("Precision: " + parsedParms.precision);
 		LOGGER.info("Geographic Precision: " + parsedParms.geographicPrecision);
 		LOGGER.info("Temporal Precision: " + parsedParms.temporalPrecision);
+		
+		System.getProperties().put(INVOCATION_PARAMETERS_KEY, parsedParms);
+
 		return parsedParms;
 	}
 	
@@ -91,17 +96,17 @@ public final class Utils {
 		/**
 		 * -p #
 		 */
-		public int precision = 0;
+		public short precision = 0;
 		
 		/**
 		 * -g #
 		 */
-		public int geographicPrecision = 100;
+		public short geographicPrecision = 100;
 		
 		/**
 		 * -t #
 		 */
-		public int temporalPrecision = 100;
+		public short temporalPrecision = 100;
 	}
 
 	public static final Time toTime(long simulationTime) {

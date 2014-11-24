@@ -30,4 +30,16 @@ public class MockCellDAO implements CellDAO {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	@Override
+	public boolean saveCell(int simulationId, int simulationResultId,
+			double temp, double lon, double lat, int row, int column) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean saveCell(int simulationId, int simulationResultId,
+			Cell cell, int row, int column) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

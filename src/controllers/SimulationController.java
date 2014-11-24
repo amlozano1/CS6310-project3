@@ -9,11 +9,13 @@ import data.SimulationDAO;
 import data.SimulationResultDAO;
 import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
+import base.PersistenceManager;
 import base.Simulation;
 import base.SimulationMethod;
 import base.SimulationParameters;
 import base.SimulationResult;
 import base.ThreadedProcess;
+import base.Utils;
 import base.Utils.InvocationParms;
 
 public class SimulationController extends ThreadedProcess {
@@ -59,16 +61,14 @@ public class SimulationController extends ThreadedProcess {
 		mOnCompleteListener = listener;
 	}
 	
-	public SimulationResult simulate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
-		// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
-		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
+	public SimulationResult simulate(SimulationResult previousResult, int sunPosition, int gridSpacing) throws InterruptedException {
+		// TODO: Move hardcoded planetary values as high as possible
+		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
-	public SimulationResult interpolate(SimulationResult previousResult, int sunPosition) throws InterruptedException {
-		// TODO: May be able to remove axialTilt and orbitalEccentricity if they are contained in the previousResult
-		//TODO: uncomment when 'interpolate' methosd ready
-//		return mSimulationMethod.interpolate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition);
-		return previousResult;
+	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, int sunPosition, int gridSpacing) throws InterruptedException {
+		// TODO: Move hardcoded planetary values as high as possible
+		return mSimulationMethod.interpolate(previousResult, partialResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
 	/**
@@ -127,20 +127,22 @@ public class SimulationController extends ThreadedProcess {
 					boolean reachedSimulationEnd = false;
 					
 					final int sunIncrement = getDegreesFromTimestep();
-									
+					PersistenceManager manager = new PersistenceManager();
+					
 					// TODO: Check if we have reached the end of the simulation
 					while (!checkStopped() && !reachedSimulationEnd) {
 						checkPaused();
 						
 						SimulationResult newResult = null;
 						if(isNewSimulation){
-							newResult = simulate(previousResult, sunPosition);
+							newResult = simulate(previousResult, sunPosition, mGridSpacing);
 						} else {
 							SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
 							if(dbResult == null){
-								newResult = simulate(previousResult, sunPosition);
+								newResult = simulate(previousResult, sunPosition, mGridSpacing);
+							} else {
+								newResult = interpolate(previousResult, dbResult, sunPosition, mGridSpacing);
 							}
-							newResult = interpolate(previousResult, sunPosition);
 						}
 
 						// TODO: Add stabilization check here
@@ -150,10 +152,8 @@ public class SimulationController extends ThreadedProcess {
 							newResult.setSunLatitude(0);
 							newResult.setSunLongitude(sunPosition);
 							newResult.setSimulationTime(minutesPassed);
-				
-							// TODO: need to handle geo precision (aka is this result saved)
-							// TODO: temporal precision (aka which cells are saved) is not handled in dao, this probably needs an abstraction layer to handle this
-							resultDAO.addSimulationResult(simulation.getId(), newResult);
+	
+							manager.saveResult(simulation, newResult);
 						}
 						
 						mQueue.put(newResult);
@@ -256,7 +256,7 @@ public class SimulationController extends ThreadedProcess {
 		parameters.setOrbitalEccentricity(orbitalEccentricity);
 		parameters.setTimeStep(simulationTimestep);
 
-		InvocationParms invocationParms = (InvocationParms)System.getProperties().get("InvocationParms");
+		InvocationParms invocationParms = (InvocationParms)System.getProperties().get(Utils.INVOCATION_PARAMETERS_KEY);
 		if(invocationParms != null){
 			parameters.setGeoPrecision(invocationParms.geographicPrecision);
 			parameters.setPrecision(invocationParms.precision);

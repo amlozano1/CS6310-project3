@@ -19,6 +19,31 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 	}
 
 	@Override
+	public boolean saveCell(int simulationId, int simulationResultId,Cell cell, int row, int column) {
+		if(cell != null)
+			return saveCell(simulationId, simulationResultId, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+		return false;
+	}
+	
+	@Override
+	public boolean saveCell(int simulationId, int simulationResultId, double temp, double lon, double lat, int row, int column) {
+		Connection conn = dataStore.getConnection();
+		PreparedStatement stmnt = null;
+		try {
+			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+			stmnt.setInt(1, simulationId);
+			stmnt.setInt(2, simulationResultId);
+			return saveCell(stmnt, temp, lon, lat, row, column);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(stmnt);
+		}
+		
+		return false;
+	}
+	
+	@Override
 	public void saveCells(int simulationId, int simulationResultId, SimulationResult cells) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
@@ -30,13 +55,10 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 			if (cells != null){
 				for (int row = 0; row < cells.getRowCount(); row++) {
 					for (int column = 0; column < cells.getColumnCount(); column++) {
-						stmnt.setInt(3, row);
-						stmnt.setInt(4, column);
-						stmnt.setDouble(5, cells.getLongitude(row, column));
-						stmnt.setDouble(6, cells.getLatitude(row, column));
-						stmnt.setDouble(7, cells.getTemperature(row, column));
-						
-						stmnt.executeUpdate();
+						Cell cell = cells.getResultData()[row][column];
+						if(cell != null){
+							saveCell(stmnt, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+						}
 					}
 				}
 			}
@@ -130,5 +152,15 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 		}
 		
 		return false;
+	}
+	
+	protected boolean saveCell(PreparedStatement stmnt, double temp, double lon, double lat, int row, int column) throws SQLException{
+		stmnt.setInt(3, row);
+		stmnt.setInt(4, column);
+		stmnt.setDouble(5, lon);
+		stmnt.setDouble(6, lat);
+		stmnt.setDouble(7, temp);
+		
+		return stmnt.executeUpdate() > 0;
 	}
 }
