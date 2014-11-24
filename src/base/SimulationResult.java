@@ -85,6 +85,14 @@ public class SimulationResult implements TemperatureGrid {
 	public double getLatitude(int x, int y) {
 		return mResultData[x][y] == null ? null : mResultData[x][y].getLatitude();
 	}
+	
+	public Cell getCell(int x, int y) {
+		return mResultData[x][y];
+	}
+	
+	public void setCell(int x, int y, Cell value) {
+		mResultData[x][y] = value;
+	}
 
 	public long getSimulationTime() {
 		return simulationTime;
@@ -110,6 +118,10 @@ public class SimulationResult implements TemperatureGrid {
 		this.sunLatitude = sunLatitude;
 	}
 
+	public Cell getCell(int x, int y){
+		return mResultData[x][y];
+	}
+	
 	/**
 	 * Gets the average temperature of the simulation data.
 	 * 

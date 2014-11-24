@@ -19,17 +19,14 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 	}
 
 	@Override
-	public boolean saveCell(int simulationId, int simulationResultId, Cell cell, int row, int column) {
+	public boolean saveCell(int simulationId, int simulationResultId, double temp, double lon, double lat, int row, int column) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		try {
 			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 			stmnt.setInt(1, simulationId);
 			stmnt.setInt(2, simulationResultId);
-
-			if (cell != null){
-				return saveCell(cell, stmnt, row, column);
-			}
+			return saveCell(stmnt, temp, lon, lat, row, column);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -52,7 +49,9 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 				for (int row = 0; row < cells.getRowCount(); row++) {
 					for (int column = 0; column < cells.getColumnCount(); column++) {
 						Cell cell = cells.getResultData()[row][column];
-						saveCell(cell, stmnt, row, column);
+						if(cell != null){
+							saveCell(stmnt, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+						}
 					}
 				}
 			}
@@ -148,12 +147,12 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 		return false;
 	}
 	
-	protected boolean saveCell(Cell cell, PreparedStatement stmnt, int row, int column) throws SQLException{
+	protected boolean saveCell(PreparedStatement stmnt, double temp, double lon, double lat, int row, int column) throws SQLException{
 		stmnt.setInt(3, row);
 		stmnt.setInt(4, column);
-		stmnt.setDouble(5, cell.getLongitude());
-		stmnt.setDouble(6, cell.getLatitude());
-		stmnt.setDouble(7, cell.getTemperature());
+		stmnt.setDouble(5, lon);
+		stmnt.setDouble(6, lat);
+		stmnt.setDouble(7, temp);
 		
 		return stmnt.executeUpdate() > 0;
 	}
