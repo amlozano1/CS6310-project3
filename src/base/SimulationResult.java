@@ -117,7 +117,7 @@ public class SimulationResult implements TemperatureGrid {
 	public void setSunLatitude(double sunLatitude) {
 		this.sunLatitude = sunLatitude;
 	}
-	
+
 	/**
 	 * Gets the average temperature of the simulation data.
 	 * 
