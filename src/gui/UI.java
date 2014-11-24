@@ -12,9 +12,11 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JSpinner.DateEditor;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -60,6 +63,8 @@ public class UI extends JFrame {
 	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
+
+	private final String START_DATE = "01-04-2014";
 	
 	public static UI getInstance(){
 		if(guiControls == null){
@@ -203,7 +208,7 @@ public class UI extends JFrame {
 		JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "MM-dd-yyyy HH:mm");
 		startTimeSpinner.setEditor(startTimeEditor);
 		try{
-			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse("01-04-2014");
+			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE);
 			startTimeSpinner.setValue(d);
 		}catch(ParseException e){
 			e.printStackTrace();
@@ -228,11 +233,12 @@ public class UI extends JFrame {
 		JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "MM-dd-yyyy HH:mm");
 		endTimeSpinner.setEditor(endTimeEditor);
 		try{
-			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse("01-04-2014");
+			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE);
 			endTimeSpinner.setValue(d); 
 		}catch(ParseException e){
 			e.printStackTrace();
 		}
+		
 		component.add(endTimeSpinner, layoutConstraint);
 				
 		//updated currentY
@@ -704,18 +710,31 @@ public class UI extends JFrame {
 					int gridSpacing = sim.getSimulationParameters().getGridSpacing();
 					int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 					System.out.println(startTimeSpinner.getValue());
-					//int startTime
-					//int simulationLength
+					Date start = (Date)startTimeSpinner.getValue();
+					Date end = (Date)endTimeSpinner.getValue();
+					int startTime = (int)(start.getTime()-(new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE).getTime()))/(60*1000);//to convert from milliseconds to minutes
+					int simulationLength = (int)(end.getTime()-start.getTime())/(60*1000);//to convert from milliseconds to minutes
+					System.out.println(startTime+"|"+simulationLength);
 					int presentationDisplayRate = 1;
 					boolean displayPresentation = false;
-					//masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
-				} /*catch (ArgumentInvalidException e) {
+					if((startTime>0) && (simulationLength>0)){
+						masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+					}else{
+						if(startTime<=0)
+							JOptionPane.showMessageDialog(frame, "The start time must be after 1/4/2014");
+						if(simulationLength<=0)
+							JOptionPane.showMessageDialog(frame, "The end time must come after the start time.");
+					}
+				} catch (ArgumentInvalidException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ThreadException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}*/
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				finally{
 					
 				}
