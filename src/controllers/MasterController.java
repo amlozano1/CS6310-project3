@@ -5,8 +5,10 @@ import java.util.concurrent.BlockingQueue;
 import callbacks.OnCompleteListener;
 import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
+import gui.UI;
 import base.PresentationMethod;
 import base.SimulationMethod;
+import base.SimulationParameters;
 import base.SimulationResult;
 
 public class MasterController {
@@ -49,14 +51,13 @@ public class MasterController {
 		mOnCompleteListener = listener;
 	}
 	
-	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength, int presentationDisplayRate, boolean startPresentation) throws ArgumentInvalidException, ThreadException {
+	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int startTime, int simulationLength, int presentationDisplayRate, boolean startPresentation) throws ArgumentInvalidException, ThreadException {
 		mSimulationController.setSimulationParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
 		mSimulationController.setOnCompleteListener(mOnSimulationCompleteListener);
 		mSimulationController.start();
 		this.runPresentation = startPresentation;
 		if(this.runPresentation) 
-			mPresenationController.start();
-		
+			mPresenationController.start();	
 	}
 	
 	public void stop() throws ThreadException {
@@ -82,6 +83,8 @@ public class MasterController {
 			try {
 				// Stop and flush the presentation so that any results that have not been displayed will not be lost
 				// Pass the complete lister in so that any outside actions will be called when the flush is finished
+				System.out.println("Complete sim");
+				UI.getInstance().completeSimulation();
 				if(runPresentation)
 					mPresenationController.stopAndFlush(mOnCompleteListener);
 			} catch (ThreadException e) {

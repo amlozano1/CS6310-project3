@@ -45,6 +45,8 @@ public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1061316348359815659L;
 
+	private static UI guiControls = null;
+	
 	private JFrame frame;
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
@@ -59,16 +61,26 @@ public class UI extends JFrame {
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
 	
-	public UI(MasterController controller){
+	public static UI getInstance(){
+		if(guiControls == null){
+			guiControls = new UI();
+		}
+		return guiControls;
+	}
+	
+	public void setController(MasterController controller){
+		this.masterController = controller;
+	}
+	
+	private UI(){
 		super("Earth Simulation");
 		
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
 		this.setLocation(10, 10);
-		this.setSize(1200, 600);
+		this.setSize(1300, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.masterController = controller;
 		
 		Dimension dim = new Dimension (800,825);
 		earthPanel.init(dim, dim, dim);
@@ -82,8 +94,6 @@ public class UI extends JFrame {
 		
 		JTabbedPane tabs = new JTabbedPane();
 		
-		//We could use this setup if we want top level tabs
-		//which only shows the map on the sim tab not the query tab 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.add(createSimControlsComponent());
@@ -107,21 +117,7 @@ public class UI extends JFrame {
 		
 		return component;
 	}
-	
-	private JComponent createQueryResultsArea(){
-		JPanel component = new JPanel();
 		
-		component.setLayout(new GridBagLayout());
-		GridBagConstraints layoutConstraint = new GridBagConstraints();
-		layoutConstraint.ipadx = 5;
-		layoutConstraint.ipady = 5;
-		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
-		int currentY = 0;
-
-		
-		return component;
-	}
-	
 	private JComponent createQueryControlsComponent(){
 		JPanel component = new JPanel();
 		component.setLayout(new GridBagLayout());
@@ -634,7 +630,7 @@ public class UI extends JFrame {
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
-						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
+						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), 0, Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
 						if(cbDisplayAnimation.isSelected()){							
 							//Update earth map with new gridspacing
 							earthPanel.drawGrid(Integer.parseInt(txtGridSpacing.getText()));
@@ -702,9 +698,26 @@ public class UI extends JFrame {
 			if(queryNameSelect.getSelectedItem()!=null){
 				//TODO: Load simulation by name
 				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
-				List<SimulationResult> simResults = ObjectFactory.getSimulationResultDAO().getAllForSimulation(sim.getId());
-				for(SimulationResult simResult : simResults){
-					//simResult.getAverageTemperature()
+				try {
+					double axialTilt = sim.getSimulationParameters().getAxialTilt();
+					double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
+					int gridSpacing = sim.getSimulationParameters().getGridSpacing();
+					int simulationTimestep = sim.getSimulationParameters().getTimeStep();
+					System.out.println(startTimeSpinner.getValue());
+					//int startTime
+					//int simulationLength
+					int presentationDisplayRate = 1;
+					boolean displayPresentation = false;
+					//masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+				} /*catch (ArgumentInvalidException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ThreadException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				finally{
+					
 				}
 			}else{
 				//TODO: See if simulation exists
@@ -794,6 +807,12 @@ public class UI extends JFrame {
 	private void updateQueryInputAvailability(boolean status){
 		txtAxialTiltQuery.setEnabled(status);
 		txtOrbitalEccQuery.setEnabled(status);
+	}
+	
+	public void completeSimulation(){
+		updateSimInputAvailability(true);
+		btnStartStop.setSelected(false);
+		btnStartStop.setText("Start");
 	}
 	
 	private void loadSimulationSettingsFromQueryNameList(){
