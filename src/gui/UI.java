@@ -713,7 +713,15 @@ public class UI extends JFrame {
 					Date start = (Date)startTimeSpinner.getValue();
 					Date end = (Date)endTimeSpinner.getValue();
 					int startTime = (int)(start.getTime()-(new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE).getTime()))/(60*1000);//to convert from milliseconds to minutes
-					int simulationLength = (int)(end.getTime()-start.getTime())/(60*1000);//to convert from milliseconds to minutes
+					long datediff = end.getTime()-start.getTime();
+					
+					System.out.println(datediff);
+					int simulationLength = (int)((end.getTime()-start.getTime())/(60L*1000L*60L*24L*30L));
+					
+					//int simulationLength = (int)((end.getTime()-start.getTime())/(60*1000*60*24*30));//to convert from milliseconds to minutes
+					System.out.println(start.getTime());
+					System.out.println(end.getTime());
+					
 					System.out.println(startTime+"|"+simulationLength);
 					int presentationDisplayRate = 1;
 					boolean displayPresentation = false;
@@ -722,7 +730,7 @@ public class UI extends JFrame {
 					}else{
 						if(startTime<=0)
 							JOptionPane.showMessageDialog(frame, "The start time must be after 1/4/2014");
-						if(simulationLength<=0)
+						if(startTime + simulationLength<=startTime)
 							JOptionPane.showMessageDialog(frame, "The end time must come after the start time.");
 					}
 				} catch (ArgumentInvalidException e) {
