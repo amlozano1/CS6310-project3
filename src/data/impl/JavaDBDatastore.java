@@ -78,6 +78,7 @@ public class JavaDBDatastore extends Datastore{
 			}
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
+			throw new IllegalAccessError("Unable to connect to data store");
 		}
 		
 		return threadLocalConn.get();
