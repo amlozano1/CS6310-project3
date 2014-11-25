@@ -1,5 +1,7 @@
 package gui;
 
+import data.SimulationDAOFactory;
+import data.impl.SimulationCriteria;
 import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
 import gui.EarthPanel;
@@ -12,11 +14,9 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,7 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JSpinner.DateEditor;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -39,10 +38,7 @@ import javax.swing.event.ChangeListener;
 
 import base.ObjectFactory;
 import base.Simulation;
-import base.SimulationResult;
 import controllers.MasterController;
-
-
 
 public class UI extends JFrame {
 
@@ -51,6 +47,7 @@ public class UI extends JFrame {
 	private static UI guiControls = null;
 	
 	private JFrame frame;
+	private JTabbedPane tabs;
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
@@ -63,8 +60,10 @@ public class UI extends JFrame {
 	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
+	private Date START_DATE = null;
+	
 
-	private final String START_DATE = "01-04-2014";
+	private final String START_DATE_STRING = "01-04-2014";
 	
 	public static UI getInstance(){
 		if(guiControls == null){
@@ -79,6 +78,13 @@ public class UI extends JFrame {
 	
 	private UI(){
 		super("Earth Simulation");
+		
+		try {
+			this.START_DATE = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE_STRING);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
@@ -97,7 +103,7 @@ public class UI extends JFrame {
 		layoutConstraint.gridx=0;
 		layoutConstraint.gridy=0;
 		
-		JTabbedPane tabs = new JTabbedPane();
+		tabs = new JTabbedPane();
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -207,12 +213,7 @@ public class UI extends JFrame {
 		startTimeSpinner = new JSpinner( new SpinnerDateModel() );
 		JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "MM-dd-yyyy HH:mm");
 		startTimeSpinner.setEditor(startTimeEditor);
-		try{
-			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE);
-			startTimeSpinner.setValue(d);
-		}catch(ParseException e){
-			e.printStackTrace();
-		}
+		startTimeSpinner.setValue(START_DATE);
 		component.add(startTimeSpinner, layoutConstraint);
 		
 		//updated currentY
@@ -232,12 +233,7 @@ public class UI extends JFrame {
 		endTimeSpinner = new JSpinner( new SpinnerDateModel() );
 		JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "MM-dd-yyyy HH:mm");
 		endTimeSpinner.setEditor(endTimeEditor);
-		try{
-			Date d = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE);
-			endTimeSpinner.setValue(d); 
-		}catch(ParseException e){
-			e.printStackTrace();
-		}
+		endTimeSpinner.setValue(START_DATE); 
 		
 		component.add(endTimeSpinner, layoutConstraint);
 				
@@ -700,46 +696,44 @@ public class UI extends JFrame {
 	private ActionListener actListQuery = new ActionListener() {
 		
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
+		public void actionPerformed(ActionEvent arg0) { 
+			if(!areQueryDatesValid()){
+				return;//Exit upon invalid dates
+			}
+			
 			if(queryNameSelect.getSelectedItem()!=null){
 				//TODO: Load simulation by name
+				
 				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
-				try {
-					double axialTilt = sim.getSimulationParameters().getAxialTilt();
-					double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
-					int gridSpacing = sim.getSimulationParameters().getGridSpacing();
-					int simulationTimestep = sim.getSimulationParameters().getTimeStep();
-					System.out.println(startTimeSpinner.getValue());
-					Date start = (Date)startTimeSpinner.getValue();
-					Date end = (Date)endTimeSpinner.getValue();
-					int startTime = (int)(start.getTime()-(new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE).getTime()))/(60*1000);//to convert from milliseconds to minutes
-					int simulationLength = (int)(end.getTime()-start.getTime())/(60*1000);//to convert from milliseconds to minutes
-					System.out.println(startTime+"|"+simulationLength);
-					int presentationDisplayRate = 1;
-					boolean displayPresentation = false;
-					if((startTime>0) && (simulationLength>0)){
-						masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
-					}else{
-						if(startTime<=0)
-							JOptionPane.showMessageDialog(frame, "The start time must be after 1/4/2014");
-						if(simulationLength<=0)
-							JOptionPane.showMessageDialog(frame, "The end time must come after the start time.");
-					}
-				} catch (ArgumentInvalidException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ThreadException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				finally{
-					
-				}
+				
+				startQuerySimulation(sim);
 			}else{
 				//TODO: See if simulation exists
+				System.out.println("No name selected.");
+				SimulationCriteria criteria = new SimulationCriteria();
+				
+				criteria.withAxialTilt(Double.parseDouble(txtAxialTiltQuery.getText()));
+				criteria.withOrbitalEccentricity(Double.parseDouble(txtOrbitalEccQuery.getText()));
+				List<Simulation> simulations = ObjectFactory.getSimulationDAO().findSimulationBy(criteria);
+				if(simulations.isEmpty()){
+					System.out.println("No simulation found.");
+					txtAxialTiltSim.setText(txtAxialTiltQuery.getText());
+					txtOrbitalEccSim.setText(txtOrbitalEccQuery.getText());
+					System.out.println(tabs.getComponent(0).toString());
+				}else{
+					if(simulations.size()>1){
+						System.out.println("More than on found.");
+					}else{
+						//Only one simulation found so updating select and firing off the simulation 
+						for(int i = 0; i<queryNameSelect.getItemCount(); i++){
+							String str = (queryNameSelect.getItemAt(i) != null) ? queryNameSelect.getItemAt(i).toString() : "";
+							if((queryNameSelect.getItemAt(i)!=null) && (queryNameSelect.getItemAt(i).toString().equals(simulations.get(0).getName()))){
+								queryNameSelect.setSelectedItem(queryNameSelect.getItemAt(i));
+							}
+						}
+						startQuerySimulation(simulations.get(0));
+					}
+				}
 			}
 			
 		}
@@ -848,5 +842,44 @@ public class UI extends JFrame {
 			System.out.println("its null.");
 	}
 
+	private boolean areQueryDatesValid(){
+		Date start = (Date)startTimeSpinner.getValue();
+		Date end = (Date)endTimeSpinner.getValue();
+		if(start.before(START_DATE)){
+			JOptionPane.showMessageDialog(frame, "The start time must be on or after 1/4/2014");
+			return false;//Exit method because of invalid data
+		}
+		
+		if(!end.after(start)){
+			JOptionPane.showMessageDialog(frame, "The end time must come after the start time.");
+			return false;//Exit method because of invalid data
+		}
 	
+		return true;
+	}
+	
+	private void startQuerySimulation(Simulation sim){
+		Date start = (Date)startTimeSpinner.getValue();
+		Date end = (Date)endTimeSpinner.getValue();
+		
+		int startTime = (int)(start.getTime()-(START_DATE.getTime()))/(60*1000);//to convert from milliseconds to minutes
+		int simulationLength = (int)((end.getTime()-start.getTime())/(60*1000));//to convert from milliseconds to minutes
+
+		double axialTilt = sim.getSimulationParameters().getAxialTilt();
+		double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
+		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
+		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
+		int presentationDisplayRate = 1;
+		boolean displayPresentation = true;
+		if((startTime>=0) && (simulationLength>0)){
+			try {
+				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+			} catch (ArgumentInvalidException e) {				
+				e.printStackTrace();
+			} catch (ThreadException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+		
 }
