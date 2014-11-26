@@ -1,6 +1,5 @@
 package gui;
 
-import data.SimulationDAOFactory;
 import data.impl.SimulationCriteria;
 import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
@@ -53,6 +52,7 @@ public class UI extends JFrame {
 	private JPanel simPanel;
 	private JTabbedPane tabs;
 	private JToggleButton btnStartStop, btnPauseResume;
+	private JButton btnQueryGo, btnMeanTempRegionResult, btnMeanTempTimeResult, btnActualValuesFile;
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
@@ -340,7 +340,7 @@ public class UI extends JFrame {
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
 		layoutConstraint.gridwidth = 2;
-		JButton btnQueryGo = new JButton("Query");
+		btnQueryGo = new JButton("Query");
 		btnQueryGo.addActionListener(actListQuery);
 		component.add(btnQueryGo, layoutConstraint);
 		layoutConstraint.gridwidth = 1;
@@ -414,7 +414,8 @@ public class UI extends JFrame {
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
 		lblMeanTempRegionResult = new JLabel("--");
-		JButton btnMeanTempRegionResult = new JButton("Open File");
+		btnMeanTempRegionResult = new JButton("Open File");
+		btnMeanTempRegionResult.setEnabled(false);
 		btnMeanTempRegionResult.addActionListener(new ActionListener() {
 			
 			@Override
@@ -442,7 +443,8 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JButton btnMeanTempTimeResult = new JButton("Open File");
+		btnMeanTempTimeResult = new JButton("Open File");
+		btnMeanTempTimeResult.setEnabled(false);
 		btnMeanTempTimeResult.addActionListener(new ActionListener() {
 			
 			@Override
@@ -470,7 +472,8 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JButton btnActualValuesFile = new JButton("Open File");
+		btnActualValuesFile = new JButton("Open File");
+		btnActualValuesFile.setEnabled(false);
 		btnActualValuesFile.addActionListener(new ActionListener() {
 			
 			@Override
@@ -772,7 +775,8 @@ public class UI extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) { 
-			if(!areQueryDatesValid()){
+
+			if(!areQueryDatesValid() || !areLongLatValid()){
 				return;//Exit upon invalid dates
 			}
 			
@@ -814,7 +818,6 @@ public class UI extends JFrame {
 					}
 				}
 			}
-			
 		}
 	};
 	
@@ -901,10 +904,28 @@ public class UI extends JFrame {
 		txtOrbitalEccQuery.setEnabled(status);
 	}
 	
+	private void updateQueryOutputAvailability(boolean status){
+		//TODO: un-comment the line below to have the button follow the rest 
+		//btnQueryGo.setEnabled(status);
+		cbMinTemp.setEnabled(status);
+		cbMaxTemp.setEnabled(status);
+		cbAllValues.setEnabled(status);
+		cbMeanRegionTemp.setEnabled(status);
+		cbMeanTimeTemp.setEnabled(status);
+		if(cbAllValues.isSelected())
+			btnActualValuesFile.setEnabled(status);
+		if(cbMeanRegionTemp.isSelected())
+			btnMeanTempRegionResult.setEnabled(status);
+		if(cbMeanTimeTemp.isSelected())
+			btnMeanTempTimeResult.setEnabled(status);
+	}
+	
 	public void completeSimulation(){
 		updateSimInputAvailability(true);
 		btnStartStop.setSelected(false);
 		btnStartStop.setText("Start");
+		
+		updateQueryOutputAvailability(true);		
 	}
 	
 	private void loadSimulationSettingsFromQueryNameList(){
@@ -937,6 +958,74 @@ public class UI extends JFrame {
 		return true;
 	}
 	
+	private boolean areLongLatValid(){
+		if((txtEastBoundary.getText().toString().equals("")) != (txtWestBoundary.getText().toString().equals(""))){
+			JOptionPane.showMessageDialog(frame, "Both East and West have to be blank or neither blank.");
+			return false;
+		}
+		
+		if((txtNorthBoundary.getText().toString().equals("")) != (txtSouthBoundary.getText().toString().equals(""))){
+			JOptionPane.showMessageDialog(frame, "Both North and South have to be blank or neither blank.");
+			return false;
+		}
+		
+		if(!txtEastBoundary.getText().toString().equals("")){
+			double east, west;
+			
+			try{
+				east = Double.parseDouble(txtEastBoundary.getText().toString());
+				if(Math.abs(east)>180)
+					throw new NumberFormatException();
+			} catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(frame, "East not set to a valid value. It must be between -180 and 180.");
+				return false;
+			}
+			
+			try{
+				west = Double.parseDouble(txtWestBoundary.getText().toString());
+				if(Math.abs(west)>180)
+					throw new NumberFormatException();
+			} catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(frame, "West not set to a valid value. It must be between -180 and 180.");
+				return false;
+			}
+			
+			if(east == west){
+				JOptionPane.showMessageDialog(frame, "East and West boundary cannot be equal.");
+				return false;
+			}
+		}
+		
+		if(!txtNorthBoundary.getText().toString().equals("")){
+			double north, south;
+			
+			try{
+				north = Double.parseDouble(txtNorthBoundary.getText().toString());
+				if(Math.abs(north)>90)
+					throw new NumberFormatException();
+			} catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(frame, "North not set to a valid value. It must be between -90 and 90.");
+				return false;
+			}
+			
+			try{
+				south = Double.parseDouble(txtSouthBoundary.getText().toString());
+				if(Math.abs(south)>90)
+					throw new NumberFormatException();
+			} catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(frame, "South not set to a valid value. It must be between -90 and 90.");
+				return false;
+			}
+			
+			if(north == south){
+				JOptionPane.showMessageDialog(frame, "North and South boundary cannot be equal.");
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	private void startQuerySimulation(Simulation sim){
 		Date start = (Date)startTimeSpinner.getValue();
 		Date end = (Date)endTimeSpinner.getValue();
@@ -949,10 +1038,11 @@ public class UI extends JFrame {
 		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
 		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 		int presentationDisplayRate = 1;
-		boolean displayPresentation = true;
+		boolean displayPresentation = false;
 		if((startTime>=0) && (simulationLength>0)){
 			try {
 				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+				updateQueryOutputAvailability(false);
 			} catch (ArgumentInvalidException e) {				
 				e.printStackTrace();
 			} catch (ThreadException e) {
