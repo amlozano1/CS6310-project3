@@ -14,7 +14,7 @@ public class EarthPanel extends JPanel {
   private static EarthPanel earthPanel = new EarthPanel( );
 	
   private static final long serialVersionUID = -1108120537851962997L;  
-  private SunDisplay sunDisplay;
+//  private SunDisplay sunDisplay;
   private EarthGridDisplay earthGD;
   private TimeDisplay timeDisplay;
   private static final int DEFAULT_GRID_SPACING = 15; //degrees
@@ -37,13 +37,13 @@ public class EarthPanel extends JPanel {
     earthGD = new EarthGridDisplay(DEFAULT_GRID_SPACING);
     earthGD.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-    sunDisplay = new SunDisplay(earthGD.getWidth());
-    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
+//    sunDisplay = new SunDisplay(earthGD.getWidth());
+//    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     timeDisplay = new TimeDisplay();
     timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
     
-    add(sunDisplay);
+//    add(sunDisplay);
     add(earthGD);
     //add(timeDisplay);
   }
@@ -62,13 +62,13 @@ public class EarthPanel extends JPanel {
 	    earthGD = new EarthGridDisplay(DEFAULT_GRID_SPACING);
 	    earthGD.setAlignmentX(Component.LEFT_ALIGNMENT);
 	        
-	    sunDisplay = new SunDisplay(earthGD.getWidth());
-	    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
+//	    sunDisplay = new SunDisplay(earthGD.getWidth());
+//	    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 	    timeDisplay = new TimeDisplay();
 	    timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
-	    add(sunDisplay);
+//	    add(sunDisplay);
 	    add(earthGD);
 	    add(timeDisplay);
   }
@@ -85,7 +85,7 @@ public class EarthPanel extends JPanel {
    */
   public void drawGrid(int degreeSeparation) {
 	  earthGD.setGranularity(degreeSeparation);
-	  sunDisplay.drawSunPath(earthGD.getWidth());
+//	  sunDisplay.drawSunPath(earthGD.getWidth());
 	  repaint();
   }
   
@@ -113,7 +113,7 @@ public class EarthPanel extends JPanel {
    * @param degrees the number of degrees to move the sun
    */
   public void moveSunPosition(float degrees) {
-    sunDisplay.moveSunPosition(degrees);
+//    sunDisplay.moveSunPosition(degrees);
     repaint();
   }
   
@@ -125,7 +125,7 @@ public class EarthPanel extends JPanel {
    * Resets the earth display and sun position.
    */
   public void reset() {
-    sunDisplay.reset();
+//    sunDisplay.reset();
     earthGD.reset();
     timeDisplay.reset();
     repaint();

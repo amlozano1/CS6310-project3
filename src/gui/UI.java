@@ -47,6 +47,7 @@ public class UI extends JFrame {
 	private static UI guiControls = null;
 	
 	private JFrame frame;
+	private JPanel simPanel;
 	private JTabbedPane tabs;
 	private JToggleButton btnStartStop, btnPauseResume;
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
@@ -54,7 +55,7 @@ public class UI extends JFrame {
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
 	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JComboBox queryNameSelect;
-	private JCheckBox cbDisplayAnimation;
+	private JCheckBox cbDisplayAnimation, cbMeanRegionTemp, cbMeanTimeTemp, cbMinTemp, cbMaxTemp, cbAllValues;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel = EarthPanel.getInstance();
@@ -105,11 +106,11 @@ public class UI extends JFrame {
 		
 		tabs = new JTabbedPane();
 		
+		simPanel = new JPanel();
+		simPanel.setLayout(new GridBagLayout());
+		simPanel.add(createSimControlsComponent());
+		tabs.add("Simulation",simPanel);
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.add(createSimControlsComponent());
-		tabs.add("Simulation",panel);
-		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.add(createQueryControlsComponent());
 		tabs.add("Query",panel);
@@ -233,7 +234,7 @@ public class UI extends JFrame {
 		endTimeSpinner = new JSpinner( new SpinnerDateModel() );
 		JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "MM-dd-yyyy HH:mm");
 		endTimeSpinner.setEditor(endTimeEditor);
-		endTimeSpinner.setValue(START_DATE); 
+		endTimeSpinner.setValue(new Date(START_DATE.getTime()+60000)); //add one minute to help ensure start and end time differ (mainly so when I test I don't have to change it every time)
 		
 		component.add(endTimeSpinner, layoutConstraint);
 				
@@ -339,6 +340,7 @@ public class UI extends JFrame {
 		JButton btnQueryGo = new JButton("Query");
 		btnQueryGo.addActionListener(actListQuery);
 		component.add(btnQueryGo, layoutConstraint);
+		layoutConstraint.gridwidth = 1;
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
@@ -347,8 +349,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelMinTemp = new JLabel("Minimum Temperature");
-		component.add(labelMinTemp, layoutConstraint);
+		cbMinTemp = new JCheckBox("Minimum Temperature");
+		cbMinTemp.setSelected(true);
+		component.add(cbMinTemp, layoutConstraint);
 		
 		//add the place holder for Min Temp value
 		layoutConstraint.gridx = 1;
@@ -364,8 +367,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelMaxTemp = new JLabel("Maximum Temperature");
-		component.add(labelMaxTemp, layoutConstraint);
+		cbMaxTemp = new JCheckBox("Maximum Temperature");
+		cbMaxTemp.setSelected(true);
+		component.add(cbMaxTemp, layoutConstraint);
 		
 		//add the place holder for Max Temp
 		layoutConstraint.gridx = 1;
@@ -381,8 +385,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelMeanRegionTemp = new JLabel("Mean Temperature(Region)");
-		component.add(labelMeanRegionTemp, layoutConstraint);
+		cbMeanRegionTemp = new JCheckBox("Mean Temperature(Region)");
+		cbMeanRegionTemp.setSelected(true);
+		component.add(cbMeanRegionTemp, layoutConstraint);
 		
 		//add the place holder for Mean Temp over region
 		layoutConstraint.gridx = 1;
@@ -398,8 +403,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		JLabel labelMeanTimeTemp = new JLabel("Mean Temperature(Time)");
-		component.add(labelMeanTimeTemp, layoutConstraint);
+		cbMeanTimeTemp = new JCheckBox("Mean Temperature(Time)");
+		cbMeanTimeTemp.setSelected(true);
+		component.add(cbMeanTimeTemp, layoutConstraint);
 		
 		//add the place holder for Mean Temp over time
 		layoutConstraint.gridx = 1;
@@ -407,6 +413,32 @@ public class UI extends JFrame {
 		layoutConstraint.gridheight = 1;
 		lblMeanTempTimeResult = new JLabel("--");
 		component.add(lblMeanTempTimeResult, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Actual Values
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		cbAllValues = new JCheckBox("Actual Values of all cells for all times");
+		cbAllValues.setSelected(true);
+		component.add(cbAllValues, layoutConstraint);
+		
+		//add the place holder Actual Values
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JButton btnActualValuesFile = new JButton("Open File");
+		btnActualValuesFile.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("***NEED TO ADD FILE OPEN***");
+			}
+		});
+		component.add(btnActualValuesFile, layoutConstraint);
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
@@ -704,29 +736,33 @@ public class UI extends JFrame {
 			if(queryNameSelect.getSelectedItem()!=null){
 				//TODO: Load simulation by name
 				
-				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());
-				
+				Simulation sim = ObjectFactory.getSimulationDAO().getSimulationByName(queryNameSelect.getSelectedItem().toString());				
 				startQuerySimulation(sim);
 			}else{
 				//TODO: See if simulation exists
-				System.out.println("No name selected.");
 				SimulationCriteria criteria = new SimulationCriteria();
 				
 				criteria.withAxialTilt(Double.parseDouble(txtAxialTiltQuery.getText()));
 				criteria.withOrbitalEccentricity(Double.parseDouble(txtOrbitalEccQuery.getText()));
 				List<Simulation> simulations = ObjectFactory.getSimulationDAO().findSimulationBy(criteria);
 				if(simulations.isEmpty()){
-					System.out.println("No simulation found.");
-					txtAxialTiltSim.setText(txtAxialTiltQuery.getText());
-					txtOrbitalEccSim.setText(txtOrbitalEccQuery.getText());
-					System.out.println(tabs.getComponent(0).toString());
+					int response = JOptionPane.showConfirmDialog(frame, 
+							"The simulation settings you have requested are not in available would you like to run the simulation now?",
+							"Confirm",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if (response == JOptionPane.YES_OPTION){
+						txtAxialTiltSim.setText(txtAxialTiltQuery.getText());
+						txtOrbitalEccSim.setText(txtOrbitalEccQuery.getText());
+						tabs.setSelectedIndex(0);
+						txtSimulationName.requestFocusInWindow();
+					}
 				}else{
 					if(simulations.size()>1){
 						System.out.println("More than on found.");
 					}else{
 						//Only one simulation found so updating select and firing off the simulation 
 						for(int i = 0; i<queryNameSelect.getItemCount(); i++){
-							String str = (queryNameSelect.getItemAt(i) != null) ? queryNameSelect.getItemAt(i).toString() : "";
 							if((queryNameSelect.getItemAt(i)!=null) && (queryNameSelect.getItemAt(i).toString().equals(simulations.get(0).getName()))){
 								queryNameSelect.setSelectedItem(queryNameSelect.getItemAt(i));
 							}

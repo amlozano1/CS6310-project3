@@ -19,6 +19,13 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 	}
 
 	@Override
+	public boolean saveCell(int simulationId, int simulationResultId,Cell cell, int row, int column) {
+		if(cell != null)
+			return saveCell(simulationId, simulationResultId, cell.getTemperature(), cell.getLongitude(), cell.getLatitude(), row, column);
+		return false;
+	}
+	
+	@Override
 	public boolean saveCell(int simulationId, int simulationResultId, double temp, double lon, double lat, int row, int column) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;

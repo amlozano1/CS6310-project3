@@ -45,7 +45,7 @@ public final class Utils {
 	public static InvocationParms parseArguments(String[] args) throws ArgumentInvalidException {
 		InvocationParms parsedParms = new InvocationParms();
 		for (int i = 0; i < args.length; i++) {
-			if (args[i] == "-p") {
+			if ("-p".equals(args[i])) {
 				try {
 					short precision = Short.parseShort(args[i + 1]);
 					if (precision < 0 || precision > MAX_PRECISION_VALUE) {
@@ -56,7 +56,7 @@ public final class Utils {
 				} catch (NumberFormatException ex) {
 					throw new ArgumentInvalidException("-p", "-p must be a valid integer value from 0 to " + MAX_PRECISION_VALUE, ex);
 				}
-			} else if (args[i] == "-g") {
+			} else if ("-g".equals(args[i])) {
 				try {
 					short geographicPrecision = Short.parseShort(args[i + 1]);
 					if (geographicPrecision < 0 || geographicPrecision > 100) {
@@ -67,7 +67,7 @@ public final class Utils {
 				} catch (NumberFormatException ex) {
 					throw new ArgumentInvalidException("-g", "-g must be a valid integer value from 0 to 100", ex);
 				}
-			} else if (args[i] == "-t") {
+			} else if ("-t".equals(args[i])) {
 				try {
 					short temporalPrecision = Short.parseShort(args[i + 1]);
 					if (temporalPrecision < 0 || temporalPrecision > 100) {

@@ -50,6 +50,7 @@ public class PersistenceManager {
 						double latitude = Utils.setPrecision(cell.getLatitude(), decimalPlaces);
 
 						cellDAO.saveCell(simulationId, simulationResultId, temp, longitude, latitude, x, y);
+						cellsSaved++;
 					}
 				}
 			}

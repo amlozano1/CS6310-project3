@@ -148,9 +148,8 @@ public class SimulationController extends ThreadedProcess {
 						// TODO: Add stabilization check here
 						
 						if(isNewSimulation){
-							//TODO: need conversion to lat long or other positioning info
-							newResult.setSunLatitude(0);
-							newResult.setSunLongitude(sunPosition);
+							newResult.setSunLatitude(calculateSunLat(mAxialTilt));
+							newResult.setSunLongitude(calculateSunLong(sunPosition));
 							newResult.setSimulationTime(minutesPassed);
 	
 							manager.saveResult(simulation, newResult);
@@ -224,6 +223,22 @@ public class SimulationController extends ThreadedProcess {
 		return minutes / 43200.0;
 	}
 
+	protected static final double calculateSunLong(int sunPosition) {
+		sunPosition = sunPosition%360;
+		return (sunPosition<180)?(-sunPosition):(Math.abs(sunPosition-360));
+	}
+	
+	protected static final double calculateSunLat(double axialTilt) {
+		if(90>=axialTilt && axialTilt>=-90)
+			return axialTilt;
+		// TODO calculate inverted latitude
+		return 0;
+	}
+	public static void main(String[] args) {
+		for (int i = -100; i < 100; i++) {
+			System.out.println(i + " : " + calculateSunLat(i));
+		}
+	}
 	private void validateParameters(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int simulationLength) throws ArgumentInvalidException {
 		if (axialTilt < -180 || axialTilt > 180) {
 			throw new ArgumentInvalidException("axialTilt", "Axial tilt must be between -180 and 180 degrees");

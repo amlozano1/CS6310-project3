@@ -3,8 +3,11 @@ package gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
+
 import javax.swing.JPanel;
 
 /**
@@ -22,6 +25,7 @@ public class EarthGridDisplay extends JPanel {
   
   private BufferedImage imgTransparent;
   private BufferedImage earthImage;
+  private BufferedImage sunImage;
   private float opacity = OPACITY;
   private float[] offsets = new float[4];
   private int degreeSeparation;
@@ -42,6 +46,7 @@ public class EarthGridDisplay extends JPanel {
    */
   EarthGridDisplay(int defaultGridPacing) {
     earthImage = new EarthImage().getBufferedImage();    
+    sunImage = new SunImage().getBufferedImage();
     setGranularity(defaultGridPacing);
     setIgnoreRepaint(true);
   }
@@ -78,8 +83,12 @@ public class EarthGridDisplay extends JPanel {
 		initCellColors(g);
 	else
 		fillCellColors(g);
+
 	//drawTransparentImage(g);
 	drawGrid(g);
+	
+	if(!paintInitialColors)
+		drawSun(g);
   }
   
   private void initCellColors(Graphics g) {
@@ -139,6 +148,7 @@ public class EarthGridDisplay extends JPanel {
 	        
 	        g.setColor(colorPicker.getColor(colorValue, opacity));
 	        g.fillRect(cellX, cellY, cellWidth, cellHeight);
+
 	        //System.out.println("("+cellX+","+cellY+","+cellWidth+","+cellHeight+")");
 	        cellX += cellWidth;
 	       //System.out.print("\n["+x+", "+y+"] color: " + colorValue);
@@ -148,9 +158,7 @@ public class EarthGridDisplay extends JPanel {
       cellX = 0;
     }
   }
-  
 
-  
   private void drawGrid(Graphics g) {
     g.setColor(new Color(0,0,0,80));
     //draw longitude lines
@@ -163,11 +171,22 @@ public class EarthGridDisplay extends JPanel {
       int y = (int)Util.getDistToEquator(lat, radius);
       g.drawLine(0, radius-y, imgWidth, radius-y);
       g.drawLine(0, radius+y, imgWidth, radius+y);
+
     }
     
     g.setColor(Color.blue);
     g.drawLine(imgWidth/2, 0, imgWidth/2, imgHeight); //prime meridian
     g.drawLine(0, imgHeight/2, imgWidth, imgHeight/2); // equator
+  }
+  
+  private void drawSun(Graphics g){
+	  int iconWidth = 30;
+	  int iconHeight = 30;
+	  double pixels_per_lon_degree = imgWidth / 360.0;
+	  
+	  int xcoord = (-iconWidth/2) + (int)(pixels_per_lon_degree * (grid.getSunLongitude() + 180)); // shift [-180, 180] -> [0,360]
+	  int ycoord = (iconHeight/2) + (int)Util.getDistToEquator(grid.getSunLatitude(), radius);
+      g.drawImage(sunImage, xcoord, radius - ycoord, iconWidth, iconHeight, this);
   }
   
   /**
