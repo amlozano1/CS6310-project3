@@ -6,11 +6,14 @@ import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
 import gui.EarthPanel;
 
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -314,7 +317,7 @@ public class UI extends JFrame {
 		
 		//updated currentY
 		currentY += layoutConstraint.gridheight;		
-		
+				
 		//add the label for West boundary
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -344,6 +347,23 @@ public class UI extends JFrame {
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
+		
+		//add the label for East boundary
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelCheckHeader = new JLabel("Check values to calculate");
+		component.add(labelCheckHeader, layoutConstraint);
+		
+		//add textbox for East boundary
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel labelValuesHeader = new JLabel("Calculated Values");
+		component.add(labelValuesHeader, layoutConstraint);
+		
+		//updated currentY
+		currentY += layoutConstraint.gridheight;		
 		
 		//add the label for Min Temp
 		layoutConstraint.gridx = 0;
@@ -400,7 +420,9 @@ public class UI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE OPEN***");
+				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
+				String filenameOfOutput = "c:\\temp\\temp.txt";
+				openOutputFile(filenameOfOutput);
 			}
 		});
 		component.add(btnMeanTempRegionResult, layoutConstraint);
@@ -426,7 +448,9 @@ public class UI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE OPEN***");
+				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
+				String filenameOfOutput = "c:\\temp\\temp.txt";
+				openOutputFile(filenameOfOutput);
 			}
 		});
 		component.add(btnMeanTempTimeResult, layoutConstraint);
@@ -452,7 +476,9 @@ public class UI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE OPEN***");
+				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
+				String filenameOfOutput = "c:\\temp\\temp.txt";
+				openOutputFile(filenameOfOutput);
 			}
 		});
 		component.add(btnActualValuesFile, layoutConstraint);
@@ -931,6 +957,18 @@ public class UI extends JFrame {
 				e.printStackTrace();
 			} catch (ThreadException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void openOutputFile(String filename){
+		File file = new File(filename);
+		if(Desktop.isDesktopSupported()){
+			try {
+				Desktop.getDesktop().edit(file);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(frame, "An error has occurred the file ("+filename+") is not accessible.");
 			}
 		}
 	}
