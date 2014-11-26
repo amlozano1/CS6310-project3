@@ -394,7 +394,16 @@ public class UI extends JFrame {
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
 		lblMeanTempRegionResult = new JLabel("--");
-		component.add(lblMeanTempRegionResult, layoutConstraint);
+		JButton btnMeanTempRegionResult = new JButton("Open File");
+		btnMeanTempRegionResult.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("***NEED TO ADD FILE OPEN***");
+			}
+		});
+		component.add(btnMeanTempRegionResult, layoutConstraint);
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
@@ -411,8 +420,16 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		lblMeanTempTimeResult = new JLabel("--");
-		component.add(lblMeanTempTimeResult, layoutConstraint);
+		JButton btnMeanTempTimeResult = new JButton("Open File");
+		btnMeanTempTimeResult.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("***NEED TO ADD FILE OPEN***");
+			}
+		});
+		component.add(btnMeanTempTimeResult, layoutConstraint);
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
