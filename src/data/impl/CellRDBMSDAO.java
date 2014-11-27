@@ -11,7 +11,7 @@ import base.SimulationResult;
 import data.CellDAO;
 import data.Datastore;
 
-public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOConstants{
+public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOConstants, SimulationResultDAOConstants{
 	private Datastore dataStore;
 	
 	public CellRDBMSDAO() {
@@ -80,16 +80,17 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 			stmntForSize.setInt(1, simulationResultId);
 			rs = stmntForSize.executeQuery();
 			if(rs.next()){
-				int columns = rs.getInt("x") + 1;
-				int rows = rs.getInt("y") + 1;
+				int rows = rs.getInt(ROW_COUNT);
+				int columns = rs.getInt(COLUMN_COUNT);
+				close(stmntForSize);
+				close(rs);
+				
 				data = new Cell[rows][columns];
 				for (int x = 0; x < data.length; x++) {
 					for (int y = 0; y < data[x].length; y++) {
 						data[x][y] = null;
 					}
 				}
-				close(stmntForSize);
-				close(rs);
 				
 				stmnt = conn.prepareStatement(GET_BY_SIMULATION_RESULT_ID);
 				stmnt.setInt(1, simulationResultId);
@@ -100,10 +101,10 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 					cell.setTemperature(rs.getDouble(TEMPERATURE));
 					cell.setLatitude(rs.getDouble(LATITUDE));
 					cell.setLongitude(rs.getDouble(LONGITUDE));
-					int x = rs.getInt(GRIDX);
-					int y = rs.getInt(GRIDY);
+					int column = rs.getInt(GRIDX);
+					int row = rs.getInt(GRIDY);
 
-					data[x][y] = cell;
+					data[row][column] = cell;
 				}
 			}
 			

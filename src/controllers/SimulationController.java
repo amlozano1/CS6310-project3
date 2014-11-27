@@ -115,8 +115,11 @@ public class SimulationController extends ThreadedProcess {
 					
 					// Track previous result to use as start of next simulation
 					// Initialize to initial grid as starting point
-					final int gridSize = getGridSize();
-					SimulationResult previousResult = ObjectFactory.getInitialGrid(gridSize, gridSize);
+					int rows = 180/mGridSpacing;
+					int cols = 360/mGridSpacing;
+					
+					SimulationResult previousResult = ObjectFactory.getInitialGrid(rows, cols);
+
 					int minutesPassed = 0;
 					// TODO: Decide if this should be a double or integer
 					int sunPosition = 0;

@@ -84,10 +84,12 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 			stmnt = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 			stmnt.setInt(1, simulationId);
 			stmnt.setLong(2, simulationResult.getSimulationTime());
-			stmnt.setDate(3, Utils.toDate(simulationResult.getSimulationTime()), TIME_ZONE);
-			stmnt.setTime(4, Utils.toTime(simulationResult.getSimulationTime()), TIME_ZONE);
-			stmnt.setDouble(5, simulationResult.getSunLongitude());
-			stmnt.setDouble(6, simulationResult.getSunLatitude());
+			stmnt.setInt(3, simulationResult.getRowCount());
+			stmnt.setInt(4, simulationResult.getColumnCount());
+			stmnt.setDate(5, Utils.toDate(simulationResult.getSimulationTime()), TIME_ZONE);
+			stmnt.setTime(6, Utils.toTime(simulationResult.getSimulationTime()), TIME_ZONE);
+			stmnt.setDouble(7, simulationResult.getSunLongitude());
+			stmnt.setDouble(8, simulationResult.getSunLatitude());
 			
 			stmnt.executeUpdate();
 			

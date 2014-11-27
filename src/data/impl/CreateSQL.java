@@ -20,6 +20,8 @@ public final class CreateSQL {
 														+ "ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,"
 														+ "SIMULATION_ID INTEGER NOT NULL,"
 														+ "SIMULATION_TIME BIGINT NOT NULL, "
+														+ "ROW_COUNT INTEGER NOT NULL,"
+														+ "COLUMN_COUNT INTEGER NOT NULL, "
 														+ "OCCURENCE_DATE DATE NOT NULL,"
 														+ "OCCURENCE_TIME TIME NOT NULL,"
 														+ "SUN_LONGITUDE FLOAT NOT NULL, "

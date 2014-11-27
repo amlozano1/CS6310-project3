@@ -6,8 +6,8 @@ public interface SimulationResultSQL {
 	public static final String GET_BY_SIMULATION_TIME = "SELECT * FROM SIMULATION_RESULT WHERE SIMULATION_ID = ? AND SIMULATION_TIME = ?";
 
 	public static final String INSERT = "INSERT INTO SIMULATION_RESULT "
-			                          + "(SIMULATION_ID,SIMULATION_TIME,OCCURENCE_DATE,OCCURENCE_TIME,SUN_LONGITUDE,SUN_LATITUDE) "
-			                          + "VALUES (?,?,?,?,?,?)";
+			                          + "(SIMULATION_ID,SIMULATION_TIME,ROW_COUNT, COLUMN_COUNT, OCCURENCE_DATE,OCCURENCE_TIME,SUN_LONGITUDE,SUN_LATITUDE) "
+			                          + "VALUES (?,?,?,?,?,?,?,?)";
 	
 	public static final String DELETE_BY_PK            = "DELETE FROM SIMULATION_RESULT WHERE ID = ?";
 	public static final String DELETE_BY_SIMULATION_ID = "DELETE FROM SIMULATION_RESULT WHERE SIMULATION_ID = ?";
