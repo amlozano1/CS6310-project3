@@ -34,4 +34,10 @@ public class Cell {
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
+
+	@Override
+	public String toString() {
+		return "Cell [temperature=" + temperature + ", longitude=" + longitude
+				+ ", latitude=" + latitude + "]";
+	}
 }
