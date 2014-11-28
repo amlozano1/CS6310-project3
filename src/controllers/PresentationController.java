@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import callbacks.OnCompleteListener;
 import exceptions.ThreadException;
 import base.PresentationMethod;
+import base.QueryMetrics;
 import base.SimulationResult;
 import base.ThreadedProcess;
 
@@ -63,11 +64,13 @@ public class PresentationController extends ThreadedProcess {
 				try {
 					mStopAndFlush = false;
 					mFlushCompleteListener = null;
-					
+					QueryMetrics metrics = QueryMetrics.getInstance();
+					metrics.clear();
 					while (!checkStopped() && (!mStopAndFlush || mQueue.size() > 0)) {
 						checkPaused();
 						
 						SimulationResult result = mQueue.take();
+						metrics.addResult(result);
 						
 						// TODO: Add presentation display rate check
 						present(result);

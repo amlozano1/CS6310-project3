@@ -83,8 +83,7 @@ public class QueryMetrics {
 		return null;
 	}
 	
-	public Double getMeanForTime(int row, int column){
-		int index = regions.indexOf(row + " x " + column);
+	public Double getMeanForTime(int index){
 		double total = 0;
 		for (Cell[] region : all) {
 			total+=region[index].getTemperature();

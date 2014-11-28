@@ -40,7 +40,7 @@ public class QueryMetricsTest {
 	public void testGetMeanForTime() {
 		for (int i = 0; i < 5; i++) {
 			for (int j = 0; j < 5; j++) {
-				double temp = metrics.getMeanForTime(i, j);
+				double temp = metrics.getMeanForTime((i*5) + j);
 				double expectedAvg = ((i*5) + j) * 100;
 				assertEquals("Region [" + i + " x " + j +"] failed", expectedAvg, temp, 0);
 			}
