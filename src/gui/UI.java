@@ -2,6 +2,7 @@ package gui;
 
 import data.impl.SimulationCriteria;
 import exceptions.ArgumentInvalidException;
+import exceptions.QueryBoundaryException;
 import exceptions.ThreadException;
 import gui.EarthPanel;
 
@@ -42,6 +43,7 @@ import javax.swing.event.ChangeListener;
 
 import base.Cell;
 import base.ObjectFactory;
+import base.QueryBoundary;
 import base.QueryMetrics;
 import base.Simulation;
 import base.SimulationResult;
@@ -91,9 +93,10 @@ public class UI extends JFrame {
 	
 	public void updateMetricResults(){
 		QueryMetrics metrics = QueryMetrics.getInstance();
-		
+		/*
 		if(lastQueriedSimulation != null){
 			//List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().findForTimeRange(lastQueriedSimulation.getId(), lastQueryStartTime, lastQueryEndTime);
+			System.out.println("Loading Sim: "+lastQueriedSimulation.getName());
 			List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().getAllForSimulation(lastQueriedSimulation.getId());
 			if(simulationResults != null){
 				for(SimulationResult simResult : simulationResults){
@@ -104,7 +107,7 @@ public class UI extends JFrame {
 				System.out.println("No results found.");
 			}
 		}
-		
+		*/
 		if(cbMinTemp.isSelected()){
 			if(metrics.getMin() == null)
 				lblMinTempResult.setText("None Found.");
@@ -1141,8 +1144,16 @@ public class UI extends JFrame {
 		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 		int presentationDisplayRate = 1;
 		boolean displayPresentation = false;
+		
+		Double east  = (txtEastBoundary.getText().equals(""))  ? null : Double.parseDouble(txtEastBoundary.getText());
+		Double west  = (txtWestBoundary.getText().equals(""))  ? null : Double.parseDouble(txtWestBoundary.getText());
+		Double north = (txtNorthBoundary.getText().equals("")) ? null :	Double.parseDouble(txtNorthBoundary.getText());
+		Double south = (txtSouthBoundary.getText().equals("")) ? null : Double.parseDouble(txtSouthBoundary.getText());
+		QueryBoundary regionBounds;		
+		
 		if((startTime>=0) && (simulationLength>0)){
 			try {
+				regionBounds = new QueryBoundary(north, south, east, west);
 				lblMaxTempResult.setText("--");
 				lblMinTempResult.setText("--");
 				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
@@ -1150,12 +1161,20 @@ public class UI extends JFrame {
 				lastQueryStartTime = startTime;
 				lastQueryEndTime = startTime + simulationLength;
 				updateQueryOutputAvailability(false);
+				System.out.println("East:"+regionBounds.getEast());
+				System.out.println("West:"+regionBounds.getWest());
+				System.out.println("North:"+regionBounds.getNorth());
+				System.out.println("South:"+regionBounds.getSouth());
 			} catch (ArgumentInvalidException e) {				
 				e.printStackTrace();
 			} catch (ThreadException e) {
 				e.printStackTrace();
+			} catch (QueryBoundaryException e) {
+				e.printStackTrace();
 			}
 		}
+		
+
 	}
 	
 	private void openOutputFile(String filename){
