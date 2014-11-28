@@ -1,5 +1,7 @@
 package base;
 
+import java.util.Arrays;
+
 import gui.TemperatureGrid;
 
 /**
@@ -134,5 +136,13 @@ public class SimulationResult implements TemperatureGrid {
 			}
 		}
 		return totalTemp / (rows * columns);
+	}
+
+	@Override
+	public String toString() {
+		return "SimulationResult [id=" + id + ", simulationTime="
+				+ simulationTime + ", sunLongitude=" + sunLongitude
+				+ ", sunLatitude=" + sunLatitude + ", mResultData="
+				+ Arrays.toString(mResultData) + "]";
 	}
 }

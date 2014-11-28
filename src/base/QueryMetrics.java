@@ -62,7 +62,7 @@ public class QueryMetrics {
 		Cell[][] cellData = result.getResultData();
 		List<Cell> flatTempData = new ArrayList<Cell>();
 		for (int row = 0; row < cellData.length; row++) {
-			for (int column = 0; column < cellData.length; column++) {
+			for (int column = 0; column < cellData[0].length; column++) {
 				Cell cell = cellData[row][column];
 				checkMin(result, cell);
 				checkMax(result, cell);
