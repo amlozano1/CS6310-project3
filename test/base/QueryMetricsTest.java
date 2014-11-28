@@ -2,6 +2,8 @@ package base;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +62,6 @@ public class QueryMetricsTest {
 		assertEquals(expectedLong, max.getLongitude().doubleValue(), 0);
 		assertEquals(expectedLat, max.getLatitude().doubleValue(), 0);
 		assertEquals(expectedTemp, max.getTemperature().doubleValue(), 0);
-
 	}
 
 	@Test
@@ -100,6 +101,35 @@ public class QueryMetricsTest {
 		assertEquals(Long.MAX_VALUE, metrics.getMaxTime());
 	}
 
+	@Test
+	public void testDisplay(){
+		boolean printHeader = true;
+		List<Cell[]> allCells = metrics.getAll();
+		int columnCount = 0;
+		for (Cell[] cells : allCells) {
+			columnCount = cells.length;
+			Long simTime = metrics.getSimTimes().get(allCells.indexOf(cells));
+			if(printHeader){
+				for (int i = 0; i < cells.length; i++) {
+					//prindt column headers
+					System.out.print(cells[i].getLongitude() + "-" + cells[i].getLatitude() + "\t");
+				}
+				System.out.println("MEAN\n");
+				printHeader = false;
+			}
+			//print row header
+			System.out.print(simTime);
+			for (int i = 0; i < cells.length; i++) {
+				System.out.print("\t" + cells[i].getTemperature());
+			}
+			System.out.print("\t | " + metrics.getMeanForRegion(simTime) + "\n");
+		}
+		System.out.print("mean\t");
+		for (int i = 0; i < columnCount; i++) {
+			System.out.print(metrics.getMeanForTime(i) + "\t");
+		}
+	}
+	
 	private Cell[][] createCellData() {
 		Cell[][] cells = new Cell[5][5];
 		

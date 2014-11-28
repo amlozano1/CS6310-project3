@@ -61,13 +61,13 @@ public class QueryMetrics {
 	public void addResult(SimulationResult result){
 		Cell[][] cellData = result.getResultData();
 		List<Cell> flatTempData = new ArrayList<Cell>();
+		simTimes.add(result.getSimulationTime());
 		for (int row = 0; row < cellData.length; row++) {
 			for (int column = 0; column < cellData[0].length; column++) {
 				Cell cell = cellData[row][column];
 				checkMin(result, cell);
 				checkMax(result, cell);
 				flatTempData.add(cell);
-				simTimes.add(result.getSimulationTime());
 				regions.add(row + " x " + column);
 			}
 		}
