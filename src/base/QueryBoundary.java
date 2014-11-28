@@ -28,8 +28,10 @@ public class QueryBoundary {
 		if((a==null) != (b==null))
 			throw new QueryBoundaryException("One value in pair ("+a+","+b+") is null. Both or neither must be null");
 		
-		if(a.equals(b))
-			throw new QueryBoundaryException("The longitude or latitude values cannot match other similar boundary.");
+		if(a!=null){
+			if(a.equals(b))
+				throw new QueryBoundaryException("The longitude or latitude values cannot match other similar boundary.");
+		}
 	}
 	
 	private void checkValue(Double bound, double limit) throws QueryBoundaryException{
