@@ -34,7 +34,7 @@ public class QueryMetrics {
 	private Cell maxTemp;
 	private long minTime;
 	private long maxTime;
-	private List<Double[]> all;
+	private List<Cell[]> all;
 	private List<Long> simTimes;
 	private List<String> regions;
 	
@@ -53,25 +53,25 @@ public class QueryMetrics {
 		maxTemp = null;
 		minTime = 0;
 		maxTime = 0;
-		all = new ArrayList<Double[]>();
+		all = new ArrayList<Cell[]>();
 		simTimes = new ArrayList<Long>();
 		regions = new ArrayList<String>();	
 	}
 	
 	public void addResult(SimulationResult result){
 		Cell[][] cellData = result.getResultData();
-		List<Double> flatTempData = new ArrayList<Double>();
+		List<Cell> flatTempData = new ArrayList<Cell>();
 		for (int row = 0; row < cellData.length; row++) {
 			for (int column = 0; column < cellData.length; column++) {
 				Cell cell = cellData[row][column];
 				checkMin(result, cell);
 				checkMax(result, cell);
-				flatTempData.add(cell.getTemperature());
+				flatTempData.add(cell);
 				simTimes.add(result.getSimulationTime());
 				regions.add(row + " x " + column);
 			}
 		}
-		all.add(flatTempData.toArray(new Double[flatTempData.size()]));
+		all.add(flatTempData.toArray(new Cell[flatTempData.size()]));
 	}
 	
 	public Double getMeanForRegion(Long simulationTime){
@@ -86,14 +86,14 @@ public class QueryMetrics {
 	public Double getMeanForTime(int row, int column){
 		int index = regions.indexOf(row + " x " + column);
 		double total = 0;
-		for (Double[] region : all) {
-			total+=region[index];
+		for (Cell[] region : all) {
+			total+=region[index].getTemperature();
 		}
 		
 		return total/all.size();
 	}
 	
-	public List<Double[]> getAll() {
+	public List<Cell[]> getAll() {
 		return all;
 	}
 
@@ -117,10 +117,10 @@ public class QueryMetrics {
 		return maxTime;
 	}
 
-	private Double average(Double[] doubles) {
+	private Double average(Cell[] doubles) {
 		double total = 0;
 		for (int i = 0; i < doubles.length; i++) {
-			total += doubles[i];
+			total += doubles[i].getTemperature();
 		}
 		return total/doubles.length;
 	}
