@@ -64,6 +64,7 @@ public class UI extends JFrame {
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
 	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
+	private JLabel lblMinTempResultTime, lblMaxTempResultTime;
 	private JComboBox queryNameSelect;
 	private JCheckBox cbDisplayAnimation, cbMeanRegionTemp, cbMeanTimeTemp, cbMinTemp, cbMaxTemp, cbAllValues;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
@@ -71,8 +72,6 @@ public class UI extends JFrame {
 	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
-	private Simulation lastQueriedSimulation = null;
-	private long lastQueryStartTime, lastQueryEndTime;
 	private Date START_DATE = null;
 	
 	private final String MEAN_TEMP_REGION_FILENAME = "MeanTempRegion.csv";
@@ -93,43 +92,25 @@ public class UI extends JFrame {
 	
 	public void updateMetricResults(){
 		QueryMetrics metrics = QueryMetrics.getInstance();
-		/*
-		if(lastQueriedSimulation != null){
-			//List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().findForTimeRange(lastQueriedSimulation.getId(), lastQueryStartTime, lastQueryEndTime);
-			System.out.println("Loading Sim: "+lastQueriedSimulation.getName());
-			List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().getAllForSimulation(lastQueriedSimulation.getId());
-			if(simulationResults != null){
-				for(SimulationResult simResult : simulationResults){
-					System.out.println("adding result");
-					metrics.addResult(simResult);
-				}
-			}else{
-				System.out.println("No results found.");
-			}
-		}
-		*/
+
 		if(cbMinTemp.isSelected()){
 			if(metrics.getMin() == null)
 				lblMinTempResult.setText("None Found.");
 			else{
-				String result = metrics.getMin().getTemperature().toString();
-				result += " degrees at ";
-				result += metrics.getMinTime();
-				result += metrics.getMin().getLatitude();
-				result += metrics.getMin().getLongitude();
+				String result = metrics.getMin().getTemperature().toString()+"degrees at ("+metrics.getMin().getLatitude()+","+metrics.getMin().getLongitude()+")";
 				lblMinTempResult.setText(result);
+				lblMinTempResultTime.setText(convertTimeToDate(metrics.getMinTime()).toString());
+				//System.out.println("MIN: "+result);
 			}
-		}	
+		}
+		
 		if(cbMaxTemp.isSelected()){
 			if(metrics.getMax() == null)
 				lblMaxTempResult.setText("None Found.");
 			else{
-				String result = metrics.getMax().getTemperature().toString();
-				result += " degrees at ";
-				result += metrics.getMaxTime();
-				result += metrics.getMax().getLatitude();
-				result += metrics.getMax().getLongitude();
+				String result = metrics.getMax().getTemperature().toString() + " degrees at ("+metrics.getMax().getLatitude()+","+metrics.getMax().getLongitude()+")";
 				lblMaxTempResult.setText(result);
+				lblMaxTempResultTime.setText(convertTimeToDate(metrics.getMaxTime()).toString());
 			}
 		}
 		
@@ -143,12 +124,12 @@ public class UI extends JFrame {
 		
 			BufferedWriter writer = new BufferedWriter(new FileWriter(allInfoOutFile));
 			writer.write("All Cell info.");
-			writer.newLine();
-			//List<Double[]> cellResults = metrics.getAll();
-			List<Cell[]> cellResults = new ArrayList<Cell[]>();
+			
+		
+			List<Cell[]> cellResults = metrics.getAll();
 			for(Cell[] cellSeries : cellResults){
 				if(cellSeries.length > 0){
-					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\"");
+					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\",");
 					for(int i =0; i < cellSeries.length; i++){
 						writer.write(cellSeries[i].getTemperature()+",");
 					}
@@ -169,6 +150,7 @@ public class UI extends JFrame {
 			}
 		
 			BufferedWriter writer = new BufferedWriter(new FileWriter(meanTempRegionFile));
+			
 			writer.write("Mean temp region.");
 			writer.close();
 		} catch (IOException e) {
@@ -208,7 +190,7 @@ public class UI extends JFrame {
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
 		this.setLocation(10, 10);
-		this.setSize(1300, 600);
+		this.setSize(1300, 800);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Dimension dim = new Dimension (800,825);
@@ -462,14 +444,14 @@ public class UI extends JFrame {
 		//update currentY
 		currentY += layoutConstraint.gridheight;
 		
-		//add the label for East boundary
+		//add header info 1st col
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
 		JLabel labelCheckHeader = new JLabel("Check values to calculate");
 		component.add(labelCheckHeader, layoutConstraint);
 		
-		//add textbox for East boundary
+		//add header info 2nd col
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
@@ -497,10 +479,27 @@ public class UI extends JFrame {
 		//update currentY
 		currentY += layoutConstraint.gridheight;
 		
-		//add the label for Max Temp
+		//add the label for Min Temp timestamp
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
+		JLabel lblMinTempTime = new JLabel("          Min coordindates");
+		component.add(lblMinTempTime, layoutConstraint);
+				
+		//add the place holder for Min Temp timestamp value
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMinTempResultTime = new JLabel("--");
+		component.add(lblMinTempResultTime, layoutConstraint);
+				
+		//update currentY
+		currentY += layoutConstraint.gridheight;	
+		
+		//add the label for Max Temp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 2;
 		cbMaxTemp = new JCheckBox("Maximum Temperature");
 		cbMaxTemp.setSelected(true);
 		component.add(cbMaxTemp, layoutConstraint);
@@ -508,10 +507,27 @@ public class UI extends JFrame {
 		//add the place holder for Max Temp
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridheight = 2;
 		lblMaxTempResult = new JLabel("--");
 		component.add(lblMaxTempResult, layoutConstraint);
 		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Max Temp timestamp
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		JLabel lblMaxTempTime = new JLabel("          Max coordindates");
+		component.add(lblMaxTempTime, layoutConstraint);
+				
+		//add the place holder for Max Temp timestamp value
+		layoutConstraint.gridx = 1;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		lblMaxTempResultTime = new JLabel("--");
+		component.add(lblMaxTempResultTime, layoutConstraint);
+				
 		//update currentY
 		currentY += layoutConstraint.gridheight;
 		
@@ -1153,12 +1169,11 @@ public class UI extends JFrame {
 		if((startTime>=0) && (simulationLength>0)){
 			try {
 				QueryBoundary regionBounds = new QueryBoundary(north, south, east, west);
-				lblMaxTempResult.setText("--");
 				lblMinTempResult.setText("--");
+				lblMinTempResultTime.setText("--");
+				lblMaxTempResult.setText("--");
+				lblMaxTempResultTime.setText("--");
 				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
-				lastQueriedSimulation = sim;
-				lastQueryStartTime = startTime;
-				lastQueryEndTime = startTime + simulationLength;
 				updateQueryOutputAvailability(false);
 				
 			} catch (ArgumentInvalidException e) {				
@@ -1182,6 +1197,10 @@ public class UI extends JFrame {
 				JOptionPane.showMessageDialog(frame, "An error has occurred the file ("+filename+") is not accessible.");
 			}
 		}
+	}
+	
+	private Date convertTimeToDate(long time){
+		return new Date(START_DATE.getTime()+time*60*1000);
 	}
 			
 }
