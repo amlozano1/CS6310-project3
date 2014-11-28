@@ -146,10 +146,17 @@ public class UI extends JFrame {
 				columnCount = cells.length;
 				Long simTime = metrics.getSimTimes().get(allCells.indexOf(cells));
 				if(printHeader){
-					writer.write("Long : Lat,");
+					writer.write("Longitude,");
 					for (int i = 0; i < cells.length; i++) {
 						//print column headers
-						writer.write("(" + cells[i].getLongitude() + " : " + cells[i].getLatitude() + "),");
+						writer.write(cells[i].getLongitude() + ",");
+					}
+					writer.newLine();
+
+					writer.write("Latitude,");
+					for (int i = 0; i < cells.length; i++) {
+						//print column headers
+						writer.write(cells[i].getLatitude() + ",");
 					}
 					writer.write("MEAN");
 					writer.newLine();

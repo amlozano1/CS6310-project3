@@ -65,7 +65,6 @@ public class PresentationController extends ThreadedProcess {
 					mStopAndFlush = false;
 					mFlushCompleteListener = null;
 					QueryMetrics metrics = QueryMetrics.getInstance();
-					metrics.clear();
 					while (!checkStopped() && (!mStopAndFlush || mQueue.size() > 0)) {
 						checkPaused();
 						

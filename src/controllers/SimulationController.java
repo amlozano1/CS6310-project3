@@ -107,7 +107,7 @@ public class SimulationController extends ThreadedProcess {
 		this.simulation = simulation;
 		this.startTime = startSim;
 		this.endTime = endSim;
-		
+		this.queryBoundaries = boundaries;
 		this.mode = Mode.QUERY;
 	}
 	
@@ -155,6 +155,7 @@ public class SimulationController extends ThreadedProcess {
 					
 					SimulationResult previousResult = getInitalGrid();
 					PersistenceManager manager = new PersistenceManager();
+					QueryMetrics.getInstance().clear();
 					QueryMetrics.getInstance().setFilter(queryBoundaries);
 
 					// TODO: Check if we have reached the end of the simulation
