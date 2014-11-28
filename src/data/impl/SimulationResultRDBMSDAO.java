@@ -51,7 +51,7 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 	}
 	
 	@Override
-	public SimulationResult findSimulationResult(int simulationId, long simulationTime) {
+	public SimulationResult findSimulationResultBetween(int simulationId, long low, long high) {
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
 		ResultSet rs = null;
@@ -59,7 +59,8 @@ public class SimulationResultRDBMSDAO extends BaseDAO implements SimulationResul
 		try {
 			stmnt = conn.prepareStatement(GET_BY_SIMULATION_TIME);
 			stmnt.setInt(1, simulationId);
-			stmnt.setLong(2, simulationTime);
+			stmnt.setLong(2, low);
+			stmnt.setLong(3, high);
 			rs = stmnt.executeQuery();
 			if(rs.next()){
 				simulationResult = fromResultSet(rs);

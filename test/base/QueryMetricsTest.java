@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import exceptions.QueryBoundaryException;
+
 public class QueryMetricsTest {
 	private QueryMetrics metrics;
 	
@@ -99,6 +101,31 @@ public class QueryMetricsTest {
 		
 		metrics.addResult(result);
 		assertEquals(Long.MAX_VALUE, metrics.getMaxTime());
+	}
+	
+	@Test
+	public void testFilter() {
+		try {
+			metrics.clear();
+			
+			Double north = 20d;
+			Double south = 0d;
+			Double east = 40d;
+			Double west = 0d;
+
+			QueryBoundary filter = new QueryBoundary(north, south, east, west);
+			metrics.setFilter(filter);
+
+			for (int i = 0; i < 10; i++) {
+				SimulationResult result = new SimulationResult(createCellData());
+				result.setSimulationTime(i * 10);
+				metrics.addResult(result);
+			}
+			
+//			assertEquals();
+		} catch (QueryBoundaryException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test

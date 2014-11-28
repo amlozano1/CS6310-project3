@@ -44,10 +44,10 @@ public class MockSimulationResultDAO implements SimulationResultDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
-	public SimulationResult findSimulationResult(int simulationId,
-			long simulationTime) {
+	public SimulationResult findSimulationResultBetween(int simulationId,
+			long lowTime, long highTime) {
 		// TODO Auto-generated method stub
 		return null;
 	}

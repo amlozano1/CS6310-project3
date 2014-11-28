@@ -7,7 +7,9 @@ import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
 import gui.UI;
 import base.PresentationMethod;
+import base.QueryBoundary;
 import base.QueryMetrics;
+import base.Simulation;
 import base.SimulationMethod;
 import base.SimulationParameters;
 import base.SimulationResult;
@@ -54,13 +56,21 @@ public class MasterController {
 	
 	public void start(double axialTilt, double orbitalEccentricity, String name, int gridSpacing, int simulationTimestep, int startTime, int simulationLength, int presentationDisplayRate, boolean startPresentation) throws ArgumentInvalidException, ThreadException {
 		mSimulationController.setSimulationParameters(axialTilt, orbitalEccentricity, name, gridSpacing, simulationTimestep, simulationLength);
+		start(startPresentation);
+	}
+	
+	public void query( Simulation simulation, int startSim, int endSim, QueryBoundary boundaries, boolean startPresentation) throws ArgumentInvalidException, ThreadException{
+		mSimulationController.setQueryParameters(simulation, startSim, endSim, boundaries);
+		start(startPresentation);
+	}
+	
+	private void start(boolean startPresentation) throws ThreadException{
 		mSimulationController.setOnCompleteListener(mOnSimulationCompleteListener);
 		mSimulationController.start();
 		this.runPresentation = startPresentation;
 		if(this.runPresentation) 
 			mPresenationController.start();	
 	}
-	
 	public void stop() throws ThreadException {
 		mSimulationController.stop();
 		if(this.runPresentation) 

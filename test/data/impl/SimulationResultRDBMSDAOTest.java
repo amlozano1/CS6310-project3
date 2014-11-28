@@ -52,7 +52,7 @@ public class SimulationResultRDBMSDAOTest {
 		SimulationResult mock = create();
 		simulationResultId = dao.addSimulationResult(simulationId, mock);
 		
-		SimulationResult result = dao.findSimulationResult(simulationId, 0);
+		SimulationResult result = dao.findSimulationResultBetween(simulationId, -1l, 1l);
 		assertNotNull("Result not returned:", result);
 		assertEquals("Result data not correct:", 10, result.getRowCount());
 		assertEquals("Result data not correct:", 10, result.getColumnCount());

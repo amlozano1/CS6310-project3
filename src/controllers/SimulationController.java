@@ -10,6 +10,8 @@ import data.SimulationResultDAO;
 import exceptions.ArgumentInvalidException;
 import base.ObjectFactory;
 import base.PersistenceManager;
+import base.QueryBoundary;
+import base.QueryMetrics;
 import base.Simulation;
 import base.SimulationMethod;
 import base.SimulationParameters;
@@ -19,8 +21,9 @@ import base.Utils;
 import base.Utils.InvocationParms;
 
 public class SimulationController extends ThreadedProcess {
-	
 	private final static Logger LOGGER = Logger.getLogger(SimulationController.class.getName());
+	
+	private enum Mode{SIMULATION, QUERY};
 	
 	public final static double DEFAULT_AXIAL_TILT = 23.44;
 	public final static double DEFAULT_ORBITAL_ECCENTRICITY = 0.0167;
@@ -35,6 +38,13 @@ public class SimulationController extends ThreadedProcess {
 	private int mGridSpacing = DEFAULT_GRID_SPACING;
 	private int mSimulationTimestep = DEFAULT_TIME_STEP;
 	private int mSimulationLength = DEFAULT_LENGTH;
+	
+	private int startTime;
+	private int endTime;
+	private QueryBoundary queryBoundaries;
+	private Simulation existingSimulation;
+
+	private Mode mode;
 	
 	private SimulationDAO simulationDAO = ObjectFactory.getSimulationDAO();
 	private SimulationResultDAO resultDAO = ObjectFactory.getSimulationResultDAO();
@@ -90,6 +100,15 @@ public class SimulationController extends ThreadedProcess {
 		mGridSpacing = gridSpacing;
 		mSimulationTimestep = simulationTimestep;
 		mSimulationLength = simulationLength;
+		
+		this.mode = Mode.SIMULATION;
+	}
+	
+	public void setQueryParameters(Simulation simulation, int startSim, int endSim, QueryBoundary boundaries) {
+		this.existingSimulation = simulation;
+		this.startTime = startSim;
+		this.endTime = endSim;
+		this.mode = Mode.QUERY;
 	}
 	
 	/**
@@ -102,7 +121,7 @@ public class SimulationController extends ThreadedProcess {
 			@Override
 			public void run() {
 				try {
-					boolean isNewSimulation = false;
+					boolean isNewSimulation = (mode == Mode.SIMULATION);
 					if(mName != null){
 						simulation = simulationDAO.getSimulationByName(mName);
 					}
@@ -110,28 +129,34 @@ public class SimulationController extends ThreadedProcess {
 						isNewSimulation = true;
 						simulation = createSimulation(mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength);
 					} else {
-						//TODO set globals from Simualtion? -mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength
+						//TODO check to see if stored simulation is long enough otherwise run new
+						SimulationParameters params = simulation.getSimulationParameters();
+						mAxialTilt = params.getAxialTilt();
+						mOrbitalEccentricity = params.getOrbitalEccentricity();
+						mName = simulation.getName();
+						mGridSpacing = params.getGridSpacing();
+						mSimulationTimestep = params.getTimeStep();
+						mSimulationLength = params.getLength();
+						if(!simulationLongEnough(simulation)){
+							simulationDAO.removeSimulation(simulation.getId());
+							simulation = createSimulation(mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength);
+							isNewSimulation = true;
+						}
 					}
 					
-					// Track previous result to use as start of next simulation
-					// Initialize to initial grid as starting point
-					int rows = 180/mGridSpacing;
-					int cols = 360/mGridSpacing;
-					
-					SimulationResult previousResult = ObjectFactory.getInitialGrid(rows, cols);
-
-					int minutesPassed = 0;
-					// TODO: Decide if this should be a double or integer
-					int sunPosition = 0;
-					
-					if(!isNewSimulation){
-						//TODO: get DB previous, minutesPassed  and sunPosition NEED to figure out beginning of sim
-					}
-					boolean reachedSimulationEnd = false;
-					
+					boolean reachedSimulationEnd = false;					
 					final int sunIncrement = getDegreesFromTimestep();
-					PersistenceManager manager = new PersistenceManager();
+					long minutesPassed = 0;
+					int sunPosition = 0;
+					if(!isNewSimulation){
+						minutesPassed = startTime;
+						sunPosition = calculateSunPositionFromTime(sunIncrement, minutesPassed);
+					}
 					
+					SimulationResult previousResult = getInitalGrid();
+					PersistenceManager manager = new PersistenceManager();
+					QueryMetrics.getInstance().setFilter(queryBoundaries);
+
 					// TODO: Check if we have reached the end of the simulation
 					while (!checkStopped() && !reachedSimulationEnd) {
 						checkPaused();
@@ -140,10 +165,14 @@ public class SimulationController extends ThreadedProcess {
 						if(isNewSimulation){
 							newResult = simulate(previousResult, sunPosition, mGridSpacing);
 						} else {
-							SimulationResult dbResult = resultDAO.findSimulationResult(simulation.getId(), minutesPassed);
+							long lo = minutesPassed - (mSimulationTimestep/2 - 1);
+							long hi = minutesPassed + (mSimulationTimestep/2);
+							SimulationResult dbResult = resultDAO.findSimulationResultBetween(simulation.getId(), lo, hi);
 							if(dbResult == null){
 								newResult = simulate(previousResult, sunPosition, mGridSpacing);
 							} else {
+								minutesPassed = dbResult.getSimulationTime();
+								sunPosition = calculateSunPositionFromTime(sunIncrement, minutesPassed);
 								newResult = interpolate(previousResult, dbResult, sunPosition, mGridSpacing);
 							}
 						}
@@ -183,7 +212,26 @@ public class SimulationController extends ThreadedProcess {
 				}
 			}
 
+			private int calculateSunPositionFromTime(int sunIncrement, long minutesPassed) {
+				long steps = minutesPassed/mSimulationTimestep;
+				
+				return (int)steps * sunIncrement;
+			}
+
 		};
+	}
+	
+	protected boolean simulationLongEnough(Simulation simulation) {
+		return (convertMonthsToMinutes(simulation.getSimulationParameters().getLength()) >= endTime);
+	}
+
+	private SimulationResult getInitalGrid(){
+		int rows = 180/mGridSpacing;
+		int cols = 360/mGridSpacing;
+		
+		// Track previous result to use as start of next simulation
+		// Initialize to initial grid as starting point
+		return ObjectFactory.getInitialGrid(rows, cols);
 	}
 	
 	@Override
@@ -221,9 +269,13 @@ public class SimulationController extends ThreadedProcess {
 	 * @param minutes Minutes to convert
 	 * @return The number of months
 	 */
-	private double convertMinutesToMonths(int minutes) {
+	private double convertMinutesToMonths(long minutes) {
 		// minutes / (1440 minutes in a day * 30 days in a Solar month)
 		return minutes / 43200.0;
+	}
+	private long convertMonthsToMinutes(long months) {
+		// minutes / (1440 minutes in a day * 30 days in a Solar month)
+		return months * 43200;
 	}
 
 	protected static final double calculateSunLong(int sunPosition) {

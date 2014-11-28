@@ -3,6 +3,8 @@ package base;
 import java.util.ArrayList;
 import java.util.List;
 
+import exceptions.QueryBoundaryException;
+
 /**
  * Minimum temperature in the region, when and where it occurred; that is, the
  * smallest temperature in the entire table and the time and location where it
@@ -38,6 +40,8 @@ public class QueryMetrics {
 	private List<Long> simTimes;
 	private List<String> regions;
 	
+	private QueryBoundary filter;
+	
 	private static final QueryMetrics metrics = new QueryMetrics();
 	
 	public static final QueryMetrics getInstance(){
@@ -56,6 +60,7 @@ public class QueryMetrics {
 		all = new ArrayList<Cell[]>();
 		simTimes = new ArrayList<Long>();
 		regions = new ArrayList<String>();	
+		filter = null;
 	}
 	
 	public void addResult(SimulationResult result){
@@ -65,15 +70,31 @@ public class QueryMetrics {
 		for (int row = 0; row < cellData.length; row++) {
 			for (int column = 0; column < cellData[0].length; column++) {
 				Cell cell = cellData[row][column];
-				checkMin(result, cell);
-				checkMax(result, cell);
-				flatTempData.add(cell);
-				regions.add(row + " x " + column);
+				if(cell != null && inRegion(cell)){
+					checkMin(result, cell);
+					checkMax(result, cell);
+					flatTempData.add(cell);
+					regions.add(row + " x " + column);
+				}
 			}
 		}
 		all.add(flatTempData.toArray(new Cell[flatTempData.size()]));
 	}
 	
+	private boolean inRegion(Cell cell) {
+		boolean inRegion = false;
+		if(filter == null){
+			inRegion = true;
+		} else {
+			inRegion = cell.getLatitude() <= filter.getNorth();
+			inRegion = inRegion && cell.getLatitude() >= filter.getSouth();
+			inRegion = inRegion && cell.getLongitude() >= filter.getWest();
+			inRegion = inRegion && cell.getLongitude() <= filter.getEast();
+		}
+		
+		return inRegion;
+	}
+
 	public Double getMeanForRegion(Long simulationTime){
 		int index = simTimes.indexOf(simulationTime);
 		if(index >= 0){
@@ -114,6 +135,10 @@ public class QueryMetrics {
 
 	public long getMaxTime() {
 		return maxTime;
+	}
+	
+	public void setFilter(QueryBoundary filter) {
+		this.filter = filter;
 	}
 
 	private Double average(Cell[] doubles) {
