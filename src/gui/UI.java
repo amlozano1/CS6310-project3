@@ -1,11 +1,5 @@
 package gui;
 
-import data.impl.SimulationCriteria;
-import exceptions.ArgumentInvalidException;
-import exceptions.QueryBoundaryException;
-import exceptions.ThreadException;
-import gui.EarthPanel;
-
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -16,8 +10,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,9 +40,12 @@ import base.ObjectFactory;
 import base.QueryBoundary;
 import base.QueryMetrics;
 import base.Simulation;
-import base.SimulationResult;
 import base.Utils;
 import controllers.MasterController;
+import data.impl.SimulationCriteria;
+import exceptions.ArgumentInvalidException;
+import exceptions.QueryBoundaryException;
+import exceptions.ThreadException;
 
 public class UI extends JFrame {
 
@@ -64,9 +61,9 @@ public class UI extends JFrame {
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
-	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
+	private JLabel lblMinTempResult, lblMaxTempResult;//, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JLabel lblMinTempResultTime, lblMaxTempResultTime;
-	private JComboBox queryNameSelect;
+	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation, cbMeanRegionTemp, cbMeanTimeTemp, cbMinTemp, cbMaxTemp, cbAllValues;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
@@ -290,7 +287,7 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		queryNameSelect = new JComboBox(queryNames.toArray());
+		queryNameSelect = new JComboBox<String>(queryNames.toArray(new String[queryNames.size()]));
 		queryNameSelect.addActionListener(new ActionListener() {
 			
 			@Override
@@ -582,7 +579,7 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		lblMeanTempRegionResult = new JLabel("--");
+//		lblMeanTempRegionResult = new JLabel("--");
 		btnMeanTempRegionResult = new JButton("Open File");
 		btnMeanTempRegionResult.setEnabled(false);
 		btnMeanTempRegionResult.addActionListener(new ActionListener() {
@@ -1197,7 +1194,7 @@ public class UI extends JFrame {
 //		double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
 //		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
 //		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
-		int presentationDisplayRate = 1;
+//		int presentationDisplayRate = 1;
 		boolean displayPresentation = true;
 		
 		Double east  = (txtEastBoundary.getText().equals(""))  ? null : Double.parseDouble(txtEastBoundary.getText());

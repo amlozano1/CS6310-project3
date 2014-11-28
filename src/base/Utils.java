@@ -123,6 +123,7 @@ public final class Utils {
 	
 	public static final String toDateString(long simulationTime) {
 		Calendar c = getForMinutesSinceStart((int) simulationTime);
+		SDF.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return SDF.format(c.getTime());
 	}
 	
