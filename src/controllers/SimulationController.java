@@ -165,12 +165,18 @@ public class SimulationController extends ThreadedProcess {
 						SimulationResult newResult = null;
 						if(isNewSimulation){
 							newResult = simulate(previousResult, sunPosition, mGridSpacing);
+							newResult.setSunLatitude(calculateSunLat(mAxialTilt));
+							newResult.setSunLongitude(calculateSunLong(sunPosition));
+							newResult.setSimulationTime(minutesPassed);
 						} else {
 							long lo = minutesPassed - (mSimulationTimestep/2 - 1);
 							long hi = minutesPassed + (mSimulationTimestep/2);
 							SimulationResult dbResult = resultDAO.findSimulationResultBetween(simulation.getId(), lo, hi);
 							if(dbResult == null){
 								newResult = simulate(previousResult, sunPosition, mGridSpacing);
+								newResult.setSunLatitude(calculateSunLat(mAxialTilt));
+								newResult.setSunLongitude(calculateSunLong(sunPosition));
+								newResult.setSimulationTime(minutesPassed);
 							} else {
 								minutesPassed = dbResult.getSimulationTime();
 								sunPosition = calculateSunPositionFromTime(sunIncrement, minutesPassed);
@@ -181,10 +187,6 @@ public class SimulationController extends ThreadedProcess {
 						// TODO: Add stabilization check here
 						
 						if(isNewSimulation){
-							newResult.setSunLatitude(calculateSunLat(mAxialTilt));
-							newResult.setSunLongitude(calculateSunLong(sunPosition));
-							newResult.setSimulationTime(minutesPassed);
-	
 							manager.saveResult(simulation, newResult);
 						}
 						
