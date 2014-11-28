@@ -7,6 +7,7 @@ import exceptions.ArgumentInvalidException;
 import exceptions.ThreadException;
 import gui.UI;
 import base.PresentationMethod;
+import base.QueryMetrics;
 import base.SimulationMethod;
 import base.SimulationParameters;
 import base.SimulationResult;
@@ -85,6 +86,7 @@ public class MasterController {
 				// Pass the complete lister in so that any outside actions will be called when the flush is finished
 				System.out.println("Complete sim");
 				UI.getInstance().completeSimulation();
+				UI.getInstance().updateMetricResults(QueryMetrics.getInstance());
 				if(runPresentation)
 					mPresenationController.stopAndFlush(mOnCompleteListener);
 			} catch (ThreadException e) {

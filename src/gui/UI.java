@@ -11,7 +11,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -39,6 +41,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import base.ObjectFactory;
+import base.QueryMetrics;
 import base.Simulation;
 import controllers.MasterController;
 
@@ -66,7 +69,9 @@ public class UI extends JFrame {
 	private MasterController masterController;
 	private Date START_DATE = null;
 	
-
+	private final String MEAN_TEMP_REGION_FILENAME = "MeanTempRegion.csv";
+	private final String MEAN_TEMP_TIME_FILENAME = "MeanTempTime.csv";
+	private final String ALL_CELL_FILENAME = "AllCellInfo.csv";
 	private final String START_DATE_STRING = "01-04-2014";
 	
 	public static UI getInstance(){
@@ -78,6 +83,89 @@ public class UI extends JFrame {
 	
 	public void setController(MasterController controller){
 		this.masterController = controller;
+	}
+	
+	public void updateMetricResults(QueryMetrics metrics){
+		if(cbMinTemp.isSelected()){
+			if(metrics.getMin() == null)
+				lblMinTempResult.setText("None Found.");
+			else{
+				String result = metrics.getMin().getTemperature().toString();
+				result += " degrees at ";
+				result += metrics.getMinTime();
+				result += metrics.getMin().getLatitude();
+				result += metrics.getMin().getLongitude();
+				lblMinTempResult.setText(result);
+			}
+		}	
+		if(cbMaxTemp.isSelected()){
+			if(metrics.getMax() == null)
+				lblMaxTempResult.setText("None Found.");
+			else{
+				String result = metrics.getMax().getTemperature().toString();
+				result += " degrees at ";
+				result += metrics.getMaxTime();
+				result += metrics.getMax().getLatitude();
+				result += metrics.getMax().getLongitude();
+				lblMaxTempResult.setText(result);
+			}
+		}
+		
+		
+		try {
+			File allInfoOutFile = new File (ALL_CELL_FILENAME);
+			
+			if(!allInfoOutFile.exists()){
+				allInfoOutFile.createNewFile();
+			}
+		
+			BufferedWriter writer = new BufferedWriter(new FileWriter(allInfoOutFile));
+			writer.write("All Cell info.");
+			writer.newLine();
+			List<Double[]> cellResults = metrics.getAll();
+			for(Double[] cellTemps : cellResults){
+				for(int i =0; i < cellTemps.length; i++){
+					writer.write(cellTemps[i]+",");
+				}
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			File meanTempRegionFile = new File (MEAN_TEMP_REGION_FILENAME);
+			
+			if(!meanTempRegionFile.exists()){
+				meanTempRegionFile.createNewFile();
+			}
+		
+			BufferedWriter writer = new BufferedWriter(new FileWriter(meanTempRegionFile));
+			writer.write("Mean temp region.");
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			File meanTempTimeFile = new File (MEAN_TEMP_TIME_FILENAME);
+			
+			if(!meanTempTimeFile.exists()){
+				meanTempTimeFile.createNewFile();
+			}
+		
+			BufferedWriter writer = new BufferedWriter(new FileWriter(meanTempTimeFile));
+			writer.write("Mean temp time.");
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	private UI(){
@@ -420,10 +508,7 @@ public class UI extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
-				String filenameOfOutput = "c:\\temp\\temp.txt";
-				openOutputFile(filenameOfOutput);
+				openOutputFile(MEAN_TEMP_REGION_FILENAME);
 			}
 		});
 		component.add(btnMeanTempRegionResult, layoutConstraint);
@@ -449,10 +534,7 @@ public class UI extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
-				String filenameOfOutput = "c:\\temp\\temp.txt";
-				openOutputFile(filenameOfOutput);
+				openOutputFile(MEAN_TEMP_TIME_FILENAME);
 			}
 		});
 		component.add(btnMeanTempTimeResult, layoutConstraint);
@@ -478,10 +560,7 @@ public class UI extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				System.out.println("***NEED TO ADD FILE TO BE OPENED***");
-				String filenameOfOutput = "c:\\temp\\temp.txt";
-				openOutputFile(filenameOfOutput);
+				openOutputFile(ALL_CELL_FILENAME);
 			}
 		});
 		component.add(btnActualValuesFile, layoutConstraint);
@@ -1038,9 +1117,11 @@ public class UI extends JFrame {
 		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
 		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 		int presentationDisplayRate = 1;
-		boolean displayPresentation = false;
+		boolean displayPresentation = true;
 		if((startTime>=0) && (simulationLength>0)){
 			try {
+				lblMaxTempResult.setText("--");
+				lblMinTempResult.setText("--");
 				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
 				updateQueryOutputAvailability(false);
 			} catch (ArgumentInvalidException e) {				
@@ -1055,9 +1136,8 @@ public class UI extends JFrame {
 		File file = new File(filename);
 		if(Desktop.isDesktopSupported()){
 			try {
-				Desktop.getDesktop().edit(file);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				Desktop.getDesktop().open(file);
+			} catch (Exception e) {
 				JOptionPane.showMessageDialog(frame, "An error has occurred the file ("+filename+") is not accessible.");
 			}
 		}
