@@ -3,8 +3,6 @@ package base;
 import java.util.ArrayList;
 import java.util.List;
 
-import exceptions.QueryBoundaryException;
-
 /**
  * Minimum temperature in the region, when and where it occurred; that is, the
  * smallest temperature in the entire table and the time and location where it

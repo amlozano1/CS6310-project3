@@ -124,19 +124,50 @@ public class UI extends JFrame {
 			}
 		
 			BufferedWriter writer = new BufferedWriter(new FileWriter(allInfoOutFile));
-			writer.write("All Cell info.");
+//			writer.write("All Cell info.");
+//			
+//		
+//			List<Cell[]> cellResults = metrics.getAll();
+//			for(Cell[] cellSeries : cellResults){
+//				if(cellSeries.length > 0){
+//					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\",");
+//					for(int i =0; i < cellSeries.length; i++){
+//						writer.write(cellSeries[i].getTemperature()+",");
+//					}
+//					writer.newLine();
+//				}
+//			}
 			
-		
-			List<Cell[]> cellResults = metrics.getAll();
-			for(Cell[] cellSeries : cellResults){
-				if(cellSeries.length > 0){
-					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\",");
-					for(int i =0; i < cellSeries.length; i++){
-						writer.write(cellSeries[i].getTemperature()+",");
+			
+			boolean printHeader = true;
+			List<Cell[]> allCells = metrics.getAll();
+			int columnCount = 0;
+			for (Cell[] cells : allCells) {
+				columnCount = cells.length;
+				Long simTime = metrics.getSimTimes().get(allCells.indexOf(cells));
+				if(printHeader){
+					writer.write("Long : Lat,");
+					for (int i = 0; i < cells.length; i++) {
+						//print column headers
+						writer.write("(" + cells[i].getLongitude() + " : " + cells[i].getLatitude() + "),");
 					}
+					writer.write("MEAN");
 					writer.newLine();
+					printHeader = false;
 				}
+				//print row header
+				writer.write(Utils.toDateString(simTime));
+				for (int i = 0; i < cells.length; i++) {
+					writer.write("," + cells[i].getTemperature());
+				}
+				writer.write("," + metrics.getMeanForRegion(simTime) );
+				writer.newLine();
 			}
+			writer.write("Mean,");
+			for (int i = 0; i < columnCount; i++) {
+				writer.write(metrics.getMeanForTime(i) + ",");
+			}
+			
 			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

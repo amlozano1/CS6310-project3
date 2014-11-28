@@ -195,7 +195,11 @@ public class SimulationController extends ThreadedProcess {
 						// Increment the sun position and minutes passed based on the time step
 						sunPosition += sunIncrement;
 						minutesPassed += mSimulationTimestep;
-						reachedSimulationEnd = convertMinutesToMonths(minutesPassed) >= mSimulationLength;
+						if(isNewSimulation){
+							reachedSimulationEnd = convertMinutesToMonths(minutesPassed) >= mSimulationLength;
+						} else {
+							reachedSimulationEnd = minutesPassed >= endTime;
+						}
 					}
 					
 					if (reachedSimulationEnd) {
@@ -242,15 +246,6 @@ public class SimulationController extends ThreadedProcess {
 	@Override
 	protected void log(Level level, String message) {
 		LOGGER.log(level, message);
-	}
-	
-	/**
-	 * Converts the grid spacing from degrees to a grid size.
-	 * 
-	 * @return The number of cells the grid should have. Assumed to be square, so this value is the same for longitude and latitude.
-	 */
-	private int getGridSize() {
-		return 360 / mGridSpacing;
 	}
 	
 	/**

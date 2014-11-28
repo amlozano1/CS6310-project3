@@ -3,6 +3,7 @@ package base;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.logging.Logger;
@@ -18,8 +19,8 @@ public final class Utils {
 	// TODO: Lookup the max value for our data implementation
 	private static final int MAX_PRECISION_VALUE = 10;
 
-	protected static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-	
+	public static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	public static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
 	static{
 		START_TIME.set(Calendar.YEAR, 2014);
 		START_TIME.set(Calendar.MONTH, Calendar.JANUARY);
@@ -118,6 +119,11 @@ public final class Utils {
 	public static final Date toDate(long simulationTime) {
 		Calendar c = getForMinutesSinceStart((int) simulationTime);
 		return new Date(c.getTimeInMillis());
+	}
+	
+	public static final String toDateString(long simulationTime) {
+		Calendar c = getForMinutesSinceStart((int) simulationTime);
+		return SDF.format(c.getTime());
 	}
 	
 	public static final long toSimulationTime(java.util.Date date) {
