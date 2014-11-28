@@ -85,7 +85,7 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 				close(stmntForSize);
 				close(rs);
 				
-				data = new Cell[rows][columns];
+				data = new Cell[columns][rows];
 				for (int x = 0; x < data.length; x++) {
 					for (int y = 0; y < data[x].length; y++) {
 						data[x][y] = null;
@@ -104,7 +104,7 @@ public class CellRDBMSDAO extends BaseDAO implements CellDAO, CellSQL, CellDAOCo
 					int column = rs.getInt(GRIDX);
 					int row = rs.getInt(GRIDY);
 
-					data[row][column] = cell;
+					data[column][row] = cell;
 				}
 			}
 			

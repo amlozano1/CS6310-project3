@@ -39,10 +39,9 @@ public class SimulationController extends ThreadedProcess {
 	private int mSimulationTimestep = DEFAULT_TIME_STEP;
 	private int mSimulationLength = DEFAULT_LENGTH;
 	
-	private int startTime;
-	private int endTime;
+	private long startTime;
+	private long endTime;
 	private QueryBoundary queryBoundaries;
-	private Simulation existingSimulation;
 
 	private Mode mode;
 	
@@ -104,10 +103,11 @@ public class SimulationController extends ThreadedProcess {
 		this.mode = Mode.SIMULATION;
 	}
 	
-	public void setQueryParameters(Simulation simulation, int startSim, int endSim, QueryBoundary boundaries) {
-		this.existingSimulation = simulation;
+	public void setQueryParameters(Simulation simulation, long startSim, long endSim, QueryBoundary boundaries) {
+		this.simulation = simulation;
 		this.startTime = startSim;
 		this.endTime = endSim;
+		
 		this.mode = Mode.QUERY;
 	}
 	

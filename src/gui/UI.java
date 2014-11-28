@@ -47,6 +47,7 @@ import base.QueryBoundary;
 import base.QueryMetrics;
 import base.Simulation;
 import base.SimulationResult;
+import base.Utils;
 import controllers.MasterController;
 
 public class UI extends JFrame {
@@ -1154,10 +1155,10 @@ public class UI extends JFrame {
 		int startTime = (int)(start.getTime()-(START_DATE.getTime()))/(60*1000);//to convert from milliseconds to minutes
 		int simulationLength = (int)((end.getTime()-start.getTime())/(60*1000));//to convert from milliseconds to minutes
 
-		double axialTilt = sim.getSimulationParameters().getAxialTilt();
-		double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
-		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
-		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
+//		double axialTilt = sim.getSimulationParameters().getAxialTilt();
+//		double orbitalEccentricity = sim.getSimulationParameters().getOrbitalEccentricity();
+//		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
+//		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 		int presentationDisplayRate = 1;
 		boolean displayPresentation = true;
 		
@@ -1173,7 +1174,10 @@ public class UI extends JFrame {
 				lblMinTempResultTime.setText("--");
 				lblMaxTempResult.setText("--");
 				lblMaxTempResultTime.setText("--");
-				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+//				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+				long queryStart = Utils.toSimulationTime(start);
+				long queryEnd =  Utils.toSimulationTime(end);
+				masterController.query(sim, queryStart, queryEnd, regionBounds, displayPresentation);
 				updateQueryOutputAvailability(false);
 				
 			} catch (ArgumentInvalidException e) {				

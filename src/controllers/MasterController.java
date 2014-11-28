@@ -59,7 +59,7 @@ public class MasterController {
 		start(startPresentation);
 	}
 	
-	public void query( Simulation simulation, int startSim, int endSim, QueryBoundary boundaries, boolean startPresentation) throws ArgumentInvalidException, ThreadException{
+	public void query( Simulation simulation, long startSim, long endSim, QueryBoundary boundaries, boolean startPresentation) throws ArgumentInvalidException, ThreadException{
 		mSimulationController.setQueryParameters(simulation, startSim, endSim, boundaries);
 		start(startPresentation);
 	}

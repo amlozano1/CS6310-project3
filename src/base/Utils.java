@@ -18,12 +18,13 @@ public final class Utils {
 	// TODO: Lookup the max value for our data implementation
 	private static final int MAX_PRECISION_VALUE = 10;
 
-	private static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	protected static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	
 	static{
 		START_TIME.set(Calendar.YEAR, 2014);
 		START_TIME.set(Calendar.MONTH, Calendar.JANUARY);
 		START_TIME.set(Calendar.DAY_OF_MONTH, 4);
-		START_TIME.set(Calendar.HOUR, 0);
+		START_TIME.set(Calendar.HOUR_OF_DAY, 0);//noon
 		START_TIME.set(Calendar.MINUTE, 0);
 		START_TIME.set(Calendar.SECOND, 0);
 		START_TIME.set(Calendar.MILLISECOND, 0);
@@ -119,17 +120,12 @@ public final class Utils {
 		return new Date(c.getTimeInMillis());
 	}
 	
-	public static final long toSimulationTime(Date date, Time time) {
-		  Calendar dateCal = Calendar.getInstance();
-		  dateCal.setTime(date);
-		  Calendar timeCal = Calendar.getInstance();
-		  timeCal.setTime(time);
-
-		  dateCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
-		  dateCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
-		  dateCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
-		  
-		  return dateCal.getTimeInMillis()/1000;
+	public static final long toSimulationTime(java.util.Date date) {
+		long millisChoosen = date.getTime() + TimeZone.getDefault().getRawOffset();
+		long millisElapsed = millisChoosen - START_TIME.getTimeInMillis();
+		long secondsElapsed = millisElapsed / 1000;
+		long minutesElapsed = secondsElapsed / 60;
+		return minutesElapsed;
 	}
 	
 	public static final double setPrecision(double value, int decimalPlaces){
