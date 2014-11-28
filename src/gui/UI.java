@@ -40,9 +40,11 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import base.Cell;
 import base.ObjectFactory;
 import base.QueryMetrics;
 import base.Simulation;
+import base.SimulationResult;
 import controllers.MasterController;
 
 public class UI extends JFrame {
@@ -67,6 +69,8 @@ public class UI extends JFrame {
 	private EarthPanel earthPanel = EarthPanel.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
+	private Simulation lastQueriedSimulation = null;
+	private long lastQueryStartTime, lastQueryEndTime;
 	private Date START_DATE = null;
 	
 	private final String MEAN_TEMP_REGION_FILENAME = "MeanTempRegion.csv";
@@ -85,7 +89,22 @@ public class UI extends JFrame {
 		this.masterController = controller;
 	}
 	
-	public void updateMetricResults(QueryMetrics metrics){
+	public void updateMetricResults(){
+		QueryMetrics metrics = QueryMetrics.getInstance();
+		
+		if(lastQueriedSimulation != null){
+			//List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().findForTimeRange(lastQueriedSimulation.getId(), lastQueryStartTime, lastQueryEndTime);
+			List<SimulationResult> simulationResults= ObjectFactory.getSimulationResultDAO().getAllForSimulation(lastQueriedSimulation.getId());
+			if(simulationResults != null){
+				for(SimulationResult simResult : simulationResults){
+					System.out.println("adding result");
+					metrics.addResult(simResult);
+				}
+			}else{
+				System.out.println("No results found.");
+			}
+		}
+		
 		if(cbMinTemp.isSelected()){
 			if(metrics.getMin() == null)
 				lblMinTempResult.setText("None Found.");
@@ -122,12 +141,16 @@ public class UI extends JFrame {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(allInfoOutFile));
 			writer.write("All Cell info.");
 			writer.newLine();
-			List<Double[]> cellResults = metrics.getAll();
-			for(Double[] cellTemps : cellResults){
-				for(int i =0; i < cellTemps.length; i++){
-					writer.write(cellTemps[i]+",");
+			//List<Double[]> cellResults = metrics.getAll();
+			List<Cell[]> cellResults = new ArrayList<Cell[]>();
+			for(Cell[] cellSeries : cellResults){
+				if(cellSeries.length > 0){
+					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\"");
+					for(int i =0; i < cellSeries.length; i++){
+						writer.write(cellSeries[i].getTemperature()+",");
+					}
+					writer.newLine();
 				}
-				writer.newLine();
 			}
 			writer.close();
 		} catch (IOException e) {
@@ -1117,12 +1140,15 @@ public class UI extends JFrame {
 		int gridSpacing = sim.getSimulationParameters().getGridSpacing();
 		int simulationTimestep = sim.getSimulationParameters().getTimeStep();
 		int presentationDisplayRate = 1;
-		boolean displayPresentation = true;
+		boolean displayPresentation = false;
 		if((startTime>=0) && (simulationLength>0)){
 			try {
 				lblMaxTempResult.setText("--");
 				lblMinTempResult.setText("--");
 				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
+				lastQueriedSimulation = sim;
+				lastQueryStartTime = startTime;
+				lastQueryEndTime = startTime + simulationLength;
 				updateQueryOutputAvailability(false);
 			} catch (ArgumentInvalidException e) {				
 				e.printStackTrace();
@@ -1142,5 +1168,5 @@ public class UI extends JFrame {
 			}
 		}
 	}
-		
+			
 }

@@ -86,7 +86,7 @@ public class MasterController {
 				// Pass the complete lister in so that any outside actions will be called when the flush is finished
 				System.out.println("Complete sim");
 				UI.getInstance().completeSimulation();
-				UI.getInstance().updateMetricResults(QueryMetrics.getInstance());
+				UI.getInstance().updateMetricResults();
 				if(runPresentation)
 					mPresenationController.stopAndFlush(mOnCompleteListener);
 			} catch (ThreadException e) {
