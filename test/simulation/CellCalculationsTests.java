@@ -27,6 +27,13 @@ public class CellCalculationsTests {
 	}
 	
 	@Test
+	public void testGetLongitudeOfCellsInRow() {
+		assertEquals(-180, CellCalculations.getLongitudeOfCellsInColumn(0, 15), 0d);
+		assertEquals(0, CellCalculations.getLongitudeOfCellsInColumn(12, 15), 0d);
+		assertEquals(180, CellCalculations.getLongitudeOfCellsInColumn(24, 15), 0d);
+	}
+	
+	@Test
 	public void testGetLatitudeOfCellsInRow() {
 		assertEquals(90.0, CellCalculations.getLatitudeOfCellsInRow(0, 15), 0.0);
 		assertEquals(75.0, CellCalculations.getLatitudeOfCellsInRow(1, 15), 0.0);
