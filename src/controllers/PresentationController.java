@@ -53,6 +53,7 @@ public class PresentationController extends ThreadedProcess {
 	public void stopAndFlush(OnCompleteListener flushCompleteListener) throws ThreadException {
 		mStopAndFlush = true;
 		mFlushCompleteListener = flushCompleteListener;
+		this.stop();
 	}
 
 	@Override
@@ -83,6 +84,11 @@ public class PresentationController extends ThreadedProcess {
 					}
 				} catch (InterruptedException e) {
 					LOGGER.info("Presentation stopped by interrupt");
+					
+					// If presentation was flushed, call the flush complete listener
+					if (mStopAndFlush && mFlushCompleteListener != null) {
+						mFlushCompleteListener.complete();
+					}
 				}
 			}
 
