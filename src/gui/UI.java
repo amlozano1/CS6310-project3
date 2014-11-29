@@ -57,11 +57,11 @@ public class UI extends JFrame {
 	private JPanel simPanel;
 	private JTabbedPane tabs;
 	private JToggleButton btnStartStop, btnPauseResume;
-	private JButton btnQueryGo, btnMeanTempRegionResult, btnMeanTempTimeResult, btnActualValuesFile;
+	private JButton btnQueryGo, btnActualValuesFile;
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
-	private JLabel lblMinTempResult, lblMaxTempResult;//, lblMeanTempTimeResult, lblMeanTempRegionResult;
+	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JLabel lblMinTempResultTime, lblMaxTempResultTime;
 	private JComboBox<String> queryNameSelect;
 	private JCheckBox cbDisplayAnimation, cbMeanRegionTemp, cbMeanTimeTemp, cbMinTemp, cbMaxTemp, cbAllValues;
@@ -89,6 +89,9 @@ public class UI extends JFrame {
 	}
 	
 	public void updateMetricResults(){
+		if(tabs.getSelectedIndex() != 1)
+			return;
+		
 		QueryMetrics metrics = QueryMetrics.getInstance();
 
 		if(cbMinTemp.isSelected()){
@@ -121,19 +124,6 @@ public class UI extends JFrame {
 			}
 		
 			BufferedWriter writer = new BufferedWriter(new FileWriter(allInfoOutFile));
-//			writer.write("All Cell info.");
-//			
-//		
-//			List<Cell[]> cellResults = metrics.getAll();
-//			for(Cell[] cellSeries : cellResults){
-//				if(cellSeries.length > 0){
-//					writer.write("\"Coordinates: ("+cellSeries[0].getLongitude()+","+cellSeries[0].getLatitude()+")\",");
-//					for(int i =0; i < cellSeries.length; i++){
-//						writer.write(cellSeries[i].getTemperature()+",");
-//					}
-//					writer.newLine();
-//				}
-//			}
 	
 			boolean printHeader = true;
 			List<Cell[]> allCells = metrics.getAll();
@@ -172,6 +162,7 @@ public class UI extends JFrame {
 			}
 			
 			writer.close();
+			System.out.println("Done...");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,7 +216,7 @@ public class UI extends JFrame {
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
 		this.setLocation(10, 10);
-		this.setSize(1300, 800);
+		this.setSize(1300, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Dimension dim = new Dimension (800,825);
@@ -562,10 +553,11 @@ public class UI extends JFrame {
 		layoutConstraint.gridheight = 1;
 		lblMaxTempResultTime = new JLabel("--");
 		component.add(lblMaxTempResultTime, layoutConstraint);
-				
+		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
 		
+		/*
 		//add the label for Mean Temp over Region
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -578,7 +570,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-//		lblMeanTempRegionResult = new JLabel("--");
+		lblMeanTempRegionResult = new JLabel("--");
+		component.add(lblMeanTempRegionResult);
+		
 		btnMeanTempRegionResult = new JButton("Open File");
 		btnMeanTempRegionResult.setEnabled(false);
 		btnMeanTempRegionResult.addActionListener(new ActionListener() {
@@ -589,9 +583,11 @@ public class UI extends JFrame {
 			}
 		});
 		component.add(btnMeanTempRegionResult, layoutConstraint);
-		
+		*/
+		/*
 		//update currentY
 		currentY += layoutConstraint.gridheight;
+		
 		
 		//add the label for mean temp over time
 		layoutConstraint.gridx = 0;
@@ -605,6 +601,9 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
+		lblMeanTempTimeResult = new JLabel("--");
+		component.add(lblMeanTempTimeResult, layoutConstraint);
+		/*
 		btnMeanTempTimeResult = new JButton("Open File");
 		btnMeanTempTimeResult.setEnabled(false);
 		btnMeanTempTimeResult.addActionListener(new ActionListener() {
@@ -616,9 +615,10 @@ public class UI extends JFrame {
 		});
 		component.add(btnMeanTempTimeResult, layoutConstraint);
 		
+		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
-		
+		*/
 		//add the label for Actual Values
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -1066,14 +1066,16 @@ public class UI extends JFrame {
 		cbMinTemp.setEnabled(status);
 		cbMaxTemp.setEnabled(status);
 		cbAllValues.setEnabled(status);
-		cbMeanRegionTemp.setEnabled(status);
-		cbMeanTimeTemp.setEnabled(status);
+		//cbMeanRegionTemp.setEnabled(status);
+		//cbMeanTimeTemp.setEnabled(status);
 		if(cbAllValues.isSelected())
 			btnActualValuesFile.setEnabled(status);
+		/*
 		if(cbMeanRegionTemp.isSelected())
 			btnMeanTempRegionResult.setEnabled(status);
 		if(cbMeanTimeTemp.isSelected())
 			btnMeanTempTimeResult.setEnabled(status);
+		*/
 	}
 	
 	public void completeSimulation(){
