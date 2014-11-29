@@ -16,7 +16,7 @@ public class EarthPanel extends JPanel {
   private static final long serialVersionUID = -1108120537851962997L;  
 //  private SunDisplay sunDisplay;
   private EarthGridDisplay earthGD;
-  private TimeDisplay timeDisplay;
+//  private TimeDisplay timeDisplay;
   private static final int DEFAULT_GRID_SPACING = 15; //degrees
   
   /**
@@ -40,8 +40,8 @@ public class EarthPanel extends JPanel {
 //    sunDisplay = new SunDisplay(earthGD.getWidth());
 //    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
     
-    timeDisplay = new TimeDisplay();
-    timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
+ //   timeDisplay = new TimeDisplay();
+ //   timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
     
 //    add(sunDisplay);
     add(earthGD);
@@ -65,12 +65,12 @@ public class EarthPanel extends JPanel {
 //	    sunDisplay = new SunDisplay(earthGD.getWidth());
 //	    sunDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
-	    timeDisplay = new TimeDisplay();
-	    timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
+//	    timeDisplay = new TimeDisplay();
+//	    timeDisplay.setAlignmentX(Component.LEFT_ALIGNMENT);
 	    
 //	    add(sunDisplay);
 	    add(earthGD);
-	    add(timeDisplay);
+//	    add(timeDisplay);
   }
   
   public static EarthPanel getInstance( ) {
@@ -116,18 +116,19 @@ public class EarthPanel extends JPanel {
 //    sunDisplay.moveSunPosition(degrees);
     repaint();
   }
-  
+  /*
   public void addTime( int minutes ) {
 	  timeDisplay.addTime(minutes);
   }
-   
+  */
+  
   /**
    * Resets the earth display and sun position.
    */
   public void reset() {
 //    sunDisplay.reset();
     earthGD.reset();
-    timeDisplay.reset();
+//    timeDisplay.reset();
     repaint();
   }
   

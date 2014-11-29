@@ -68,6 +68,8 @@ public class UI extends JFrame {
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel = EarthPanel.getInstance();
+	private TimeDisplayQuery queryTimeDisplay = TimeDisplayQuery.getInstance();
+	private TimeDisplaySimulation simTimeDisplay = TimeDisplaySimulation.getInstance();
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
 	private Date START_DATE = null;
@@ -193,6 +195,7 @@ public class UI extends JFrame {
 	private UI(){
 		super("Earth Simulation");
 		
+		
 		try {
 			this.START_DATE = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH).parse(START_DATE_STRING);
 		} catch (ParseException e) {
@@ -214,9 +217,10 @@ public class UI extends JFrame {
 		GridBagConstraints layoutConstraint = new GridBagConstraints();
 		
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
-		layoutConstraint.gridx=0;
-		layoutConstraint.gridy=0;
 		
+		layoutConstraint.gridx=0;
+		layoutConstraint.gridy=1;
+		layoutConstraint.gridheight=1;
 		tabs = new JTabbedPane();
 		
 		simPanel = new JPanel();
@@ -231,7 +235,9 @@ public class UI extends JFrame {
 		
 		layoutConstraint.gridx=1;
 		layoutConstraint.gridy=0;
+		layoutConstraint.gridheight=2;
 		this.add(createVisualizerDisplay(), layoutConstraint);
+		
 		this.setVisible(true);
 	}
 	
@@ -251,6 +257,22 @@ public class UI extends JFrame {
 		layoutConstraint.ipady = 5;
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		int currentY = 0;
+			
+		//Add display time label
+		layoutConstraint.gridx=0;
+		layoutConstraint.gridy=currentY;
+		layoutConstraint.gridheight=1;
+		JLabel lblDispTime = new JLabel("Current Time on Display");
+		component.add(lblDispTime, layoutConstraint);
+		
+		//Add display time
+		layoutConstraint.gridx=1;
+		layoutConstraint.gridy=currentY;
+		layoutConstraint.gridheight=1;
+		component.add(queryTimeDisplay, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
 		
 		//add the label for Simulation Name
 		layoutConstraint.gridx = 0;
@@ -608,6 +630,23 @@ public class UI extends JFrame {
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		int currentY = 0;
 		
+
+		//Add display time label
+		layoutConstraint.gridx=0;
+		layoutConstraint.gridy=currentY;
+		layoutConstraint.gridheight=1;
+		JLabel lblDispTime = new JLabel("Current Time on Display");
+		component.add(lblDispTime, layoutConstraint);
+		
+		//Add display time
+		layoutConstraint.gridx=1;
+		layoutConstraint.gridy=currentY;
+		layoutConstraint.gridheight=1;
+		component.add(simTimeDisplay, layoutConstraint);
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+				
 		//add the label for Simulation Name
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;

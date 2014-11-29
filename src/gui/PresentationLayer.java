@@ -1,7 +1,10 @@
 package gui;
 
+import java.util.Date;
+
 import base.PresentationMethod;
 import base.SimulationResult;
+import base.Utils;
 
 
 public class PresentationLayer implements PresentationMethod {
@@ -11,14 +14,8 @@ public class PresentationLayer implements PresentationMethod {
 		//Thread.sleep(1000);
 		//System.out.println();
 		EarthPanel.getInstance().updateGrid(result);
-
-//		for (int i = 0; i < result.getRowCount(); i++) {
-//			for (int j = 0; j < result.getColumnCount(); j++) {
-//				//EarthPanel.getInstance().moveSunPosition(Buffer.getInstance().getHead().getfColumnUnderSun());
-//				//EarthPanel.getInstance().setTime(result.getSimulationTime());
-//			}
-//			//System.out.println();
-//		}
+		TimeDisplayQuery.getInstance().setTime(result.getSimulationTime());
+		TimeDisplaySimulation.getInstance().setTime(result.getSimulationTime());
 	}
 
 }
