@@ -63,7 +63,7 @@ public class UI extends JFrame {
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
 	private JLabel lblMinTempResult, lblMaxTempResult;//, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JLabel lblMinTempResultTime, lblMaxTempResultTime;
-	private JComboBox<String> queryNameSelect;
+	private JComboBox queryNameSelect;
 	private JCheckBox cbDisplayAnimation, cbMinTemp, cbMaxTemp, cbAllValues, cbMeanRegionTemp, cbMeanTimeTemp;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
@@ -287,7 +287,7 @@ public class UI extends JFrame {
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
 		layoutConstraint.gridheight = 1;
-		queryNameSelect = new JComboBox<String>(queryNames.toArray(new String[queryNames.size()]));
+		queryNameSelect = new JComboBox(queryNames.toArray(new String[queryNames.size()]));
 		queryNameSelect.addActionListener(new ActionListener() {
 			
 			@Override
