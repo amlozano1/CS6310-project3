@@ -1045,19 +1045,13 @@ public class UI extends JFrame {
 	private void updateQueryOutputAvailability(boolean status){
 		//TODO: un-comment the line below to have the button follow the rest 
 		//btnQueryGo.setEnabled(status);
+	
 		cbMinTemp.setEnabled(status);
 		cbMaxTemp.setEnabled(status);
 		cbAllValues.setEnabled(status);
-		//cbMeanRegionTemp.setEnabled(status);
-		//cbMeanTimeTemp.setEnabled(status);
 		if(cbAllValues.isSelected() || cbMeanRegionTemp.isSelected() || cbMeanTimeTemp.isSelected())
 			btnActualValuesFile.setEnabled(status);
-		/*
-		if(cbMeanRegionTemp.isSelected())
-			btnMeanTempRegionResult.setEnabled(status);
-		if(cbMeanTimeTemp.isSelected())
-			btnMeanTempTimeResult.setEnabled(status);
-		*/
+	
 	}
 	
 	public void completeSimulation(){
@@ -1195,6 +1189,7 @@ public class UI extends JFrame {
 //				masterController.start(axialTilt, orbitalEccentricity, queryNameSelect.getSelectedItem().toString(), gridSpacing, simulationTimestep, startTime, simulationLength, presentationDisplayRate, displayPresentation);
 				long queryStart = Utils.toSimulationTime(start);
 				long queryEnd =  Utils.toSimulationTime(end);
+				earthPanel.drawGrid(sim.getSimulationParameters().getGridSpacing());
 				masterController.query(sim, queryStart, queryEnd, regionBounds, displayPresentation);
 				updateQueryOutputAvailability(false);
 				
