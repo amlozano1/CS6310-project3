@@ -13,7 +13,6 @@ public class TimeDisplayQuery extends JLabel {
 	private static TimeDisplayQuery self = null;
 	
 	public static TimeDisplayQuery getInstance(){
-		System.out.println("New time display");
 		if (self == null){
 			self = new TimeDisplayQuery();
 		}

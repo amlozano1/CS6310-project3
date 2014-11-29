@@ -22,9 +22,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -219,8 +221,7 @@ public class UI extends JFrame {
 		layoutConstraint.fill = GridBagConstraints.HORIZONTAL;
 		
 		layoutConstraint.gridx=0;
-		layoutConstraint.gridy=1;
-		layoutConstraint.gridheight=1;
+		layoutConstraint.gridy=0;
 		tabs = new JTabbedPane();
 		
 		simPanel = new JPanel();
@@ -235,7 +236,6 @@ public class UI extends JFrame {
 		
 		layoutConstraint.gridx=1;
 		layoutConstraint.gridy=0;
-		layoutConstraint.gridheight=2;
 		this.add(createVisualizerDisplay(), layoutConstraint);
 		
 		this.setVisible(true);
@@ -243,6 +243,7 @@ public class UI extends JFrame {
 	
 	private JComponent createVisualizerDisplay(){
 		JPanel component = new JPanel();
+	
 		earthPanel.drawGrid(15);
 		component.add(earthPanel);
 		
@@ -937,6 +938,7 @@ public class UI extends JFrame {
 				criteria.withAxialTilt(Double.parseDouble(txtAxialTiltQuery.getText()));
 				criteria.withOrbitalEccentricity(Double.parseDouble(txtOrbitalEccQuery.getText()));
 				List<Simulation> simulations = ObjectFactory.getSimulationDAO().findSimulationBy(criteria);
+				
 				if(simulations.isEmpty()){
 					int response = JOptionPane.showConfirmDialog(frame, 
 							"The simulation settings you have requested are not in available would you like to run the simulation now?",
@@ -950,17 +952,8 @@ public class UI extends JFrame {
 						txtSimulationName.requestFocusInWindow();
 					}
 				}else{
-					if(simulations.size()>1){
-						System.out.println("More than on found.");
-					}else{
-						//Only one simulation found so updating select and firing off the simulation 
-						for(int i = 0; i<queryNameSelect.getItemCount(); i++){
-							if((queryNameSelect.getItemAt(i)!=null) && (queryNameSelect.getItemAt(i).toString().equals(simulations.get(0).getName()))){
-								queryNameSelect.setSelectedItem(queryNameSelect.getItemAt(i));
-							}
-						}
-						startQuerySimulation(simulations.get(0));
-					}
+					//grabbing Simulation 0 since orderby clause grabs best result
+					startQuerySimulation(simulations.get(0));
 				}
 			}
 		}

@@ -1,11 +1,7 @@
 package gui;
 
-import java.util.Date;
-
 import base.PresentationMethod;
 import base.SimulationResult;
-import base.Utils;
-
 
 public class PresentationLayer implements PresentationMethod {
 	@Override

@@ -1,7 +1,6 @@
 package gui;
 
 import javax.swing.JLabel;
-
 import base.Utils;
 
 public class TimeDisplaySimulation extends JLabel {
@@ -13,7 +12,6 @@ public class TimeDisplaySimulation extends JLabel {
 	private static TimeDisplaySimulation self = null;
 	
 	public static TimeDisplaySimulation getInstance(){
-		System.out.println("New time display");
 		if (self == null){
 			self = new TimeDisplaySimulation();
 		}
