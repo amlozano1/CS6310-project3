@@ -61,10 +61,10 @@ public class UI extends JFrame {
 	private JTextField txtSimulationName, txtGridSpacing, txtSimLength, txtAxialTiltSim, txtOrbitalEccSim, txtPresentationDisplayRate;
 	private JTextField txtAxialTiltQuery, txtOrbitalEccQuery;
 	private JTextField txtNorthBoundary, txtSouthBoundary, txtEastBoundary, txtWestBoundary;
-	private JLabel lblMinTempResult, lblMaxTempResult, lblMeanTempTimeResult, lblMeanTempRegionResult;
+	private JLabel lblMinTempResult, lblMaxTempResult;//, lblMeanTempTimeResult, lblMeanTempRegionResult;
 	private JLabel lblMinTempResultTime, lblMaxTempResultTime;
 	private JComboBox<String> queryNameSelect;
-	private JCheckBox cbDisplayAnimation, cbMeanRegionTemp, cbMeanTimeTemp, cbMinTemp, cbMaxTemp, cbAllValues;
+	private JCheckBox cbDisplayAnimation, cbMinTemp, cbMaxTemp, cbAllValues, cbMeanRegionTemp, cbMeanTimeTemp;
 	private JSpinner spinnerSimTimeStep, startTimeSpinner, endTimeSpinner;
 	private JSlider sliderOpacity;
 	private EarthPanel earthPanel = EarthPanel.getInstance();
@@ -72,8 +72,6 @@ public class UI extends JFrame {
 	private MasterController masterController;
 	private Date START_DATE = null;
 	
-	private final String MEAN_TEMP_REGION_FILENAME = "MeanTempRegion.csv";
-	private final String MEAN_TEMP_TIME_FILENAME = "MeanTempTime.csv";
 	private final String ALL_CELL_FILENAME = "AllCellInfo.csv";
 	private final String START_DATE_STRING = "01-04-2014";
 	
@@ -132,74 +130,63 @@ public class UI extends JFrame {
 				columnCount = cells.length;
 				Long simTime = metrics.getSimTimes().get(allCells.indexOf(cells));
 				if(printHeader){
-					writer.write("Longitude,");
-					for (int i = 0; i < cells.length; i++) {
-						//print column headers
-						writer.write(cells[i].getLongitude() + ",");
-					}
-					writer.newLine();
+					if(cbAllValues.isSelected() || cbMeanTimeTemp.isSelected()){
+						writer.write("Longitude,");
+						for (int i = 0; i < cells.length; i++) {
+							//print column headers
+							writer.write(cells[i].getLongitude() + ",");
+						}
+						writer.newLine();
 
-					writer.write("Latitude,");
-					for (int i = 0; i < cells.length; i++) {
-						//print column headers
-						writer.write(cells[i].getLatitude() + ",");
+						writer.write("Latitude,");
+						for (int i = 0; i < cells.length; i++) {
+							//print column headers
+							writer.write(cells[i].getLatitude() + ",");
+						}
 					}
-					writer.write(",Region's Mean");
+					if(cbMeanRegionTemp.isSelected())
+						writer.write(",Region's Mean");
 					writer.newLine();
 					printHeader = false;
 				}
 				//print row header
-				writer.write(Utils.toDateString(simTime));
-				for (int i = 0; i < cells.length; i++) {
-					writer.write("," + cells[i].getTemperature());
+				if(cbAllValues.isSelected() || cbMeanRegionTemp.isSelected())
+					writer.write(Utils.toDateString(simTime));
+				if(cbAllValues.isSelected()){
+					for (int i = 0; i < cells.length; i++) {
+						writer.write("," + cells[i].getTemperature());
+					}
 				}
-				writer.write(",," + metrics.getMeanForRegion(simTime) );
+				if(cbMeanRegionTemp.isSelected()){
+					if(cbAllValues.isSelected()){
+						writer.write(",," + metrics.getMeanForRegion(simTime) );
+					}else{
+						if(cbMeanTimeTemp.isSelected()){
+							for (int i = 0; i < cells.length; i++) {
+								writer.write(",");
+							}
+							writer.write(",," + metrics.getMeanForRegion(simTime) );
+						}else{
+							writer.write(","+metrics.getMeanForRegion(simTime));
+						}
+					}
+				}
 				writer.newLine();
 			}
 			writer.newLine();
-			writer.write("Time's Mean,");
-			for (int i = 0; i < columnCount; i++) {
-				writer.write(metrics.getMeanForTime(i) + ",");
+			
+			if(cbMeanTimeTemp.isSelected()){
+				writer.write("Time's Mean,");
+				for (int i = 0; i < columnCount; i++) {
+					writer.write(metrics.getMeanForTime(i) + ",");
+				}
 			}
 			
-			writer.close();
-			System.out.println("Done...");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
-			File meanTempRegionFile = new File (MEAN_TEMP_REGION_FILENAME);
-			
-			if(!meanTempRegionFile.exists()){
-				meanTempRegionFile.createNewFile();
-			}
-		
-			BufferedWriter writer = new BufferedWriter(new FileWriter(meanTempRegionFile));
-			
-			writer.write("Mean temp region.");
 			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		try {
-			File meanTempTimeFile = new File (MEAN_TEMP_TIME_FILENAME);
-			
-			if(!meanTempTimeFile.exists()){
-				meanTempTimeFile.createNewFile();
-			}
-		
-			BufferedWriter writer = new BufferedWriter(new FileWriter(meanTempTimeFile));
-			writer.write("Mean temp time.");
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		
 	}
 	
@@ -558,68 +545,6 @@ public class UI extends JFrame {
 		//update currentY
 		currentY += layoutConstraint.gridheight;
 		
-		/*
-		//add the label for Mean Temp over Region
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		cbMeanRegionTemp = new JCheckBox("Mean Temperature(Region)");
-		cbMeanRegionTemp.setSelected(true);
-		component.add(cbMeanRegionTemp, layoutConstraint);
-		
-		//add the place holder for Mean Temp over region
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMeanTempRegionResult = new JLabel("--");
-		component.add(lblMeanTempRegionResult);
-		
-		btnMeanTempRegionResult = new JButton("Open File");
-		btnMeanTempRegionResult.setEnabled(false);
-		btnMeanTempRegionResult.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				openOutputFile(MEAN_TEMP_REGION_FILENAME);
-			}
-		});
-		component.add(btnMeanTempRegionResult, layoutConstraint);
-		*/
-		/*
-		//update currentY
-		currentY += layoutConstraint.gridheight;
-		
-		
-		//add the label for mean temp over time
-		layoutConstraint.gridx = 0;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		cbMeanTimeTemp = new JCheckBox("Mean Temperature(Time)");
-		cbMeanTimeTemp.setSelected(true);
-		component.add(cbMeanTimeTemp, layoutConstraint);
-		
-		//add the place holder for Mean Temp over time
-		layoutConstraint.gridx = 1;
-		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
-		lblMeanTempTimeResult = new JLabel("--");
-		component.add(lblMeanTempTimeResult, layoutConstraint);
-		/*
-		btnMeanTempTimeResult = new JButton("Open File");
-		btnMeanTempTimeResult.setEnabled(false);
-		btnMeanTempTimeResult.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				openOutputFile(MEAN_TEMP_TIME_FILENAME);
-			}
-		});
-		component.add(btnMeanTempTimeResult, layoutConstraint);
-		
-		
-		//update currentY
-		currentY += layoutConstraint.gridheight;
-		*/
 		//add the label for Actual Values
 		layoutConstraint.gridx = 0;
 		layoutConstraint.gridy = currentY;
@@ -631,7 +556,7 @@ public class UI extends JFrame {
 		//add the place holder Actual Values
 		layoutConstraint.gridx = 1;
 		layoutConstraint.gridy = currentY;
-		layoutConstraint.gridheight = 1;
+		layoutConstraint.gridheight = 3;
 		btnActualValuesFile = new JButton("Open File");
 		btnActualValuesFile.setEnabled(false);
 		btnActualValuesFile.addActionListener(new ActionListener() {
@@ -642,6 +567,30 @@ public class UI extends JFrame {
 			}
 		});
 		component.add(btnActualValuesFile, layoutConstraint);
+		layoutConstraint.gridheight = 1;
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for Mean Temp over Region
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		cbMeanRegionTemp = new JCheckBox("Mean Temperature(Region)");
+		cbMeanRegionTemp.setSelected(true);
+		component.add(cbMeanRegionTemp, layoutConstraint);
+		
+		
+		//update currentY
+		currentY += layoutConstraint.gridheight;
+		
+		//add the label for mean temp over time
+		layoutConstraint.gridx = 0;
+		layoutConstraint.gridy = currentY;
+		layoutConstraint.gridheight = 1;
+		cbMeanTimeTemp = new JCheckBox("Mean Temperature(Time)");
+		cbMeanTimeTemp.setSelected(true);
+		component.add(cbMeanTimeTemp, layoutConstraint);
 		
 		//update currentY
 		currentY += layoutConstraint.gridheight;
@@ -1069,7 +1018,7 @@ public class UI extends JFrame {
 		cbAllValues.setEnabled(status);
 		//cbMeanRegionTemp.setEnabled(status);
 		//cbMeanTimeTemp.setEnabled(status);
-		if(cbAllValues.isSelected())
+		if(cbAllValues.isSelected() || cbMeanRegionTemp.isSelected() || cbMeanTimeTemp.isSelected())
 			btnActualValuesFile.setEnabled(status);
 		/*
 		if(cbMeanRegionTemp.isSelected())
