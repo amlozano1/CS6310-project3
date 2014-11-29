@@ -44,7 +44,7 @@ public class CellCalculations {
 	 */
 	public static double getLatitudeOfCellsInRow(int row, double gridSpacing) {
 		double totalRows = getNumberOfRows(gridSpacing);
-		return (row - (totalRows / 2.0)) * gridSpacing;
+		return -(row - (totalRows / 2.0)) * gridSpacing;
 	}
 	
 	/**

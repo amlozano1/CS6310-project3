@@ -28,18 +28,19 @@ public class CellCalculationsTests {
 	
 	@Test
 	public void testGetLatitudeOfCellsInRow() {
-		assertEquals(-75.0, CellCalculations.getLatitudeOfCellsInRow(1, 15), 0.0);
-		assertEquals(-60.0, CellCalculations.getLatitudeOfCellsInRow(2, 15), 0.0);
-		assertEquals(-45.0, CellCalculations.getLatitudeOfCellsInRow(3, 15), 0.0);
-		assertEquals(-30.0, CellCalculations.getLatitudeOfCellsInRow(4, 15), 0.0);
-		assertEquals(-15.0, CellCalculations.getLatitudeOfCellsInRow(5, 15), 0.0);
+		assertEquals(90.0, CellCalculations.getLatitudeOfCellsInRow(0, 15), 0.0);
+		assertEquals(75.0, CellCalculations.getLatitudeOfCellsInRow(1, 15), 0.0);
+		assertEquals(60.0, CellCalculations.getLatitudeOfCellsInRow(2, 15), 0.0);
+		assertEquals(45.0, CellCalculations.getLatitudeOfCellsInRow(3, 15), 0.0);
+		assertEquals(30.0, CellCalculations.getLatitudeOfCellsInRow(4, 15), 0.0);
+		assertEquals(15.0, CellCalculations.getLatitudeOfCellsInRow(5, 15), 0.0);
 		assertEquals(0.0, CellCalculations.getLatitudeOfCellsInRow(6, 15), 0.0);
-		assertEquals(15.0, CellCalculations.getLatitudeOfCellsInRow(7, 15), 0.0);
-		assertEquals(30.0, CellCalculations.getLatitudeOfCellsInRow(8, 15), 0.0);
-		assertEquals(45.0, CellCalculations.getLatitudeOfCellsInRow(9, 15), 0.0);
-		assertEquals(60.0, CellCalculations.getLatitudeOfCellsInRow(10, 15), 0.0);
-		assertEquals(75.0, CellCalculations.getLatitudeOfCellsInRow(11, 15), 0.0);
-		assertEquals(90.0, CellCalculations.getLatitudeOfCellsInRow(12, 15), 0.0);
+		assertEquals(-15.0, CellCalculations.getLatitudeOfCellsInRow(7, 15), 0.0);
+		assertEquals(-30.0, CellCalculations.getLatitudeOfCellsInRow(8, 15), 0.0);
+		assertEquals(-45.0, CellCalculations.getLatitudeOfCellsInRow(9, 15), 0.0);
+		assertEquals(-60.0, CellCalculations.getLatitudeOfCellsInRow(10, 15), 0.0);
+		assertEquals(-75.0, CellCalculations.getLatitudeOfCellsInRow(11, 15), 0.0);
+		assertEquals(-90.0, CellCalculations.getLatitudeOfCellsInRow(12, 15), 0.0);
 	}
 	
 	@Test
