@@ -56,8 +56,10 @@ public class CellCalculations {
 	 */
 	public static double getLongitudeOfCellsInColumn(int column, double gridSpacing) {
 		double totalColumns = getNumberOfColumns(gridSpacing);
-		double d = (column + 1) * gridSpacing;
-		return column < (totalColumns / 2) ? -d : 360 - d;
+//		double d = (column + 1) * gridSpacing;
+//		return column < (totalColumns / 2) ? -d : 360 - d;
+		
+		return ((360 / totalColumns) * column) - 180;
 	}
 	
 	/**
