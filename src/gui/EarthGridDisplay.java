@@ -123,41 +123,31 @@ public class EarthGridDisplay extends JPanel {
     return imgWidth;
   }
   
-  private void fillCellColors(Graphics g) {
-    int cellX=0, cellY=0;
-    int cellWidth = pixelsPerCellX;
-    int xIndex = 0;
-    
-    int lat = 90;
-    for (int y = 0; y < numCellsY; y++) {
-    	int top = (int)Util.getDistToEquator(lat, radius);
-    	lat -= degreeSeparation;
-    	int bot = (int)Util.getDistToEquator(lat, radius);
-    	int cellHeight = top-bot; 
-    	      
-    	for (int x = 0; x < numCellsX ; x++){
-    		
-    		xIndex = x + numCellsX/2;
-    		
-    		if ( xIndex >= numCellsX ) {
-    			xIndex = xIndex - numCellsX;
-    		}
-    		
-	        double newTemp = grid.getTemperature(xIndex, y);
-	        int colorValue = new Double(newTemp).intValue();
-	        
-	        g.setColor(colorPicker.getColor(colorValue, opacity));
-	        g.fillRect(cellX, cellY, cellWidth, cellHeight);
+	private void fillCellColors(Graphics g) {
+		int cellX = 0, cellY = 0;
+		int cellWidth = pixelsPerCellX;
 
-	        //System.out.println("("+cellX+","+cellY+","+cellWidth+","+cellHeight+")");
-	        cellX += cellWidth;
-	       //System.out.print("\n["+x+", "+y+"] color: " + colorValue);
-	        top = bot;
-	      }      
-      cellY += cellHeight;
-      cellX = 0;
-    }
-  }
+		int lat = 90;
+		for (int y = 0; y < numCellsY; y++) {
+			int top = (int) Util.getDistToEquator(lat, radius);
+			lat -= degreeSeparation;
+			int bot = (int) Util.getDistToEquator(lat, radius);
+			int cellHeight = top - bot;
+
+			for (int x = 0; x < numCellsX; x++) {
+				double newTemp = grid.getTemperature(x, y);
+				int colorValue = new Double(newTemp).intValue();
+
+				g.setColor(colorPicker.getColor(colorValue, opacity));
+
+				g.fillRect(cellX, cellY, cellWidth, cellHeight);
+				cellX += cellWidth;
+				top = bot;
+			}
+			cellY += cellHeight;
+			cellX = 0;
+		}
+	}
 
   private void drawGrid(Graphics g) {
     g.setColor(new Color(0,0,0,80));
