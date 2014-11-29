@@ -154,7 +154,7 @@ public class UI extends JFrame {
 						//print column headers
 						writer.write(cells[i].getLatitude() + ",");
 					}
-					writer.write("Region's Mean");
+					writer.write(",Region's Mean");
 					writer.newLine();
 					printHeader = false;
 				}
@@ -163,9 +163,10 @@ public class UI extends JFrame {
 				for (int i = 0; i < cells.length; i++) {
 					writer.write("," + cells[i].getTemperature());
 				}
-				writer.write("," + metrics.getMeanForRegion(simTime) );
+				writer.write(",," + metrics.getMeanForRegion(simTime) );
 				writer.newLine();
 			}
+			writer.newLine();
 			writer.write("Time's Mean,");
 			for (int i = 0; i < columnCount; i++) {
 				writer.write(metrics.getMeanForTime(i) + ",");
