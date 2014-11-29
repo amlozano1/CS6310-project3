@@ -1,5 +1,7 @@
 package controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,10 +64,10 @@ public class PresentationController extends ThreadedProcess {
 
 			@Override
 			public void run() {
+				QueryMetrics metrics = QueryMetrics.getInstance();
 				try {
 					mStopAndFlush = false;
 					mFlushCompleteListener = null;
-					QueryMetrics metrics = QueryMetrics.getInstance();
 					while (!checkStopped() && (!mStopAndFlush || mQueue.size() > 0)) {
 						checkPaused();
 						
@@ -84,6 +86,23 @@ public class PresentationController extends ThreadedProcess {
 					}
 				} catch (InterruptedException e) {
 					LOGGER.info("Presentation stopped by interrupt");
+					
+					// Drain remaining simulation results into a list
+					Collection<SimulationResult> drain = new ArrayList<SimulationResult>();
+					mQueue.drainTo(drain);
+					
+					for (SimulationResult result : drain) {
+						metrics.addResult(result);
+						
+						// TODO: Add presentation display rate check
+						try {
+							present(result);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+						}
+						
+						log(Level.INFO, "Buffer size: " + mQueue.size() + "/" + (mQueue.size() + mQueue.remainingCapacity()));
+					}
 					
 					// If presentation was flushed, call the flush complete listener
 					if (mStopAndFlush && mFlushCompleteListener != null) {
