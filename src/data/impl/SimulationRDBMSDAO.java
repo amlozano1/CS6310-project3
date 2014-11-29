@@ -162,6 +162,11 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM ").append(TABLE_NAME);
 		sql.append(" ").append(criteria.buildWhere());
+		sql.append(" ORDER BY ");
+		sql.append(GRID_SPACING).append(" DESC, ");
+		sql.append(PRECISION).append(" ASC, ");
+		sql.append(TEMPORAL_PRECISION).append(" ASC, ");
+		sql.append(GEO_PRECISION).append(" ASC ");
 		
 		Connection conn = dataStore.getConnection();
 		PreparedStatement stmnt = null;
