@@ -208,8 +208,11 @@ public class UI extends JFrame {
 		//this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setMaximumSize(getMaximumSize());
 		this.setResizable(true);
-		this.setLocation(10, 10);
-		this.setSize(1300, 600);
+		this.setLocation(0, 0);
+		if(getMaximumSize().getHeight()>1280)
+			this.setSize(1280, 720);
+		else
+			this.setSize(getMaximumSize());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Dimension dim = new Dimension (800,825);
@@ -1044,7 +1047,7 @@ public class UI extends JFrame {
 	
 	private void updateQueryOutputAvailability(boolean status){
 		//TODO: un-comment the line below to have the button follow the rest 
-		//btnQueryGo.setEnabled(status);
+		btnQueryGo.setEnabled(status);
 	
 		cbMinTemp.setEnabled(status);
 		cbMaxTemp.setEnabled(status);
