@@ -168,6 +168,8 @@ public class SimulationController extends ThreadedProcess {
 							newResult.setSunLatitude(calculateSunLat(mAxialTilt));
 							newResult.setSunLongitude(calculateSunLong(sunPosition));
 							newResult.setSimulationTime(minutesPassed);
+							
+							manager.saveResult(simulation, newResult);
 						} else {
 							long lo = minutesPassed - (mSimulationTimestep/2 - 1);
 							long hi = minutesPassed + (mSimulationTimestep/2);
@@ -185,11 +187,7 @@ public class SimulationController extends ThreadedProcess {
 						}
 
 						// TODO: Add stabilization check here
-						
-						if(isNewSimulation){
-							manager.saveResult(simulation, newResult);
-						}
-						
+
 						mQueue.put(newResult);
 						
 						// Store result as previous result to input into next pass
@@ -218,14 +216,13 @@ public class SimulationController extends ThreadedProcess {
 					LOGGER.info("Simulation stopped by interrupt");
 				}
 			}
-
-			private int calculateSunPositionFromTime(int sunIncrement, long minutesPassed) {
-				long steps = minutesPassed/mSimulationTimestep;
-				
-				return (int)steps * sunIncrement;
-			}
-
 		};
+	}
+	
+	private int calculateSunPositionFromTime(int sunIncrement, long minutesPassed) {
+		long steps = minutesPassed/mSimulationTimestep;
+		
+		return (int)steps * sunIncrement;
 	}
 	
 	protected boolean simulationLongEnough(Simulation simulation) {
