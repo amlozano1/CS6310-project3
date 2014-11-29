@@ -75,9 +75,9 @@ public class SimulationController extends ThreadedProcess {
 		return mSimulationMethod.simulate(previousResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
-	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, int sunPosition, int gridSpacing) throws InterruptedException {
+	public SimulationResult interpolate(SimulationResult partialResult, int sunPosition, int gridSpacing) throws InterruptedException {
 		// TODO: Move hardcoded planetary values as high as possible
-		return mSimulationMethod.interpolate(previousResult, partialResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
+		return mSimulationMethod.interpolate(partialResult, mAxialTilt, mOrbitalEccentricity, sunPosition, gridSpacing, 40030140.0, 0.3, 0.612, 149600000.0, 525600, 29555656845976000000.0);
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class SimulationController extends ThreadedProcess {
 							} else {
 								minutesPassed = dbResult.getSimulationTime();
 								sunPosition = calculateSunPositionFromTime(sunIncrement, minutesPassed);
-								newResult = interpolate(previousResult, dbResult, sunPosition, mGridSpacing);
+								newResult = interpolate(dbResult, sunPosition, mGridSpacing);
 							}
 						}
 

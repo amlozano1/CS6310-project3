@@ -16,6 +16,6 @@ public interface SimulationMethod {
 	
 	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException;
 	
-	public SimulationResult interpolate(SimulationResult previousResult, SimulationResult partialResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException;
+	public SimulationResult interpolate(SimulationResult partialResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException;
 
 }

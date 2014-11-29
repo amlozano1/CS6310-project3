@@ -3,3 +3,4 @@
 *.db
 derby.log
 /heatedplanetp3t1-db/
+AllCellInfo.csv
