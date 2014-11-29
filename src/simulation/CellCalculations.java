@@ -87,7 +87,7 @@ public class CellCalculations {
 	public static double getCeilingWidth(int row, double circumference, double gridSpacing) {
 		double latitude = getLatitudeOfCellsInRow(row, gridSpacing);
 		double height = getCellVerticalSideLength(circumference, gridSpacing);
-		return Math.cos(getRadiansFromDegrees(latitude + gridSpacing)) * height;
+		return Math.cos(getRadiansFromDegrees(latitude - gridSpacing)) * height;
 	}
 	
 	/**
@@ -197,6 +197,9 @@ public class CellCalculations {
 		double dNoon = Math.abs(d - rotationalAngle);
 		double a = dNoon < 90 ? Math.cos(dNoon) : 0;
 		return Math.cos(latitude) * a;
+		
+//		double a = dNoon < 90 ? Math.cos(getRadiansFromDegrees(dNoon)) : 0;
+//		return Math.cos(getRadiansFromDegrees(latitude)) * a;
 	}
 	
 	public static double getBorderEastWestProportion(int row, double circumference, double gridSpacing) {
