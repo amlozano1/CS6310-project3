@@ -120,6 +120,7 @@ public class SimulationController extends ThreadedProcess {
 
 			@Override
 			public void run() {
+				long maxMemoryUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 				try {
 					boolean isNewSimulation = (mode == Mode.SIMULATION);
 					if(mName != null){
@@ -187,6 +188,8 @@ public class SimulationController extends ThreadedProcess {
 						}
 
 						// TODO: Add stabilization check here
+						
+						maxMemoryUsed = Math.max(maxMemoryUsed, Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 
 						mQueue.put(newResult);
 						
@@ -215,6 +218,7 @@ public class SimulationController extends ThreadedProcess {
 				} catch (InterruptedException e) {
 					LOGGER.info("Simulation stopped by interrupt");
 				}
+				LOGGER.info(String.format("Max memory used: %d bytes", maxMemoryUsed));
 			}
 		};
 	}
