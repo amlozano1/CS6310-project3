@@ -94,7 +94,6 @@ public class MasterController {
 			try {
 				// Stop and flush the presentation so that any results that have not been displayed will not be lost
 				// Pass the complete lister in so that any outside actions will be called when the flush is finished
-				System.out.println("Complete sim");
 				UI.getInstance().completeSimulation();
 				UI.getInstance().updateMetricResults();
 				if(runPresentation)

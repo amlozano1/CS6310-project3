@@ -75,6 +75,8 @@ public class UI extends JFrame {
 	private List<String> queryNames = new ArrayList<String>();
 	private MasterController masterController;
 	private Date START_DATE = null;
+	private long responseStartTime, responseStopTime;
+	
 	
 	private final String ALL_CELL_FILENAME = "AllCellInfo.csv";
 	private final String START_DATE_STRING = "01-04-2014";
@@ -91,6 +93,8 @@ public class UI extends JFrame {
 	}
 	
 	public void updateMetricResults(){
+		responseStopTime = System.nanoTime();
+		System.out.println("Response Time:"+(responseStopTime-responseStartTime));
 		if(tabs.getSelectedIndex() != 1)
 			return;
 		
@@ -859,6 +863,7 @@ public class UI extends JFrame {
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
+						responseStartTime = System.nanoTime();
 						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), 0, Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
 						if(cbDisplayAnimation.isSelected()){							
 							//Update earth map with new gridspacing
@@ -1021,7 +1026,7 @@ public class UI extends JFrame {
 		
 		try{
 			int presDispRate = Integer.parseInt(txtPresentationDisplayRate.getText());
-			if(presDispRate <1)
+			if(presDispRate < 1)
 				return "The Presentation Display Rate must be greater than 0.";
 		}catch(NumberFormatException e){
 			return "Error processing Presentation Display Rate.";
@@ -1075,8 +1080,8 @@ public class UI extends JFrame {
 			txtAxialTiltQuery.setText(sim.getSimulationParameters().getAxialTilt()+"");
 			txtOrbitalEccQuery.setText(sim.getSimulationParameters().getOrbitalEccentricity()+"");
 			updateQueryInputAvailability(false);
-		}else
-			System.out.println("its null.");
+		}//else
+		//	System.out.println("its null.");
 	}
 
 	private boolean areQueryDatesValid(){
@@ -1193,6 +1198,7 @@ public class UI extends JFrame {
 				long queryStart = Utils.toSimulationTime(start);
 				long queryEnd =  Utils.toSimulationTime(end);
 				earthPanel.drawGrid(sim.getSimulationParameters().getGridSpacing());
+				responseStartTime = System.nanoTime();
 				masterController.query(sim, queryStart, queryEnd, regionBounds, displayPresentation);
 				updateQueryOutputAvailability(false);
 				
