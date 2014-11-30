@@ -94,7 +94,7 @@ public class UI extends JFrame {
 	
 	public void updateMetricResults(){
 		responseStopTime = System.nanoTime();
-		System.out.println("Response Time:"+(responseStopTime-responseStartTime));
+		System.out.println("Query Response Time:"+(responseStopTime-responseStartTime));
 		if(tabs.getSelectedIndex() != 1)
 			return;
 		
@@ -863,6 +863,7 @@ public class UI extends JFrame {
 					
 					//masterController.start(SIMULATION_AXIAL_TILT, SIMULATION_ORBITAL_ECCENTRICITY, SIMULATION_NAME, SIMULATION_GRID_SPACING, SIMULATION_TIME_STEP, SIMULATION_LENGTH, PRESENTATION_DISPLAY_RATE);
 					try {
+						responseStartTime = System.nanoTime();
 						masterController.start(Double.parseDouble(txtAxialTiltSim.getText()), Double.parseDouble(txtOrbitalEccSim.getText()), txtSimulationName.getText(), Integer.parseInt(txtGridSpacing.getText()), (Integer)spinnerSimTimeStep.getValue(), 0, Integer.parseInt(txtSimLength.getText()), Integer.parseInt(txtPresentationDisplayRate.getText()), cbDisplayAnimation.isSelected());
 						if(cbDisplayAnimation.isSelected()){							
 							//Update earth map with new gridspacing
