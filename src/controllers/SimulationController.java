@@ -138,6 +138,7 @@ public class SimulationController extends ThreadedProcess {
 						mSimulationTimestep = params.getTimeStep();
 						mSimulationLength = params.getLength();
 						if(!simulationLongEnough(simulation)){
+							resultDAO.removeAllForSimulation(simulation.getId());
 							simulationDAO.removeSimulation(simulation.getId());
 							simulation = createSimulation(mAxialTilt, mOrbitalEccentricity, mName, mGridSpacing, mSimulationTimestep, mSimulationLength);
 							isNewSimulation = true;

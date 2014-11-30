@@ -1167,7 +1167,7 @@ public class UI extends JFrame {
 		Date start = (Date)startTimeSpinner.getValue();
 		Date end = (Date)endTimeSpinner.getValue();
 		
-		int startTime = (int)(start.getTime()-(START_DATE.getTime()))/(60*1000);//to convert from milliseconds to minutes
+		long startTime = (start.getTime()-(START_DATE.getTime()))/(60*1000);//to convert from milliseconds to minutes
 		int simulationLength = (int)((end.getTime()-start.getTime())/(60*1000));//to convert from milliseconds to minutes
 
 //		double axialTilt = sim.getSimulationParameters().getAxialTilt();
