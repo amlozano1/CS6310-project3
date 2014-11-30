@@ -16,8 +16,8 @@ public final class Utils {
 	
 	public static String INVOCATION_PARAMETERS_KEY = "InvocationParms";
 	
-	// TODO: Lookup the max value for our data implementation
-	private static final int MAX_PRECISION_VALUE = 10;
+	private static final int MAX_PRECISION_VALUE = String.format("%f", Double.MAX_VALUE).replace(".", "").length();
+	private static final int DEFAULT_PRECISION_VALUE = String.format("%f", Float.MAX_VALUE).replace(".", "").length();
 
 	public static final Calendar START_TIME = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	public static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
@@ -49,7 +49,7 @@ public final class Utils {
 		for (int i = 0; i < args.length; i++) {
 			if ("-p".equals(args[i])) {
 				try {
-					short precision = Short.parseShort(args[i + 1]);
+					int precision = Integer.parseInt(args[i + 1]);
 					if (precision < 0 || precision > MAX_PRECISION_VALUE) {
 						throw new ArgumentInvalidException("-p", "-p must be a valid integer value from 0 to " + MAX_PRECISION_VALUE);
 					}
@@ -98,7 +98,7 @@ public final class Utils {
 		/**
 		 * -p #
 		 */
-		public short precision = 0;
+		public int precision = Utils.DEFAULT_PRECISION_VALUE;
 		
 		/**
 		 * -g #

@@ -32,7 +32,7 @@ public class SimulationRDBMSDAO extends BaseDAO implements SimulationDAO, Simula
 			stmnt.setShort(4, parameters.getLength());
 			stmnt.setDouble(5, parameters.getOrbitalEccentricity());
 			stmnt.setDouble(6, parameters.getAxialTilt());
-			stmnt.setShort(7, parameters.getPrecision());
+			stmnt.setInt(7, parameters.getPrecision());
 			stmnt.setShort(8, parameters.getGeoPrecision());
 			stmnt.setShort(9, parameters.getTempPrecision());
 

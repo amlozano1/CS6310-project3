@@ -6,7 +6,7 @@ public class SimulationParameters {
 	private short length;
 	private double axialTilt;
 	private double orbitalEccentricity;
-	private short precision;
+	private int precision;
 	private short geoPrecision;
 	private short tempPrecision;
 	
@@ -40,10 +40,10 @@ public class SimulationParameters {
 	public void setOrbitalEccentricity(double orbitalEccentricity) {
 		this.orbitalEccentricity = orbitalEccentricity;
 	}
-	public short getPrecision() {
+	public int getPrecision() {
 		return precision;
 	}
-	public void setPrecision(short precision) {
+	public void setPrecision(int precision) {
 		this.precision = precision;
 	}
 	public short getGeoPrecision() {
