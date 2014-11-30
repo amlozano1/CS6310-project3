@@ -14,6 +14,8 @@ public class SimulationAlgorithm implements SimulationMethod {
 	public SimulationResult simulate(SimulationResult previousResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing, double planetCircumference,
 			double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException {
 		
+		long startTime = System.nanoTime();
+		
 		int columns = previousResult.getColumnCount();
 		int rows = previousResult.getRowCount();
 		double adjustedSolarPowerPerMeter = OrbitalPosition.getInverseSquare(orbitalEccentricity, sunPosition, solarYear, orbitSemiMajorAxis, solarPowerPerMeter);
@@ -52,12 +54,16 @@ public class SimulationAlgorithm implements SimulationMethod {
 		LOGGER.info(String.format("Heating: %.5f", heating));
 		LOGGER.info(String.format("Cooling: %.5f", cooling));
 		
+		LOGGER.info(String.format("Simulation completed in %d nanoseconds", System.nanoTime() - startTime));
+		
 		return new SimulationResult(data);
 	}
 
 	@Override
 	public SimulationResult interpolate(SimulationResult partialResult, double axialTilt, double orbitalEccentricity, int sunPosition, int gridSpacing,
 			double planetCircumference, double planetAldebo, double planetEmissivity, double orbitSemiMajorAxis, double solarYear, double solarPowerPerMeter) throws InterruptedException {
+
+		long startTime = System.nanoTime();
 		
 		int columns = partialResult.getColumnCount();
 		int rows = partialResult.getRowCount();
@@ -125,6 +131,8 @@ public class SimulationAlgorithm implements SimulationMethod {
 				}
 			}
 		}
+		
+		LOGGER.info(String.format("Interpolation completed in %d nanoseconds", System.nanoTime() - startTime));
 		
 		return partialResult;
 	}
