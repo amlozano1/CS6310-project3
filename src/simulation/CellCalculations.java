@@ -188,9 +188,9 @@ public class CellCalculations {
 	 * @param time The time to measure attenuation at in minutes passed.
 	 * @return The heat attenuation (reduction factor) for the specified cell at the specified time.
 	 */
-	public static double getHeatAttenuation(int row, int column, double gridSpacing, int time) {
+	public static double getHeatAttenuation(int row, int column, double gridSpacing, int sunPosition) {
 		// TODO: Account for tilt here? then apply to rotationAngle
-		double rotationalAngle = getRotationalAngle(time);
+		double rotationalAngle = sunPosition % 360;
 		double latitude = getLatitudeOfCellsInRow(row, gridSpacing);
 		double longitude = getLongitudeOfCellsInColumn(column, gridSpacing);
 		double d = longitude >= 0 ? 360 - longitude : -longitude;
