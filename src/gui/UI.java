@@ -94,7 +94,7 @@ public class UI extends JFrame {
 	
 	public void updateMetricResults(){
 		responseStopTime = System.nanoTime();
-		System.out.println("Query Response Time:"+(responseStopTime-responseStartTime));
+		System.out.println("Response Time:"+(responseStopTime-responseStartTime));
 		if(tabs.getSelectedIndex() != 1)
 			return;
 		
